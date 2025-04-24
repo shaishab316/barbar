@@ -6,6 +6,7 @@ import { EUserRole } from '../app/modules/user/User.enum';
 import { TRoute } from '../types/route.types';
 import AdminRoutes from '../app/modules/admin/Admin.routes';
 import serveResponse from '../util/server/serveResponse';
+import { BannerRoutes } from '../app/modules/banner/Banner.route';
 
 const routes: TRoute[] = [
   {
@@ -31,6 +32,10 @@ const routes: TRoute[] = [
         data: user,
       });
     }),
+  },
+  {
+    path: '/banner',
+    route: BannerRoutes.user,
   },
 ];
 
