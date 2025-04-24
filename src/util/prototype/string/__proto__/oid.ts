@@ -1,4 +1,6 @@
 import { Types } from 'mongoose';
+import ServerError from '../../../../errors/ServerError';
+import { StatusCodes } from 'http-status-codes';
 
 declare global {
   interface String {
@@ -8,6 +10,12 @@ declare global {
 
 Object.defineProperty(String.prototype, 'oid', {
   get() {
+    if (!Types.ObjectId.isValid(this as string))
+      throw new ServerError(
+        StatusCodes.BAD_REQUEST,
+        this + ' is an invalid ObjectId',
+      );
+
     return new Types.ObjectId(this as string);
   },
   enumerable: false,
