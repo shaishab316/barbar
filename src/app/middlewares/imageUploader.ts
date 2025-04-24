@@ -14,9 +14,13 @@ import sharp from 'sharp';
 const imageUploader = ({
   width,
   height,
+  fieldName = 'images',
+  maxCount = 10,
 }: {
   width?: number;
   height?: number;
+  fieldName?: string;
+  maxCount?: number;
 } = {}) => {
   const uploadDir = path.join(process.cwd(), 'uploads', 'images');
   const resizedDir = path.join(uploadDir, 'resized');
@@ -52,19 +56,21 @@ const imageUploader = ({
   const upload = multer({
     storage,
     fileFilter,
-  }).fields([{ name: 'images', maxCount: 20 }]);
+  }).fields([{ name: fieldName, maxCount }]);
 
   return catchAsync((req, res, next) => {
     upload(req, res, async err => {
       if (err) next(err);
 
-      const uploadedImages = req.files as { images?: Express.Multer.File[] };
+      const uploadedImages = req.files as {
+        [key: string]: Express.Multer.File[];
+      };
 
-      if (!uploadedImages?.images?.length) return next();
+      if (!uploadedImages?.[fieldName]?.length) return next();
 
       const resizedImages: string[] = [];
 
-      for (const file of uploadedImages.images) {
+      for (const file of uploadedImages[fieldName]) {
         const filePath = path.join(uploadDir, file.filename);
 
         if (!width && !height) resizedImages.push(`/images/${file.filename}`);
@@ -90,7 +96,9 @@ const imageUploader = ({
         }
       }
 
-      req.body.images = resizedImages;
+      req.body[fieldName] = maxCount > 1 ? resizedImages : resizedImages[0];
+      req.tempFiles = resizedImages;
+
       next();
     });
   });
