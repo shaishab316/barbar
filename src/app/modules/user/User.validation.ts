@@ -51,7 +51,6 @@ export const UserValidations = {
   edit: z.object({
     body: z.object({
       name: z.string().optional(),
-      email: z.string().email('Give a valid email').optional(),
       avatar: z.string().optional(),
       phone: z.string().optional(),
       gender: z
