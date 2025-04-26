@@ -1,26 +1,29 @@
 import { UserServices } from './User.service';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
+import { StatusCodes } from 'http-status-codes';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {
-    body.avatar = body.images[0];
-
-    await UserServices.create(body);
+    const data = await UserServices.create(body);
 
     serveResponse(res, {
-      message: 'Send Otp successfully! Check your email.',
+      statusCode: StatusCodes.CREATED,
+      message: 'User registered successfully!',
+      data,
     });
   }),
 
-  edit: catchAsync(async (req, res) => {
-    req.body.avatar = req.body.images?.[0];
-
-    const updatedUser = await UserServices.edit(req);
+  edit: catchAsync(async ({ body, user }, res) => {
+    const data = await UserServices.edit({
+      ...body,
+      oldAvatar: user?.avatar,
+      _id: user?._id,
+    });
 
     serveResponse(res, {
       message: 'Profile updated successfully!',
-      data: updatedUser,
+      data,
     });
   }),
 

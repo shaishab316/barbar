@@ -16,6 +16,8 @@ export const UserRoutes = {
     imageUploader({
       width: 300,
       height: 300,
+      fieldName: 'avatar',
+      maxCount: 1,
     }),
     purifyRequest(UserValidations.edit),
     UserControllers.edit,
