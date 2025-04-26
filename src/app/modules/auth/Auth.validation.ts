@@ -3,9 +3,15 @@ import { z } from 'zod';
 export const AuthValidations = {
   login: z.object({
     body: z.object({
-      email: z.string().email('Give a valid email'),
+      email: z
+        .string({
+          required_error: 'Email is missing',
+        })
+        .email('Give a valid email'),
       password: z
-        .string()
+        .string({
+          required_error: 'Password is missing',
+        })
         .min(6, 'Password must be at least 6 characters long'),
     }),
   }),
@@ -13,11 +19,15 @@ export const AuthValidations = {
   passwordChange: z.object({
     body: z.object({
       oldPassword: z
-        .string()
+        .string({
+          required_error: 'Old Password is missing',
+        })
         .min(1, 'Old Password is required')
         .min(6, 'Old Password must be at least 6 characters long'),
       newPassword: z
-        .string()
+        .string({
+          required_error: 'New Password is missing',
+        })
         .min(1, 'New Password is required')
         .min(6, 'New Password must be at least 6 characters long'),
     }),
@@ -31,19 +41,11 @@ export const AuthValidations = {
     }),
   }),
 
-  loginWith: z.object({
-    params: z.object({
-      provider: z.enum(['facebook', 'google', 'apple'], {
-        errorMap: () => ({
-          message: 'Provider must be one of facebook, google, or apple',
-        }),
-      }),
-    }),
-  }),
-
   resetPassword: z.object({
     body: z.object({
-      password: z.string().min(6, 'Password must be 6 characters long'),
+      password: z
+        .string({ required_error: 'Password is missing' })
+        .min(6, 'Password must be 6 characters long'),
     }),
   }),
 };
