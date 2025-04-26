@@ -4,6 +4,7 @@ import User from '../modules/user/User.model';
 import { verifyToken } from '../modules/auth/Auth.utils';
 import catchAsync from '../../util/server/catchAsync';
 import { EUserRole } from '../modules/user/User.enum';
+import { TUser } from '../modules/user/User.interface';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles
@@ -15,7 +16,7 @@ const auth = (...roles: EUserRole[]) =>
     req.user = (await User.findById(
       verifyToken(req.headers.authorization?.split(' ')?.[1] ?? '', 'access')
         .userId,
-    ))!;
+    ).select('+password')) as TUser;
 
     if (
       !req.user ||

@@ -7,6 +7,7 @@ import { TRoute } from '../types/route.types';
 import AdminRoutes from '../app/modules/admin/Admin.routes';
 import serveResponse from '../util/server/serveResponse';
 import { BannerRoutes } from '../app/modules/banner/Banner.route';
+import { userExcludeFields } from '../app/modules/user/User.constant';
 
 const routes: TRoute[] = [
   {
@@ -26,7 +27,9 @@ const routes: TRoute[] = [
   {
     path: '/me',
     middlewares: [auth(EUserRole.USER, EUserRole.ADMIN)],
-    route: Router().get('/', ({ user }, res) => {
+    route: Router().get('/', ({ user }: any, res) => {
+      userExcludeFields.forEach(field => (user[field] = undefined));
+
       serveResponse(res, {
         message: 'Profile fetched successfully!',
         data: user,

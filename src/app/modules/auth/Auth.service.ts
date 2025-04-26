@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { createToken, verifyToken } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import config from '../../../config';
 import { Response } from 'express';
 import { userExcludeFields } from '../user/User.constant';
@@ -26,11 +26,9 @@ export const AuthServices = {
   },
 
   async changePassword(
-    id: Types.ObjectId,
+    user: TUser & Document,
     { newPassword, oldPassword }: Record<string, string>,
   ) {
-    const user = (await User.findById(id).select('+password'))!;
-
     if (!(await bcrypt.compare(oldPassword, user.password!)))
       throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
 
