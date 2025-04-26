@@ -8,21 +8,30 @@ import catchAsync from '../../util/server/catchAsync';
 import sharp from 'sharp';
 import { json } from '../../util/transform/json';
 
-interface ImageUploaderOptions {
+interface CaptureField extends Field {
   width?: number;
   height?: number;
-  fields: Field[];
+}
+
+interface CaptureOptions {
+  fields?: CaptureField[];
   maxFileSizeMB?: number;
 }
 
-const imageUploader = (
-  {
-    width,
-    height,
-    fields = [{ name: 'images', maxCount: 10 }],
-    maxFileSizeMB = 5,
-  }: ImageUploaderOptions = { fields: [{ name: 'images', maxCount: 10 }] },
-) => {
+/**
+ * Image upload middleware with per-field resizing
+ * @param {Object} options - Configuration
+ * @param {Array} [options.fields=[{name:'images',maxCount:10}]] - Upload fields with optional width/height
+ * @param {number} [options.maxFileSizeMB=5] - Max file size in MB
+ * @returns {Function} Express middleware
+ *
+ * @example
+ * capture({ fields: [{ name: 'avatar', width: 200, height: 200 }] })
+ */
+const capture = ({
+  fields = [{ name: 'images', maxCount: 10 }],
+  maxFileSizeMB = 5,
+}: CaptureOptions = {}) => {
   const uploadDir = path.join(process.cwd(), 'uploads', 'images');
   createDir(uploadDir);
 
@@ -80,8 +89,11 @@ const imageUploader = (
                   .withMetadata()
                   .toFormat('jpeg', { quality: 80 });
 
-                if (width || height)
-                  processor.resize(width, height, { fit: 'inside' });
+                if (field.width || field.height) {
+                  processor.resize(field.width, field.height, {
+                    fit: 'inside',
+                  });
+                }
 
                 await processor.toFile(filePath);
                 req.tempFiles.push(`/images/${fileName}`);
@@ -109,4 +121,4 @@ const imageUploader = (
   });
 };
 
-export default imageUploader;
+export default capture;
