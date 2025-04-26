@@ -1,6 +1,6 @@
-/* eslint-disable no-undef, no-unused-vars */
+/* eslint-disable no-undef */
 import path from 'path';
-import multer, { FileFilterCallback } from 'multer';
+import multer, { FileFilterCallback, Field } from 'multer';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
 import { createDir } from '../../util/file/createDir';
@@ -8,37 +8,35 @@ import catchAsync from '../../util/server/catchAsync';
 import sharp from 'sharp';
 import { json } from '../../util/transform/json';
 
-/**
- * @description Multer middleware to handle image uploads with optional resizing.
- */
-const imageUploader = ({
-  width,
-  height,
-  fieldName = 'images',
-  maxCount = 10,
-  maxFileSizeMB = 5,
-}: {
+interface ImageUploaderOptions {
   width?: number;
   height?: number;
-  fieldName?: string;
-  maxCount?: number;
+  fields: Field[];
   maxFileSizeMB?: number;
-} = {}) => {
-  const uploadDir = path.join(process.cwd(), 'uploads', 'images');
+}
 
+const imageUploader = (
+  {
+    width,
+    height,
+    fields = [{ name: 'images', maxCount: 10 }],
+    maxFileSizeMB = 5,
+  }: ImageUploaderOptions = { fields: [{ name: 'images', maxCount: 10 }] },
+) => {
+  const uploadDir = path.join(process.cwd(), 'uploads', 'images');
   createDir(uploadDir);
 
   const storage = multer.memoryStorage();
 
   const fileFilter = (_req: any, file: any, cb: FileFilterCallback) => {
-    if (!file.mimetype.startsWith('image/'))
+    if (!file.mimetype.startsWith('image/')) {
       return cb(
         new ServerError(
           StatusCodes.BAD_REQUEST,
           'Only image files are allowed',
         ),
       );
-
+    }
     cb(null, true);
   };
 
@@ -47,57 +45,66 @@ const imageUploader = ({
     fileFilter,
     limits: {
       fileSize: maxFileSizeMB * 1024 * 1024,
-      files: maxCount,
     },
-  }).fields([{ name: fieldName, maxCount }]);
+  }).fields(fields);
 
   return catchAsync(async (req, res, next) => {
     upload(req, res, async err => {
       if (err) return next(err);
 
-      const uploadedImages = req.files as {
-        [key: string]: Express.Multer.File[];
+      const uploadedFiles = req.files as {
+        [fieldname: string]: Express.Multer.File[];
       };
+      const processedFiles: { [fieldname: string]: string | string[] } = {};
+      req.tempFiles = [];
 
-      if (uploadedImages?.[fieldName]?.length) {
-        const images: string[] = [];
+      try {
+        await Promise.all(
+          fields.map(async field => {
+            const files = uploadedFiles?.[field.name];
+            if (!files?.length) return;
 
-        for (const file of uploadedImages[fieldName]) {
-          try {
-            const fileExt = path.extname(file.originalname);
-            const fileName = `${file.originalname
-              .replace(fileExt, '')
-              .toLowerCase()
-              .split(' ')
-              .join('-')}-${Date.now()}${fileExt}`;
+            const processed = await Promise.all(
+              files.map(async file => {
+                const fileExt = path.extname(file.originalname);
+                const fileName = `${file.originalname
+                  .replace(fileExt, '')
+                  .toLowerCase()
+                  .split(' ')
+                  .join('-')}-${Date.now()}.jpeg`;
 
-            const filePath = path.join(uploadDir, fileName);
+                const filePath = path.join(uploadDir, fileName);
 
-            if (width || height) {
-              await sharp(file.buffer)
-                .resize(width, height, { fit: 'inside' })
-                .toFile(filePath);
-            } else {
-              await sharp(file.buffer).toFile(filePath);
-            }
+                const processor = sharp(file.buffer)
+                  .rotate()
+                  .withMetadata()
+                  .toFormat('jpeg', { quality: 80 });
 
-            images.push(`/${path.join('images', fileName)}`);
-          } catch (error) {
-            return next(
-              new ServerError(
-                StatusCodes.INTERNAL_SERVER_ERROR,
-                'Image processing failed',
-              ),
+                if (width || height)
+                  processor.resize(width, height, { fit: 'inside' });
+
+                await processor.toFile(filePath);
+                req.tempFiles.push(`/images/${fileName}`);
+                return `/images/${fileName}`;
+              }),
             );
-          }
-        }
 
-        req.body[fieldName] = maxCount > 1 ? images : images[0];
-        req.tempFiles = images;
+            processedFiles[field.name] =
+              field.maxCount && field.maxCount > 1 ? processed : processed[0];
+          }),
+        );
+
+        req.body = { ...req.body, ...processedFiles };
+        if (req.body.data) req.body = json(req.body.data);
+        next();
+      } catch (error) {
+        next(
+          new ServerError(
+            StatusCodes.INTERNAL_SERVER_ERROR,
+            'Image processing failed',
+          ),
+        );
       }
-
-      if (req.body.data) req.body = json(req.body.data);
-      next();
     });
   });
 };
