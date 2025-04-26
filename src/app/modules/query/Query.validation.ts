@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { exists } from '../../../util/db/exists';
 import { Model } from 'mongoose';
+import { oid } from '../../../util/transform/oid';
 
 export const QueryValidations = {
   list: z.object({
@@ -18,10 +19,7 @@ export const QueryValidations = {
   exists: (_id: string, model: Model<any>) =>
     z.object({
       params: z.object({
-        [_id]: z
-          .string()
-          .transform(str => str.oid)
-          .refine(exists(model)),
+        [_id]: z.string().transform(oid).refine(exists(model)),
       }),
     }),
 };
