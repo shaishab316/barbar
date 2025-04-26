@@ -13,8 +13,8 @@ export const BannerServices = {
   },
 
   async delete(bannerId: Types.ObjectId) {
-    const banner = (await Banner.findByIdAndDelete(bannerId))!;
+    const { image } = (await Banner.findByIdAndDelete(bannerId))!;
 
-    await deleteFile(banner.image);
+    await deleteFile(image);
   },
 };

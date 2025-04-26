@@ -8,8 +8,10 @@ import { BannerValidations } from './Banner.validation';
 
 const admin = Router();
 
+admin.get('/', BannerControllers.list);
+
 admin.post(
-  '/',
+  '/create',
   imageUploader({ fieldName: 'image', maxCount: 1 }),
   purifyRequest(BannerValidations.create),
   BannerControllers.create,
@@ -23,5 +25,5 @@ admin.delete(
 
 export const BannerRoutes = {
   admin,
-  user: Router().get('/', BannerControllers.list),
+  user: Router().get('/', BannerControllers.retrieve),
 };

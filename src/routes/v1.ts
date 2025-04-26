@@ -34,7 +34,7 @@ const routes: TRoute[] = [
     }),
   },
   {
-    path: '/banner',
+    path: '/banners',
     route: BannerRoutes.user,
   },
 ];
