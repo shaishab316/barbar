@@ -7,7 +7,7 @@ import getIpAddress from '../util/server/getIpAddress';
 const ip_address = env('ip address', getIpAddress());
 const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
 const href = env('href', `http://${ip_address}:${port}`);
-const name = env('name', 'Campus Couch');
+const name = env('name', 'BarBar');
 const email = env('email user', 'admin@gmail.com');
 
 /**
