@@ -6,7 +6,6 @@ import { UserControllers } from '../user/User.controller';
 import { UserValidations } from '../user/User.validation';
 import capture from '../../middlewares/capture';
 import purifyRequest from '../../middlewares/purifyRequest';
-import { EUserRole } from '../user/User.enum';
 import { otpLimiter } from '../otp/Otp.utils';
 import { OtpValidations } from '../otp/Otp.validation';
 import { OtpControllers } from '../otp/Otp.controller';
@@ -48,7 +47,7 @@ router.post(
 
 router.post(
   '/reset-password',
-  auth(EUserRole.USER, EUserRole.ADMIN),
+  auth(),
   purifyRequest(AuthValidations.resetPassword),
   AuthControllers.resetPassword,
 );

@@ -14,7 +14,7 @@ const routes: TRoute[] = [
   },
   {
     path: '/profile',
-    middlewares: [auth(EUserRole.USER, EUserRole.ADMIN)],
+    middlewares: [auth()],
     route: UserRoutes.user,
   },
   {

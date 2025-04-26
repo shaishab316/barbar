@@ -58,7 +58,7 @@ const capture = ({
       const uploadedFiles = req.files as {
         [fieldname: string]: Express.Multer.File[];
       };
-      const processedFiles: { [fieldname: string]: string | string[] } = {};
+      const images: { [fieldname: string]: string | string[] } = {};
       req.tempFiles = [];
 
       try {
@@ -95,13 +95,14 @@ const capture = ({
               }),
             );
 
-            processedFiles[field.name] =
+            images[field.name] =
               field.maxCount && field.maxCount > 1 ? processed : processed[0];
           }),
         );
 
-        req.body = { ...req.body, ...processedFiles };
         if (req.body.data) req.body = json(req.body.data);
+        Object.assign(req.body, images);
+
         next();
       } catch (error) {
         next(
