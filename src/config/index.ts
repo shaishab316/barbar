@@ -69,6 +69,7 @@ const config = {
     email: env('admin email', email),
     password: env('admin password', genSecret(4)),
   },
+  otpExp: env<ms.StringValue>('otp expire in', '10m'),
 };
 
 export default config;

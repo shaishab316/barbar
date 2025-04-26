@@ -15,32 +15,17 @@ router.post(
   imageUploader({
     width: 300,
     height: 300,
+    fieldName: 'avatar',
+    maxCount: 1,
   }),
   purifyRequest(UserValidations.create),
   UserControllers.create,
-);
-
-router.patch(
-  '/edit',
-  auth(EUserRole.USER, EUserRole.ADMIN),
-  imageUploader({
-    width: 300,
-    height: 300,
-  }),
-  purifyRequest(UserValidations.edit),
-  UserControllers.edit,
 );
 
 router.post(
   '/login',
   purifyRequest(AuthValidations.login),
   AuthControllers.login,
-);
-
-router.post(
-  '/login/:provider',
-  purifyRequest(AuthValidations.loginWith),
-  AuthControllers.loginWith,
 );
 
 router.post('/logout', AuthControllers.logout);

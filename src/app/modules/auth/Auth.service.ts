@@ -4,14 +4,14 @@ import { createToken, generateOtp, verifyToken } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
 import { sendEmail } from '../../../util/sendMail';
-import { AuthTemplates } from './Auth.template';
+import { OtpTemplates } from '../otp/Otp.template';
 import { Types } from 'mongoose';
 import config from '../../../config';
-import { EUserStatus } from '../user/User.enum';
 import downloadImage from '../../../util/file/downloadImage';
 import deleteFile from '../../../util/file/deleteFile';
 import { Request, Response } from 'express';
 import { facebookUser } from './Auth.lib';
+import { userExcludeFields } from '../user/User.constant';
 
 export const AuthServices = {
   async login(email: string) {
@@ -19,9 +19,7 @@ export const AuthServices = {
       email,
     }))!;
 
-    if (user.status === EUserStatus.ACTIVE) return this.retrieveToken(user._id);
-
-    await this.sendOtp(email, 'active');
+    return this.retrieveToken(user._id);
   },
 
   async setRefreshToken(res: Response, refreshToken: string) {
@@ -52,12 +50,6 @@ export const AuthServices = {
     const otp = (user.otp = generateOtp()).toString();
     user.otpExp = new Date(Date.now() + 10 * 60 * 1000 * 1000);
     await user.save();
-
-    await sendEmail({
-      to: email,
-      subject: `Your ${config.server.name} ${type} OTP is ${otp}.`,
-      html: AuthTemplates.otp(user.name, otp, type),
-    });
   },
 
   async verifyOtp(email: string) {
@@ -67,9 +59,6 @@ export const AuthServices = {
         $unset: {
           otp: '',
           otpExp: '',
-        },
-        $set: {
-          status: EUserStatus.ACTIVE,
         },
       },
     ).select('_id'))!;
@@ -106,7 +95,7 @@ export const AuthServices = {
     const refreshToken = createToken({ userId }, 'refresh');
 
     const userData = await User.findById(userId)
-      .select('name avatar email role')
+      .select('-' + userExcludeFields.join(' -'))
       .lean();
 
     return { accessToken, user: userData, refreshToken };
@@ -148,7 +137,6 @@ export const AuthServices = {
         name,
         avatar: newAvatar,
         googleId: uid,
-        status: EUserStatus.ACTIVE,
       });
     else {
       if (user.googleId && user.googleId !== uid)

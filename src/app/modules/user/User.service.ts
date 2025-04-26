@@ -3,6 +3,7 @@ import User from './User.model';
 import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
+import { userExcludeFields } from './User.constant';
 
 export const UserServices = {
   async create(user: TUser) {
@@ -17,7 +18,7 @@ export const UserServices = {
   async edit(user: TUser & { oldAvatar: string }) {
     const updatedUser = await User.findByIdAndUpdate(user!._id, user, {
       new: true,
-    });
+    }).select('-' + userExcludeFields.join(' -'));
 
     if (user.avatar) await deleteFile(user.oldAvatar);
 

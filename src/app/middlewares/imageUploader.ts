@@ -7,6 +7,7 @@ import deleteFile from '../../util/file/deleteFile';
 import { createDir } from '../../util/file/createDir';
 import catchAsync from '../../util/server/catchAsync';
 import sharp from 'sharp';
+import { json } from '../../util/transform/json';
 
 /**
  * @description Multer middleware to handle image uploads with optional resizing.
@@ -96,6 +97,7 @@ const imageUploader = ({
         }
       }
 
+      if (req.body.data) req.body = json(req.body.data);
       req.body[fieldName] = maxCount > 1 ? resizedImages : resizedImages[0];
       req.tempFiles = resizedImages;
 
