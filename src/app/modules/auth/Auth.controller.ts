@@ -2,6 +2,7 @@ import { AuthServices } from './Auth.service';
 import catchAsync from '../../../util/server/catchAsync';
 import config from '../../../config';
 import serveResponse from '../../../util/server/serveResponse';
+import { OtpServices } from '../otp/Otp.service';
 
 export const AuthControllers = {
   login: catchAsync(async ({ body }, res) => {
@@ -38,18 +39,11 @@ export const AuthControllers = {
     });
   }),
 
-  sendOtp: catchAsync(async ({ body }, res) => {
-    await AuthServices.sendOtp(body.email, 'reset');
+  verifyOtp: catchAsync(async (req, res) => {
+    await OtpServices.verify(req.user!._id!, req.body.otp);
 
-    serveResponse(res, {
-      message: 'Send Otp successfully! Check your email.',
-    });
-  }),
-
-  verifyOtp: catchAsync(async ({ body }, res) => {
-    const { accessToken, refreshToken, user } = await AuthServices.verifyOtp(
-      body.email,
-    );
+    const { accessToken, refreshToken, user } =
+      await AuthServices.retrieveToken(req.user!._id!);
 
     AuthServices.setRefreshToken(res, refreshToken);
 
@@ -75,18 +69,6 @@ export const AuthControllers = {
     serveResponse(res, {
       message: 'AccessToken generated successfully!',
       data: { token: accessToken },
-    });
-  }),
-
-  loginWith: catchAsync(async (req, res) => {
-    const { accessToken, refreshToken, user } =
-      await AuthServices.loginWith(req);
-
-    AuthServices.setRefreshToken(res, refreshToken);
-
-    serveResponse(res, {
-      message: 'Login successfully!',
-      data: { token: accessToken, user },
     });
   }),
 };

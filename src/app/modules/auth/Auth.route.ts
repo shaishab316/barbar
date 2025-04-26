@@ -10,6 +10,7 @@ import { EUserRole } from '../user/User.enum';
 import { otpLimiter } from '../otp/Otp.utils';
 import { OtpValidations } from '../otp/Otp.validation';
 import { OtpControllers } from '../otp/Otp.controller';
+import { temUser } from '../../middlewares/temUser';
 
 const router = express.Router();
 
@@ -49,7 +50,8 @@ router.post(
 
 router.post(
   '/verify-otp',
-  purifyRequest(AuthValidations.verifyOtp),
+  purifyRequest(OtpValidations.verify),
+  temUser,
   AuthControllers.verifyOtp,
 );
 

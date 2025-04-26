@@ -53,22 +53,6 @@ export const AuthValidations = {
     }),
   }),
 
-  verifyOtp: z.object({
-    body: z
-      .object({
-        email: z.string(),
-        otp: z.coerce.number(),
-      })
-      .superRefine(async ({ email, otp }) => {
-        const user = await User.findOne({ email });
-        if (!user || user.otp !== otp || new Date(user.otpExp!) < new Date())
-          throw new ServerError(
-            StatusCodes.UNAUTHORIZED,
-            'You are not authorized.',
-          );
-      }),
-  }),
-
   resetPassword: z.object({
     body: z.object({
       password: z.string().min(6, 'Password must be 6 characters long'),
