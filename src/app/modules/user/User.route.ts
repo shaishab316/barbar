@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UserControllers } from './User.controller';
-import imageUploader from '../../middlewares/imageUploader';
+import capture from '../../middlewares/capture';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { UserValidations } from './User.validation';
 import { QueryValidations } from '../query/Query.validation';
@@ -28,11 +28,8 @@ user.get(
 
 user.patch(
   '/edit',
-  imageUploader({
-    width: 300,
-    height: 300,
-    fieldName: 'avatar',
-    maxCount: 1,
+  capture({
+    fields: [{ name: 'avatar', maxCount: 1, width: 300 }],
   }),
   purifyRequest(UserValidations.edit),
   UserControllers.edit,

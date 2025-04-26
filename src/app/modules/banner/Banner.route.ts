@@ -3,7 +3,7 @@ import { BannerControllers } from './Banner.controller';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import Banner from './Banner.model';
-import imageUploader from '../../middlewares/imageUploader';
+import capture from '../../middlewares/capture';
 import { BannerValidations } from './Banner.validation';
 
 const admin = Router();
@@ -12,7 +12,9 @@ admin.get('/', BannerControllers.list);
 
 admin.post(
   '/create',
-  imageUploader({ fieldName: 'image', maxCount: 1 }),
+  capture({
+    fields: [{ name: 'image', maxCount: 1, width: 720, height: 360 }],
+  }),
   purifyRequest(BannerValidations.create),
   BannerControllers.create,
 );

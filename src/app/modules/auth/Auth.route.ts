@@ -4,7 +4,7 @@ import { AuthValidations } from './Auth.validation';
 import auth from '../../middlewares/auth';
 import { UserControllers } from '../user/User.controller';
 import { UserValidations } from '../user/User.validation';
-import imageUploader from '../../middlewares/imageUploader';
+import capture from '../../middlewares/capture';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { EUserRole } from '../user/User.enum';
 import { otpLimiter } from '../otp/Otp.utils';
@@ -16,11 +16,8 @@ const router = express.Router();
 
 router.post(
   '/register',
-  imageUploader({
-    width: 300,
-    height: 300,
-    fieldName: 'avatar',
-    maxCount: 1,
+  capture({
+    fields: [{ name: 'avatar', maxCount: 1, width: 300 }],
   }),
   purifyRequest(UserValidations.create),
   UserControllers.create,

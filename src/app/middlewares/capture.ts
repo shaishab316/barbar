@@ -19,14 +19,8 @@ interface CaptureOptions {
 }
 
 /**
- * Image upload middleware with per-field resizing
- * @param {Object} options - Configuration
- * @param {Array} [options.fields=[{name:'images',maxCount:10}]] - Upload fields with optional width/height
- * @param {number} [options.maxFileSizeMB=5] - Max file size in MB
- * @returns {Function} Express middleware
- *
- * @example
- * capture({ fields: [{ name: 'avatar', width: 200, height: 200 }] })
+ * Smart image upload handler with per-field processing
+ * @example capture({ fields: [{ name: 'avatar', width: 200 }] })
  */
 const capture = ({
   fields = [{ name: 'images', maxCount: 10 }],
