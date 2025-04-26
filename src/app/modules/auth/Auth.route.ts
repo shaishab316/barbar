@@ -35,13 +35,6 @@ router.post(
 
 router.post('/logout', AuthControllers.logout);
 
-router.patch(
-  '/change-password',
-  auth(EUserRole.USER, EUserRole.ADMIN),
-  purifyRequest(AuthValidations.passwordChange),
-  AuthControllers.changePassword,
-);
-
 router.post(
   '/send-otp',
   otpLimiter,

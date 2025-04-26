@@ -32,8 +32,8 @@ export const AuthControllers = {
     });
   }),
 
-  changePassword: catchAsync(async ({ user, body }, res) => {
-    await AuthServices.changePassword(user as any, body);
+  cngPass: catchAsync(async ({ user, body }, res) => {
+    await AuthServices.cngPass(user as any, body);
 
     serveResponse(res, {
       message: 'Password changed successfully!',

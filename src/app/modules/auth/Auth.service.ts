@@ -25,7 +25,7 @@ export const AuthServices = {
     });
   },
 
-  async changePassword(
+  async cngPass(
     user: TUser & Document,
     { newPassword, oldPassword }: Record<string, string>,
   ) {

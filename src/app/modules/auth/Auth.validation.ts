@@ -16,7 +16,7 @@ export const AuthValidations = {
     }),
   }),
 
-  passwordChange: z.object({
+  cngPass: z.object({
     body: z.object({
       oldPassword: z
         .string({
