@@ -5,9 +5,10 @@ import serveResponse from '../../../util/server/serveResponse';
 import { OtpServices } from '../otp/Otp.service';
 
 export const AuthControllers = {
-  login: catchAsync(async ({ body }, res) => {
+  login: catchAsync(async (req, res) => {
     const { accessToken, refreshToken, user } = await AuthServices.login(
-      body.email,
+      req.user!,
+      req.body.password,
     );
 
     AuthServices.setRefreshToken(res, refreshToken);

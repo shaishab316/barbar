@@ -29,6 +29,7 @@ router.post(
 router.post(
   '/login',
   purifyRequest(AuthValidations.login),
+  temUser('+password'),
   AuthControllers.login,
 );
 
@@ -51,7 +52,7 @@ router.post(
 router.post(
   '/verify-otp',
   purifyRequest(OtpValidations.verify),
-  temUser,
+  temUser(),
   AuthControllers.verifyOtp,
 );
 

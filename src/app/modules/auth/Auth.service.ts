@@ -7,14 +7,14 @@ import { Types } from 'mongoose';
 import config from '../../../config';
 import { Response } from 'express';
 import { userExcludeFields } from '../user/User.constant';
+import { TUser } from '../user/User.interface';
 
 export const AuthServices = {
-  async login(email: string) {
-    const user = (await User.findOne({
-      email,
-    }))!;
+  async login(user: TUser, password: string) {
+    if (!(await bcrypt.compare(password, user.password!)))
+      throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
 
-    return this.retrieveToken(user._id);
+    return this.retrieveToken(user._id!);
   },
 
   async setRefreshToken(res: Response, refreshToken: string) {
