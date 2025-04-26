@@ -1,20 +1,22 @@
 import ms from 'ms';
 import config from '../../../config';
-import { generateOtp } from '../auth/Auth.utils';
-import { TUser } from '../user/User.interface';
 import Otp from './Otp.model';
 import { sendEmail } from '../../../util/sendMail';
 import { OtpTemplates } from './Otp.template';
+import User from '../user/User.model';
+import { genSecret } from '../../../util/crypto/genSecret';
 
 export const OtpServices = {
-  async send(user: TUser) {
-    const otp = generateOtp();
+  async send(email: string) {
+    const user = (await User.findOne({ email }))!;
+
+    const otp = genSecret(config.otp.length / 2).toUpperCase();
 
     await Otp.findOneAndUpdate(
       { user: user._id },
       {
         otp,
-        otpExp: new Date(Date.now() + ms(config.otpExp)),
+        otpExp: new Date(Date.now() + ms(config.otp.exp)),
       },
       {
         upsert: true,
@@ -23,7 +25,7 @@ export const OtpServices = {
     );
 
     await sendEmail({
-      to: user.email,
+      to: email,
       subject: `Your ${config.server.name} password reset OTP is ${otp}.`,
       html: OtpTemplates.reset(user.name, otp),
     });

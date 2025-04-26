@@ -1,3 +1,4 @@
+import ms from 'ms';
 import config from '../../../config';
 
 export const OtpTemplates = {
@@ -230,7 +231,7 @@ export const OtpTemplates = {
   							<div class="info-content">
   								<h3>Time Sensitive</h3>
   								<p>
-  									This code will expire in 10 minutes for security
+  									This code will expire in ${ms(ms(config.otp.exp), { long: true })} for security
   								</p>
   							</div>
   						</div>

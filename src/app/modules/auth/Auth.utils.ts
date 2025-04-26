@@ -60,10 +60,3 @@ export const verifyToken = (token: string, type: TTokenType) => {
     throw new ServerError(StatusCodes.UNAUTHORIZED, 'Invalid token');
   }
 };
-
-/**
- * Generate a random 6-digit OTP
- * @returns A 6-digit OTP
- */
-export const generateOtp = () =>
-  Math.floor(1_00_000 + Math.random() * 9_00_000).toString();

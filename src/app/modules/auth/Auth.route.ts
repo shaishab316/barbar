@@ -7,6 +7,9 @@ import { UserValidations } from '../user/User.validation';
 import imageUploader from '../../middlewares/imageUploader';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { EUserRole } from '../user/User.enum';
+import { otpLimiter } from '../otp/Otp.utils';
+import { OtpValidations } from '../otp/Otp.validation';
+import { OtpControllers } from '../otp/Otp.controller';
 
 const router = express.Router();
 
@@ -39,8 +42,9 @@ router.patch(
 
 router.post(
   '/send-otp',
-  purifyRequest(AuthValidations.sendOtp),
-  AuthControllers.sendOtp,
+  otpLimiter,
+  purifyRequest(OtpValidations.send),
+  OtpControllers.send,
 );
 
 router.post(

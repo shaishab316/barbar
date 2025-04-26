@@ -53,15 +53,6 @@ export const AuthValidations = {
     }),
   }),
 
-  sendOtp: z.object({
-    body: z.object({
-      email: z.string().superRefine(async email => {
-        if (!(await User.exists({ email })))
-          throw new ServerError(StatusCodes.NOT_FOUND, 'User does not exist');
-      }),
-    }),
-  }),
-
   verifyOtp: z.object({
     body: z
       .object({
