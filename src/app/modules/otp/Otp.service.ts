@@ -27,7 +27,7 @@ export const OtpServices = {
       { user: user._id },
       {
         otp,
-        otpExp: new Date(Date.now() + ms(config.otp.exp)),
+        exp: new Date(Date.now() + ms(config.otp.exp)),
       },
       {
         upsert: true,

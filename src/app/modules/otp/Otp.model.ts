@@ -15,11 +15,13 @@ const otpSchema = new Schema<TOtp>(
     exp: {
       type: Date,
       required: true,
-      index: { expireAfterSeconds: 0 },
     },
   },
   { versionKey: false },
 );
+
+// ! for auto delete after expire
+otpSchema.index({ exp: 1 }, { expireAfterSeconds: 0 });
 
 const Otp = model<TOtp>('Otp', otpSchema);
 
