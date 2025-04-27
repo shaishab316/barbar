@@ -8,6 +8,7 @@ import config from '../../../config';
 import { Response } from 'express';
 import { userExcludeFields } from '../user/User.constant';
 import { TUser } from '../user/User.interface';
+import { ETokenType } from './Auth.enum';
 
 export const AuthServices = {
   async login(user: TUser, password: string) {
@@ -20,7 +21,7 @@ export const AuthServices = {
   async setRefreshToken(res: Response, refreshToken: string) {
     res.cookie('refreshToken', refreshToken, {
       secure: config.server.node_env !== 'development',
-      maxAge: verifyToken(refreshToken, 'refresh').exp! * 1000,
+      maxAge: verifyToken(refreshToken, ETokenType.REFRESH).exp! * 1000,
       httpOnly: true,
     });
   },
@@ -40,7 +41,7 @@ export const AuthServices = {
     if (!token)
       throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not logged in!');
 
-    const { userId } = verifyToken(token, 'refresh');
+    const { userId } = verifyToken(token, ETokenType.REFRESH);
 
     const user = await User.findById(userId).select('_id');
 
@@ -50,8 +51,8 @@ export const AuthServices = {
   },
 
   async retrieveToken(userId: Types.ObjectId) {
-    const accessToken = createToken({ userId }, 'access');
-    const refreshToken = createToken({ userId }, 'refresh');
+    const accessToken = createToken({ userId }, ETokenType.ACCESS);
+    const refreshToken = createToken({ userId }, ETokenType.REFRESH);
 
     const userData = await User.findById(userId)
       .select('-' + userExcludeFields.join(' -'))

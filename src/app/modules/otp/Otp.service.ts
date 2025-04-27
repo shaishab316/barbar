@@ -9,6 +9,7 @@ import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
 import { createToken } from '../auth/Auth.utils';
+import { ETokenType } from '../auth/Auth.enum';
 
 export const OtpServices = {
   async send(email: string) {
@@ -52,6 +53,6 @@ export const OtpServices = {
 
     await validOtp.deleteOne();
 
-    return createToken({ userId: user }, 'reset');
+    return createToken({ userId: user }, ETokenType.RESET);
   },
 };

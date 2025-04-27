@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { logger, errorLogger } from '../logger/logger';
 import User from '../../app/modules/user/User.model';
 import { verifyToken } from '../../app/modules/auth/Auth.utils';
+import { ETokenType } from '../../app/modules/auth/Auth.enum';
 
 export let io: Server | null;
 
@@ -32,7 +33,7 @@ const socket = (server: http.Server) => {
       }
 
       // Authenticate user
-      const { email } = verifyToken(token, 'access');
+      const { email } = verifyToken(token, ETokenType.ACCESS);
 
       const user = await User.findOne({ email });
 

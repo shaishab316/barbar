@@ -5,16 +5,20 @@ import { verifyToken } from '../modules/auth/Auth.utils';
 import catchAsync from '../../util/server/catchAsync';
 import { EUserRole } from '../modules/user/User.enum';
 import { TUser } from '../modules/user/User.interface';
+import { ETokenType } from '../modules/auth/Auth.enum';
 
 /**
  * Middleware to authenticate and authorize requests based on user roles
  *
  * @param roles - The roles that are allowed to access the resource
  */
-const auth = (...roles: EUserRole[]) =>
+const auth = (
+  roles: EUserRole[] = [],
+  tokenType: ETokenType = ETokenType.ACCESS,
+) =>
   catchAsync(async (req, _, next) => {
     req.user = (await User.findById(
-      verifyToken(req.headers.authorization?.split(' ')?.[1] ?? '', 'access')
+      verifyToken(req.headers.authorization?.split(' ')?.[1] ?? '', tokenType)
         .userId,
     ).select('+password')) as TUser;
 

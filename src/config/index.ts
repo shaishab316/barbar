@@ -48,6 +48,10 @@ const config = {
       secret: env('jwt refresh secret', genSecret()),
       expire_in: env<ms.StringValue>('jwt refresh expire in', '30d'),
     },
+    reset_token: {
+      secret: env('jwt reset secret', genSecret()),
+      expire_in: env<ms.StringValue>('jwt reset expire in', '10m'),
+    },
   },
   payment: {
     stripe: {

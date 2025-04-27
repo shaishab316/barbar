@@ -4,7 +4,7 @@ import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { errorLogger } from '../../../util/logger/logger';
 import colors from 'colors';
-export type TTokenType = 'access' | 'reset' | 'refresh';
+import { ETokenType } from './Auth.enum';
 
 /**
  * Create a token
@@ -12,20 +12,20 @@ export type TTokenType = 'access' | 'reset' | 'refresh';
  * @param type - The type of token to create
  * @returns The signed token
  */
-export const createToken = (payload: JwtPayload, type: TTokenType) => {
+export const createToken = (payload: JwtPayload, type: ETokenType) => {
   payload.tokenType = type;
 
   try {
     switch (type) {
-      case 'access':
+      case ETokenType.ACCESS:
         return jwt.sign(payload, config.jwt.access_token.secret, {
           expiresIn: config.jwt.access_token.expire_in,
         });
-      case 'reset':
-        return jwt.sign(payload, config.jwt.access_token.secret, {
-          expiresIn: '10m',
+      case ETokenType.RESET:
+        return jwt.sign(payload, config.jwt.reset_token.secret, {
+          expiresIn: config.jwt.reset_token.expire_in,
         });
-      case 'refresh':
+      case ETokenType.REFRESH:
         return jwt.sign(payload, config.jwt.refresh_token.secret, {
           expiresIn: config.jwt.refresh_token.expire_in,
         });
@@ -45,18 +45,18 @@ export const createToken = (payload: JwtPayload, type: TTokenType) => {
  * @param type - The type of token to verify
  * @returns The decoded token
  */
-export const verifyToken = (token: string, type: TTokenType) => {
+export const verifyToken = (token: string, type: ETokenType) => {
   try {
     switch (type) {
-      case 'access':
+      case ETokenType.ACCESS:
         return jwt.verify(token, config.jwt.access_token.secret) as JwtPayload;
-      case 'reset':
-        return jwt.verify(token, config.jwt.access_token.secret) as JwtPayload;
-      case 'refresh':
+      case ETokenType.RESET:
+        return jwt.verify(token, config.jwt.reset_token.secret) as JwtPayload;
+      case ETokenType.REFRESH:
         return jwt.verify(token, config.jwt.refresh_token.secret) as JwtPayload;
     }
   } catch (error) {
     errorLogger.error(colors.red('🔑 Failed to verify token'), error);
-    throw new ServerError(StatusCodes.UNAUTHORIZED, 'Invalid token');
+    throw new ServerError(StatusCodes.UNAUTHORIZED, 'Please login again');
   }
 };

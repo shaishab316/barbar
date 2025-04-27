@@ -19,7 +19,7 @@ const routes: TRoute[] = [
   },
   {
     path: '/admin',
-    middlewares: [auth(EUserRole.ADMIN)],
+    middlewares: [auth([EUserRole.ADMIN])],
     route: AdminRoutes,
   },
   {

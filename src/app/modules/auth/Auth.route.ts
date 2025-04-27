@@ -8,6 +8,7 @@ import capture from '../../middlewares/capture';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { temUser } from '../../middlewares/temUser';
 import { OtpRoutes } from '../otp/Otp.route';
+import { ETokenType } from './Auth.enum';
 
 const router = express.Router();
 
@@ -33,7 +34,7 @@ router.use('/otp', OtpRoutes);
 
 router.post(
   '/reset-password',
-  auth(),
+  auth([], ETokenType.RESET),
   purifyRequest(AuthValidations.resetPassword),
   AuthControllers.resetPassword,
 );
