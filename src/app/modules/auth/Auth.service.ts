@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { createToken, verifyToken } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
-import { Document, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import config from '../../../config';
 import { Response } from 'express';
 import { userExcludeFields } from '../user/User.constant';
@@ -23,18 +23,6 @@ export const AuthServices = {
       maxAge: verifyToken(refreshToken, 'refresh').exp! * 1000,
       httpOnly: true,
     });
-  },
-
-  async cngPass(
-    user: TUser & Document,
-    { newPassword, oldPassword }: Record<string, string>,
-  ) {
-    if (!(await bcrypt.compare(oldPassword, user.password!)))
-      throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
-
-    user.password = newPassword;
-
-    await user.save();
   },
 
   async resetPassword(email: string, password: string) {

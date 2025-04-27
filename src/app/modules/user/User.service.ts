@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
 import { userExcludeFields } from './User.constant';
+import bcrypt from 'bcrypt';
+import { Document } from 'mongoose';
 
 export const UserServices = {
   async create(user: TUser) {
@@ -23,6 +25,18 @@ export const UserServices = {
     if (user.avatar) await deleteFile(user.oldAvatar);
 
     return updatedUser;
+  },
+
+  async changePassword(
+    user: TUser & Document,
+    { newPassword, oldPassword }: Record<string, string>,
+  ) {
+    if (!(await bcrypt.compare(oldPassword, user.password!)))
+      throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
+
+    user.password = newPassword;
+
+    await user.save();
   },
 
   async list({ page, limit }: Record<string, any>) {

@@ -2,7 +2,6 @@ import { AuthServices } from './Auth.service';
 import catchAsync from '../../../util/server/catchAsync';
 import config from '../../../config';
 import serveResponse from '../../../util/server/serveResponse';
-import { OtpServices } from '../otp/Otp.service';
 
 export const AuthControllers = {
   login: catchAsync(async (req, res) => {
@@ -29,28 +28,6 @@ export const AuthControllers = {
 
     serveResponse(res, {
       message: 'Logged out successfully',
-    });
-  }),
-
-  cngPass: catchAsync(async ({ user, body }, res) => {
-    await AuthServices.cngPass(user as any, body);
-
-    serveResponse(res, {
-      message: 'Password changed successfully!',
-    });
-  }),
-
-  verifyOtp: catchAsync(async (req, res) => {
-    await OtpServices.verify(req.user!._id!, req.body.otp);
-
-    const { accessToken, refreshToken, user } =
-      await AuthServices.retrieveToken(req.user!._id!);
-
-    AuthServices.setRefreshToken(res, refreshToken);
-
-    serveResponse(res, {
-      message: 'Otp verified successfully!',
-      data: { token: accessToken, user },
     });
   }),
 

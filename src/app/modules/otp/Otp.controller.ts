@@ -10,4 +10,13 @@ export const OtpControllers = {
       message: 'OTP sent successfully!',
     });
   }),
+
+  verify: catchAsync(async (req, res) => {
+    const resetToken = await OtpServices.verify(req.user!._id!, req.body.otp);
+
+    serveResponse(res, {
+      message: 'OTP verified successfully!',
+      data: { resetToken },
+    });
+  }),
 };

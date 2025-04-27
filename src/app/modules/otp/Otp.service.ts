@@ -8,6 +8,7 @@ import { genSecret } from '../../../util/crypto/genSecret';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
+import { createToken } from '../auth/Auth.utils';
 
 export const OtpServices = {
   async send(email: string) {
@@ -50,5 +51,7 @@ export const OtpServices = {
       );
 
     await validOtp.deleteOne();
+
+    return createToken({ userId: user }, 'reset');
   },
 };

@@ -65,4 +65,21 @@ export const UserValidations = {
       birthDate: z.string().transform(date).optional(),
     }),
   }),
+
+  cngPass: z.object({
+    body: z.object({
+      oldPassword: z
+        .string({
+          required_error: 'Old Password is missing',
+        })
+        .min(1, 'Old Password is required')
+        .min(6, 'Old Password must be at least 6 characters long'),
+      newPassword: z
+        .string({
+          required_error: 'New Password is missing',
+        })
+        .min(1, 'New Password is required')
+        .min(6, 'New Password must be at least 6 characters long'),
+    }),
+  }),
 };

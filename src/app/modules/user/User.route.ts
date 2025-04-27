@@ -7,8 +7,6 @@ import { QueryValidations } from '../query/Query.validation';
 import serveResponse from '../../../util/server/serveResponse';
 import { userExcludeFields } from './User.constant';
 import auth from '../../middlewares/auth';
-import { AuthValidations } from '../auth/Auth.validation';
-import { AuthControllers } from '../auth/Auth.controller';
 
 const user = Router();
 
@@ -33,8 +31,8 @@ user.patch(
 user.patch(
   '/change-password',
   auth(),
-  purifyRequest(AuthValidations.cngPass),
-  AuthControllers.cngPass,
+  purifyRequest(UserValidations.cngPass),
+  UserControllers.changePassword,
 );
 
 export const UserRoutes = {
