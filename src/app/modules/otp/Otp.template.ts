@@ -207,12 +207,12 @@ export const OtpTemplates = {
 
   						<div class="otp-container">
   							<div class="otp-numbers">
-  								<span class="otp-number">${otp[0]}</span>
-  								<span class="otp-number">${otp[1]}</span>
-  								<span class="otp-number">${otp[2]}</span>
-  								<span class="otp-number">${otp[3]}</span>
-  								<span class="otp-number">${otp[4]}</span>
-  								<span class="otp-number">${otp[5]}</span>
+  								${otp
+                    .split('')
+                    .map(
+                      (number: string) =>
+                        `<span class="otp-number">${number}</span>`,
+                    )}
   							</div>
   						</div>
 
