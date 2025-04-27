@@ -133,11 +133,6 @@ export const OtpTemplates = {
 					  border: 1px solid #fed7aa;
 					}
 
-					.info-card.warning {
-					  background-color: #fff1f2;
-					  border: 1px solid #fecdd3;
-					}
-
 					.info-icon {
 					  display: table-cell;
 					  vertical-align: top;
@@ -183,9 +178,6 @@ export const OtpTemplates = {
 					}
 					.icon.shield {
 					  color: #f59e0b;
-					}
-					.icon.warning {
-					  color: #ef4444;
 					}
 					.icon.support {
 					  color: #6b7280;
@@ -245,18 +237,6 @@ export const OtpTemplates = {
   								<p>
   									Never share this code with anyone. Our team will
   									never ask for your verification code.
-  								</p>
-  							</div>
-  						</div>
-
-  						<div class="info-card warning">
-  							<div class="info-icon">
-  								<span class="icon warning"></span>
-  							</div>
-  							<div class="info-content">
-  								<h3>Didn't Request an Account?</h3>
-  								<p>
-  									If you didn't request an account with us, you can safely ignore this email.
   								</p>
   							</div>
   						</div>

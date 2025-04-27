@@ -4,7 +4,7 @@ import Otp from './Otp.model';
 import { sendEmail } from '../../../util/sendMail';
 import { OtpTemplates } from './Otp.template';
 import User from '../user/User.model';
-import { genSecret } from '../../../util/crypto/genSecret';
+import { otpGenerator } from '../../../util/crypto/otpGenerator';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
@@ -21,7 +21,7 @@ export const OtpServices = {
         'You are not authorized.',
       );
 
-    const otp = genSecret(config.otp.length / 2).toUpperCase();
+    const otp = otpGenerator(config.otp.length);
 
     await Otp.findOneAndUpdate(
       { user: user._id },
@@ -37,7 +37,7 @@ export const OtpServices = {
 
     await sendEmail({
       to: email,
-      subject: `Your ${config.server.name} password reset OTP is ${otp}.`,
+      subject: `Your ${config.server.name} password reset OTP is ⚡ ${otp} ⚡.`,
       html: OtpTemplates.reset(user.name, otp),
     });
   },
