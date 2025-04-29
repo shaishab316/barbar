@@ -5,6 +5,8 @@ const inquirer = require('inquirer');
 const fileTemplates = {
   route: mName => `import { Router } from 'express';
 import { ${mName}Controllers } from './${mName}.controller';
+import { ${mName}Validations } from './${mName}.validation';
+import purifyRequest from '../../middlewares/purifyRequest';
 
 const router = Router();
 
