@@ -23,7 +23,6 @@ const salonSchema = new Schema<TSalon>(
         type: String,
         required: true,
         enum: ['Point'],
-        default: 'Point',
       },
       coordinates: {
         type: [Number],
@@ -60,7 +59,6 @@ const salonSchema = new Schema<TSalon>(
           },
         ]),
       ),
-      required: true,
     },
   },
   { timestamps: true, versionKey: false },

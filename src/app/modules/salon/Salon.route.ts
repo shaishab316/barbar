@@ -5,7 +5,7 @@ import purifyRequest from '../../middlewares/purifyRequest';
 
 const router = Router();
 
-router.post(
+router.patch(
   '/create',
   purifyRequest(SalonValidations.create),
   SalonControllers.create,
