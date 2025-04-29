@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 
 const fileTemplates = {
   route: mName => `import { Router } from 'express';
+import { ${mName}Controllers } from './${mName}.controller';
 
 const router = Router();
 
@@ -30,9 +31,17 @@ const ${mName} = model<T${mName}>('${mName}', ${mName.toLowerCase()}Schema);
 
 export default ${mName};`,
 
-  controller: mName => `export const ${mName}Controllers = {};`,
+  controller: mName => `import { StatusCodes } from 'http-status-codes';
+import catchAsync from '../../../util/server/catchAsync';
+import serveResponse from '../../../util/server/serveResponse';
+import { ${mName}Services } from './${mName}.service';
 
-  service: mName => `export const ${mName}Services = {};`,
+export const ${mName}Controllers = {};`,
+
+  service: mName => `import { T${mName} } from './${mName}.interface';
+import ${mName} from './${mName}.model';
+
+export const ${mName}Services = {};`,
 
   validation: mName => `import { z } from 'zod';
 
