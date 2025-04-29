@@ -5,4 +5,5 @@ export const SalonServices = {
   async create(salonData: TSalon) {
     return Salon.create(salonData);
   },
+
 };

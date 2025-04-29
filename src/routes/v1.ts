@@ -4,8 +4,9 @@ import { UserRoutes } from '../app/modules/user/User.route';
 import auth from '../app/middlewares/auth';
 import { EUserRole } from '../app/modules/user/User.enum';
 import { TRoute } from '../types/route.types';
-import AdminRoutes from '../app/modules/admin/Admin.routes';
+import AdminRoutes from '../app/modules/admin/Admin.route';
 import { BannerRoutes } from '../app/modules/banner/Banner.route';
+import HostRoutes from '../app/modules/host/Host.route';
 
 const routes: TRoute[] = [
   {
@@ -21,6 +22,11 @@ const routes: TRoute[] = [
     path: '/admin',
     middlewares: [auth([EUserRole.ADMIN])],
     route: AdminRoutes,
+  },
+  {
+    path: '/host',
+    middlewares: [auth([EUserRole.HOST])],
+    route: HostRoutes,
   },
   {
     path: '/banners',

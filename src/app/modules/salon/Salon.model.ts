@@ -66,6 +66,8 @@ const salonSchema = new Schema<TSalon>(
   { timestamps: true, versionKey: false },
 );
 
+salonSchema.index({ location: '2dsphere' });
+
 const Salon = model<TSalon>('Salon', salonSchema);
 
 export default Salon;
