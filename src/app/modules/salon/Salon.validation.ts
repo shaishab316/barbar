@@ -19,7 +19,6 @@ export const SalonValidations = {
         ]),
       }),
       gender: z.nativeEnum(EUserGender),
-      rating: z.number().min(1).max(5),
       businessHours: z.object(
         Object.fromEntries(
           week.map(day => [

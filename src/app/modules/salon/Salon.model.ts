@@ -39,7 +39,6 @@ const salonSchema = new Schema<TSalon>(
     ],
     rating: {
       type: Number,
-      required: true,
       min: 1,
       max: 5,
     },
