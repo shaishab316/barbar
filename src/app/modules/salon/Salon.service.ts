@@ -1,9 +1,10 @@
 import { Types } from 'mongoose';
 import { TSalon } from './Salon.interface';
 import Salon from './Salon.model';
+import { TList } from '../query/Query.interface';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
-import { TList } from '../query/Query.interface';
+import deleteFile from '../../../util/file/deleteFile';
 
 export const SalonServices = {
   async create(salonData: TSalon) {
@@ -14,23 +15,30 @@ export const SalonServices = {
   },
 
   async uploadIntoGallery(host: Types.ObjectId, images: string[]) {
-    const salonId = (await Salon.findOne({ host }).select('_id'))?._id;
-
-    if (!salonId)
-      throw new ServerError(StatusCodes.NOT_FOUND, 'Salon not found!');
+    const salon = await this.salon(host);
 
     return Salon.findOneAndUpdate(
-      { _id: salonId },
+      { _id: salon?._id },
       { $push: { gallery: { $each: images.map(image => ({ image })) } } },
       { new: true },
     );
   },
 
-  async deleteFromGallery(salonId: Types.ObjectId, imageId: string) {
-    return Salon.updateOne(
-      { _id: salonId },
-      { $pull: { gallery: { _id: imageId.oid } } },
+  async deleteFromGallery(host: Types.ObjectId, imageId: Types.ObjectId) {
+    const salon = await this.salon(host);
+
+    const image = salon?.gallery.find(
+      ({ _id }) => _id.toString() === imageId.toString(),
+    )?.image;
+
+    if (!image) throw new ServerError(StatusCodes.NOT_FOUND, 'Image not found');
+
+    await Salon.findOneAndUpdate(
+      { _id: salon._id },
+      { $pull: { gallery: { _id: imageId } } },
     );
+
+    return deleteFile(image);
   },
 
   async list({ page, limit }: TList) {
@@ -49,5 +57,13 @@ export const SalonServices = {
       },
       salons,
     };
+  },
+
+  async salon(host: Types.ObjectId) {
+    const salon = await Salon.findOne({ host });
+
+    if (!salon) throw new ServerError(StatusCodes.NOT_FOUND, 'Salon not found');
+
+    return salon;
   },
 };

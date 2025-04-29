@@ -22,4 +22,11 @@ export const QueryValidations = {
         [_id]: z.string().transform(oid).refine(exists(model)),
       }),
     }),
+
+  validOid: (_id: string) =>
+    z.object({
+      params: z.object({
+        [_id]: z.string().transform(oid),
+      }),
+    }),
 };

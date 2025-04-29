@@ -25,6 +25,12 @@ host.post(
   SalonControllers.uploadIntoGallery,
 );
 
+host.delete(
+  '/gallery/:imageId/delete',
+  purifyRequest(QueryValidations.validOid('imageId')),
+  SalonControllers.deleteFromGallery,
+);
+
 /** User routes */
 const user = Router();
 

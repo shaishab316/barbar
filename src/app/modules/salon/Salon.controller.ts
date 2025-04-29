@@ -34,8 +34,8 @@ export const SalonControllers = {
     });
   }),
 
-  deleteFromGallery: catchAsync(async ({ params, query }, res) => {
-    await SalonServices.deleteFromGallery(params.salonId, query.imageId);
+  deleteFromGallery: catchAsync(async ({ params, user }, res) => {
+    await SalonServices.deleteFromGallery(user!._id!, params.imageId);
 
     serveResponse(res, {
       message: 'Gallery deleted successfully!',

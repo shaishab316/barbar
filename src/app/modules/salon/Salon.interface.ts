@@ -16,7 +16,7 @@ export type TSalon = {
   gender: EUserGender;
   gallery: {
     image: string;
-    _id?: Types.ObjectId;
+    _id: Types.ObjectId;
   }[];
   rating: number;
   businessHours: TBusinessHours;
