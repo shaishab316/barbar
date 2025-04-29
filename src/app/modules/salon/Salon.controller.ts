@@ -26,6 +26,15 @@ export const SalonControllers = {
     });
   }),
 
+  retrieve: catchAsync(async ({ params }, res) => {
+    const data = await SalonServices.retrieve(params.salonId);
+
+    serveResponse(res, {
+      message: 'Salon retrieved successfully!',
+      data,
+    });
+  }),
+
   uploadIntoGallery: catchAsync(async ({ body, user }, res) => {
     await SalonServices.uploadIntoGallery(user!._id!, body.images);
 

@@ -59,6 +59,10 @@ export const SalonServices = {
     };
   },
 
+  async retrieve(salonId: Types.ObjectId) {
+    return Salon.findById(salonId);
+  },
+
   async salon(host: Types.ObjectId) {
     const salon = await Salon.findOne({ host });
 

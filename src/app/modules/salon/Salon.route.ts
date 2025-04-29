@@ -4,6 +4,7 @@ import { SalonValidations } from './Salon.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
 import { QueryValidations } from '../query/Query.validation';
+import Salon from './Salon.model';
 
 /** Host routes */
 const host = Router();
@@ -35,6 +36,12 @@ host.delete(
 const user = Router();
 
 user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
+
+user.get(
+  '/:salonId',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  SalonControllers.retrieve,
+);
 
 export const SalonRoutes = {
   host,
