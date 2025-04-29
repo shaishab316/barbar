@@ -3,10 +3,12 @@ import { SalonControllers } from './Salon.controller';
 import { SalonValidations } from './Salon.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
+import { QueryValidations } from '../query/Query.validation';
 
-const router = Router();
+/** Host routes */
+const host = Router();
 
-router.patch(
+host.patch(
   '/',
   capture({
     fields: [{ name: 'banner', maxCount: 1, width: 720, height: 360 }],
@@ -15,4 +17,20 @@ router.patch(
   SalonControllers.create,
 );
 
-export const SalonRoutes = router;
+host.post(
+  '/gallery',
+  capture({
+    fields: [{ name: 'images', maxCount: 10, width: 720 }],
+  }),
+  SalonControllers.uploadIntoGallery,
+);
+
+/** User routes */
+const user = Router();
+
+user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
+
+export const SalonRoutes = {
+  host,
+  user,
+};

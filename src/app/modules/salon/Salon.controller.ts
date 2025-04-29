@@ -15,4 +15,30 @@ export const SalonControllers = {
       data,
     });
   }),
+
+  list: catchAsync(async ({ query }, res) => {
+    const { meta, salons } = await SalonServices.list(query);
+
+    serveResponse(res, {
+      message: 'Salons retrieved successfully!',
+      meta,
+      data: salons,
+    });
+  }),
+
+  uploadIntoGallery: catchAsync(async ({ body, user }, res) => {
+    await SalonServices.uploadIntoGallery(user!._id!, body.images);
+
+    serveResponse(res, {
+      message: 'Gallery uploaded successfully!',
+    });
+  }),
+
+  deleteFromGallery: catchAsync(async ({ params, query }, res) => {
+    await SalonServices.deleteFromGallery(params.salonId, query.imageId);
+
+    serveResponse(res, {
+      message: 'Gallery deleted successfully!',
+    });
+  }),
 };

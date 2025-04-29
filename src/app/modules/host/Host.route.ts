@@ -5,7 +5,7 @@ import { SalonRoutes } from '../salon/Salon.route';
 const routes: TRoute[] = [
   {
     path: '/salon',
-    route: SalonRoutes,
+    route: SalonRoutes.host,
   },
 ];
 

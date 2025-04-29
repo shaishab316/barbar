@@ -6,6 +6,7 @@ import ServerError from '../../../errors/ServerError';
 import { userExcludeFields } from './User.constant';
 import bcrypt from 'bcrypt';
 import { Document } from 'mongoose';
+import { TList } from '../query/Query.interface';
 
 export const UserServices = {
   async create(user: TUser) {
@@ -39,7 +40,7 @@ export const UserServices = {
     await user.save();
   },
 
-  async list({ page, limit }: Record<string, any>) {
+  async list({ page, limit }: TList) {
     const users = await User.find()
       .skip((page - 1) * limit)
       .limit(limit);
