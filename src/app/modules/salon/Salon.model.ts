@@ -1,0 +1,71 @@
+import { Schema, model } from 'mongoose';
+import { TSalon } from './Salon.interface';
+import { EUserGender } from '../user/User.enum';
+import { week } from './Salon.constant';
+
+const salonSchema = new Schema<TSalon>(
+  {
+    host: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    banner: {
+      type: String,
+      required: true,
+    },
+    location: {
+      type: {
+        type: String,
+        required: true,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
+    gallery: [
+      {
+        image: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
+    gender: {
+      type: String,
+      enum: Object.values(EUserGender),
+      required: true,
+    },
+    businessHours: {
+      ...Object.fromEntries(
+        week.map(day => [
+          day,
+          {
+            start: { type: String, required: true },
+            end: { type: String, required: true },
+            isOpen: { type: Boolean, required: true, default: true },
+          },
+        ]),
+      ),
+      required: true,
+    },
+  },
+  { timestamps: true, versionKey: false },
+);
+
+const Salon = model<TSalon>('Salon', salonSchema);
+
+export default Salon;
