@@ -2,6 +2,7 @@ import { UserServices } from './User.service';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { StatusCodes } from 'http-status-codes';
+import { userExcludeFields } from './User.constant';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {
@@ -42,6 +43,15 @@ export const UserControllers = {
       message: 'Users retrieved successfully!',
       meta,
       data: users,
+    });
+  }),
+
+  me: catchAsync(({ user }: any, res) => {
+    userExcludeFields.forEach(field => (user[field] = undefined));
+
+    serveResponse(res, {
+      message: 'Profile fetched successfully!',
+      data: user,
     });
   }),
 };
