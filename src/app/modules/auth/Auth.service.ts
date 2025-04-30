@@ -27,7 +27,7 @@ export const AuthServices = {
   },
 
   async resetPassword(email: string, password: string) {
-    await User.updateOne(
+    return User.updateOne(
       { email },
       {
         $set: { password },
