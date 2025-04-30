@@ -79,6 +79,12 @@ const config = {
     limit: env('otp limit', 2),
     window: env<ms.StringValue>('otp window', '10s'),
   },
+  salon: {
+    default_service_duration: env<ms.StringValue>(
+      'default service duration',
+      '30m',
+    ),
+  },
 };
 
 export default config;
