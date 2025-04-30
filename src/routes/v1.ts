@@ -8,6 +8,7 @@ import AdminRoutes from '../app/modules/admin/Admin.route';
 import { BannerRoutes } from '../app/modules/banner/Banner.route';
 import HostRoutes from '../app/modules/host/Host.route';
 import { SalonRoutes } from '../app/modules/salon/Salon.route';
+import { ServiceRoutes } from '../app/modules/service/Service.route';
 
 const routes: TRoute[] = [
   {
@@ -37,6 +38,11 @@ const routes: TRoute[] = [
     path: '/salons',
     middlewares: [auth()],
     route: SalonRoutes.user,
+  },
+  {
+    path: '/services',
+    middlewares: [auth()],
+    route: ServiceRoutes.user,
   },
 ];
 

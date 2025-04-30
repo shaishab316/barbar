@@ -16,4 +16,31 @@ export const ServiceControllers = {
       data,
     });
   }),
+
+  edit: catchAsync(async ({ body, params }, res) => {
+    const data = await ServiceServices.edit(params.serviceId, body);
+
+    serveResponse(res, {
+      message: 'Service updated successfully!',
+      data,
+    });
+  }),
+
+  delete: catchAsync(async ({ params }, res) => {
+    await ServiceServices.delete(params.serviceId);
+
+    serveResponse(res, {
+      message: 'Service deleted successfully!',
+    });
+  }),
+
+  list: catchAsync(async ({ query }, res) => {
+    const { services, meta } = await ServiceServices.list(query);
+
+    serveResponse(res, {
+      message: 'Services retrieved successfully!',
+      meta,
+      data: services,
+    });
+  }),
 };

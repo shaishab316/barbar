@@ -2,17 +2,13 @@ import { z } from 'zod';
 import { EUserGender } from '../user/User.enum';
 import { oid } from '../../../util/transform/oid';
 import { exists } from '../../../util/db/exists';
-import Salon from '../salon/Salon.model';
 import Category from '../category/Category.model';
 import ms from 'ms';
+import Salon from '../salon/Salon.model';
 
 export const ServiceValidations = {
   create: z.object({
     body: z.object({
-      salon: z
-        .string({ required_error: 'Salon is missing' })
-        .transform(oid)
-        .refine(exists(Salon)),
       name: z
         .string({ required_error: 'Name is missing' })
         .min(1, 'Name is missing'),
@@ -32,6 +28,26 @@ export const ServiceValidations = {
         })
         .min(ms('1m'), 'Duration must be at least 1 minute'),
       gender: z.nativeEnum(EUserGender),
+    }),
+  }),
+
+  edit: z.object({
+    body: z.object({
+      name: z.string().optional(),
+      banner: z.string().optional(),
+      category: z.string().optional(),
+      price: z.coerce.number().optional(),
+      duration: z.coerce
+        .number()
+        .min(ms('1m'), 'Duration must be at least 1 minute')
+        .optional(),
+      gender: z.nativeEnum(EUserGender).optional(),
+    }),
+  }),
+
+  list: z.object({
+    query: z.object({
+      salon: z.string().transform(oid).refine(exists(Salon)).optional(),
     }),
   }),
 };

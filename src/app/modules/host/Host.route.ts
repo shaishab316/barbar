@@ -15,7 +15,7 @@ const routes: TRoute[] = [
   },
   {
     path: '/services',
-    route: ServiceRoutes,
+    route: ServiceRoutes.host,
   },
 ];
 

@@ -3,10 +3,12 @@ import { ServiceControllers } from './Service.controller';
 import { ServiceValidations } from './Service.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
+import Service from './Service.model';
+import { QueryValidations } from '../query/Query.validation';
 
-const router = Router();
+const host = Router();
 
-router.post(
+host.post(
   '/create',
   capture({
     fields: [{ name: 'banner', maxCount: 1, width: 500 }],
@@ -15,4 +17,27 @@ router.post(
   ServiceControllers.create,
 );
 
-export const ServiceRoutes = router;
+host.patch(
+  '/:serviceId/edit',
+  purifyRequest(QueryValidations.exists('serviceId', Service)),
+  capture({
+    fields: [{ name: 'banner', maxCount: 1, width: 500 }],
+  }),
+  purifyRequest(ServiceValidations.edit),
+  ServiceControllers.edit,
+);
+
+host.delete(
+  '/:serviceId/delete',
+  purifyRequest(QueryValidations.exists('serviceId', Service)),
+  ServiceControllers.delete,
+);
+
+export const ServiceRoutes = {
+  host,
+  user: Router().get(
+    '/',
+    purifyRequest(QueryValidations.list, ServiceValidations.list),
+    ServiceControllers.list,
+  ),
+};

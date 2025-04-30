@@ -36,6 +36,8 @@ export const CategoryServices = {
     await category.save();
 
     if (categoryData.banner) await deleteFile(oldBanner);
+
+    return category;
   },
 
   async delete(categoryId: Types.ObjectId) {
