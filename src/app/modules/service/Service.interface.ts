@@ -6,7 +6,8 @@ export type TService = {
 
   salon: Types.ObjectId;
   name: string;
-  category: string;
+  banner: string;
+  category: Types.ObjectId;
   price: number;
   duration: number;
   gender: EUserGender;

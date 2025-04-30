@@ -3,6 +3,7 @@ import { TService } from './Service.interface';
 import ms from 'ms';
 import config from '../../../config';
 import { EUserGender } from '../user/User.enum';
+import autoPopulate from 'mongoose-autopopulate';
 
 const serviceSchema = new Schema<TService>(
   {
@@ -15,9 +16,15 @@ const serviceSchema = new Schema<TService>(
       type: String,
       required: true,
     },
-    category: {
+    banner: {
       type: String,
       required: true,
+    },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+      autopopulate: { select: 'name banner' },
     },
     price: {
       type: Number,
@@ -36,6 +43,10 @@ const serviceSchema = new Schema<TService>(
   },
   { timestamps: true, versionKey: false },
 );
+
+serviceSchema.index({ salon: 1, name: 1, category: 1 }, { unique: true });
+
+serviceSchema.plugin(autoPopulate);
 
 const Service = model<TService>('Service', serviceSchema);
 
