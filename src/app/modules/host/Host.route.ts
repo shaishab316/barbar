@@ -3,6 +3,7 @@ import { TRoute } from '../../../types/route.types';
 import { SalonRoutes } from '../salon/Salon.route';
 import { CategoryRoutes } from '../category/Category.route';
 import { ServiceRoutes } from '../service/Service.route';
+import { SpecialistRoutes } from '../specialist/Specialist.route';
 
 const routes: TRoute[] = [
   {
@@ -16,6 +17,10 @@ const routes: TRoute[] = [
   {
     path: '/services',
     route: ServiceRoutes.host,
+  },
+  {
+    path: '/specialists',
+    route: SpecialistRoutes,
   },
 ];
 
