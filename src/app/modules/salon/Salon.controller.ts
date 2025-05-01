@@ -50,4 +50,13 @@ export const SalonControllers = {
       message: 'Gallery deleted successfully!',
     });
   }),
+
+  salon: catchAsync(async ({ user }, res) => {
+    const data = await SalonServices.salon(user!._id!);
+
+    serveResponse(res, {
+      message: 'My Salon retrieved successfully!',
+      data,
+    });
+  }),
 };

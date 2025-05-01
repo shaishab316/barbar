@@ -9,6 +9,8 @@ import Salon from './Salon.model';
 /** Host routes */
 const host = Router();
 
+host.get('/', SalonControllers.salon);
+
 host.patch(
   '/',
   capture({
