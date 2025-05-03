@@ -5,6 +5,8 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
 import { QueryValidations } from '../query/Query.validation';
 import Salon from './Salon.model';
+import { ServiceRoutes } from '../service/Service.route';
+import { PackageRoutes } from '../package/Package.route';
 
 /** Host routes */
 const host = Router();
@@ -34,15 +36,22 @@ host.delete(
   SalonControllers.deleteFromGallery,
 );
 
+/** Salon routes */
+const salon = Router();
+
+salon.get('/', SalonControllers.retrieve);
+salon.use('/services', ServiceRoutes.user);
+salon.use('/packages', PackageRoutes.user);
+
 /** User routes */
 const user = Router();
 
 user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
 
-user.get(
+user.use(
   '/:salonId',
   purifyRequest(QueryValidations.exists('salonId', Salon)),
-  SalonControllers.retrieve,
+  salon,
 );
 
 export const SalonRoutes = {
