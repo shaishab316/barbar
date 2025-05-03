@@ -4,7 +4,6 @@ import { oid } from '../../../util/transform/oid';
 import { exists } from '../../../util/db/exists';
 import Category from '../category/Category.model';
 import ms from 'ms';
-import Salon from '../salon/Salon.model';
 
 export const ServiceValidations = {
   create: z.object({
@@ -42,12 +41,6 @@ export const ServiceValidations = {
         .min(ms('1m'), 'Duration must be at least 1 minute')
         .optional(),
       gender: z.nativeEnum(EUserGender).optional(),
-    }),
-  }),
-
-  list: z.object({
-    query: z.object({
-      salon: z.string().transform(oid).refine(exists(Salon)).optional(),
     }),
   }),
 };

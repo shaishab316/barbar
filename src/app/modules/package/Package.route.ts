@@ -34,18 +34,11 @@ host.delete(
   PackageControllers.delete,
 );
 
-/** User routes */
-const user = Router();
-
-user.get('/', purifyRequest(QueryValidations.list), PackageControllers.list);
-
-user.get(
-  '/:packageId',
-  purifyRequest(QueryValidations.exists('packageId', Package)),
-  PackageControllers.retrieve,
-);
-
 export const PackageRoutes = {
   host,
-  user,
+  user: Router().get(
+    '/:packageId',
+    purifyRequest(QueryValidations.exists('packageId', Package)),
+    PackageControllers.retrieve,
+  ),
 };

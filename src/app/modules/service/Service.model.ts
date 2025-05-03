@@ -44,8 +44,6 @@ const serviceSchema = new Schema<TService>(
   { timestamps: true, versionKey: false },
 );
 
-serviceSchema.index({ salon: 1, name: 1, category: 1 }, { unique: true });
-
 serviceSchema.plugin(autoPopulate);
 
 const Service = model<TService>('Service', serviceSchema);

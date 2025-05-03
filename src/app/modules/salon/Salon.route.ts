@@ -5,8 +5,8 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import capture from '../../middlewares/capture';
 import { QueryValidations } from '../query/Query.validation';
 import Salon from './Salon.model';
-import { ServiceRoutes } from '../service/Service.route';
-import { PackageRoutes } from '../package/Package.route';
+import { ServiceControllers } from '../service/Service.controller';
+import { PackageControllers } from '../package/Package.controller';
 
 /** Host routes */
 const host = Router();
@@ -36,22 +36,33 @@ host.delete(
   SalonControllers.deleteFromGallery,
 );
 
-/** Salon routes */
-const salon = Router();
-
-salon.get('/', SalonControllers.retrieve);
-salon.use('/services', ServiceRoutes.user);
-salon.use('/packages', PackageRoutes.user);
-
 /** User routes */
 const user = Router();
 
 user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
 
-user.use(
+user.get(
   '/:salonId',
   purifyRequest(QueryValidations.exists('salonId', Salon)),
-  salon,
+  SalonControllers.retrieve,
+);
+
+user.get(
+  '/:salonId/services',
+  purifyRequest(
+    QueryValidations.exists('salonId', Salon),
+    QueryValidations.list,
+  ),
+  ServiceControllers.list,
+);
+
+user.get(
+  '/:salonId/packages',
+  purifyRequest(
+    QueryValidations.exists('salonId', Salon),
+    QueryValidations.list,
+  ),
+  PackageControllers.list,
 );
 
 export const SalonRoutes = {
