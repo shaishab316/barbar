@@ -9,14 +9,8 @@ import PublicRoutes from '../app/modules/public/Public.route';
 
 const routes: TRoute[] = [
   {
-    path: '/admin',
-    middlewares: [auth([EUserRole.ADMIN])],
-    route: AdminRoutes,
-  },
-  {
-    path: '/host',
-    middlewares: [auth([EUserRole.HOST])],
-    route: HostRoutes,
+    path: '/',
+    route: PublicRoutes,
   },
   {
     path: '/',
@@ -24,8 +18,14 @@ const routes: TRoute[] = [
     route: UserRoutes.user,
   },
   {
-    path: '/',
-    route: PublicRoutes,
+    path: '/host',
+    middlewares: [auth([EUserRole.HOST])],
+    route: HostRoutes,
+  },
+  {
+    path: '/admin',
+    middlewares: [auth([EUserRole.ADMIN])],
+    route: AdminRoutes,
   },
 ];
 
