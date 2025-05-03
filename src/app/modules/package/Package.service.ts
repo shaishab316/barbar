@@ -34,19 +34,24 @@ export const PackageServices = {
     return deleteFile(banner);
   },
 
-  async list({ page, limit }: TList) {
-    const packages = await Package.find()
+  async list({ page, limit, salon }: TList & { salon: Types.ObjectId }) {
+    const packages = await Package.find({ salon })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await Package.countDocuments();
+    const total = await Package.countDocuments({ salon });
 
     return {
       meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+        query: {
+          salon,
+        },
       },
       packages,
     };

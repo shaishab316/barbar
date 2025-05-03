@@ -33,27 +33,30 @@ export const ServiceServices = {
     return deleteFile(banner);
   },
 
-  async list(query: TList & any) {
-    const { page, limit } = query;
-
-    const filter: Partial<TService> = {};
-
-    if (query.salon) filter.salon = query.salon;
-
-    const services = await Service.find(filter)
+  async list({ page, limit, salon }: TList & { salon: Types.ObjectId }) {
+    const services = await Service.find({ salon })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await Service.countDocuments(filter);
+    const total = await Service.countDocuments({ salon });
 
     return {
       meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+        query: {
+          salon,
+        },
       },
       services,
     };
+  },
+
+  async retrieve(serviceId: Types.ObjectId) {
+    return Service.findById(serviceId);
   },
 };

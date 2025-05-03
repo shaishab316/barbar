@@ -34,13 +34,25 @@ export const ServiceControllers = {
     });
   }),
 
-  list: catchAsync(async ({ query }, res) => {
-    const { services, meta } = await ServiceServices.list(query);
+  list: catchAsync(async ({ query, params }, res) => {
+    const { services, meta } = await ServiceServices.list({
+      ...query,
+      salon: params.salonId,
+    });
 
     serveResponse(res, {
       message: 'Services retrieved successfully!',
       meta,
       data: services,
+    });
+  }),
+
+  retrieve: catchAsync(async ({ params }, res) => {
+    const data = await ServiceServices.retrieve(params.serviceId);
+
+    serveResponse(res, {
+      message: 'Service retrieved successfully!',
+      data,
     });
   }),
 };

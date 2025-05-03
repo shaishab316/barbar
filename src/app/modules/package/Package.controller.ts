@@ -31,8 +31,11 @@ export const PackageControllers = {
     });
   }),
 
-  list: catchAsync(async ({ query }, res) => {
-    const { meta, packages } = await PackageServices.list(query);
+  list: catchAsync(async ({ query, params }, res) => {
+    const { meta, packages } = await PackageServices.list({
+      ...query,
+      salon: params.salonId,
+    });
 
     serveResponse(res, {
       message: 'Packages retrieved successfully!',

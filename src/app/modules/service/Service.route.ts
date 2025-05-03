@@ -6,6 +6,7 @@ import capture from '../../middlewares/capture';
 import Service from './Service.model';
 import { QueryValidations } from '../query/Query.validation';
 
+/** Host routes */
 const host = Router();
 
 host.post(
@@ -33,11 +34,22 @@ host.delete(
   ServiceControllers.delete,
 );
 
+/** User routes */
+const user = Router();
+
+user.get(
+  '/',
+  purifyRequest(QueryValidations.list, ServiceValidations.list),
+  ServiceControllers.list,
+);
+
+user.get(
+  '/:serviceId',
+  purifyRequest(QueryValidations.exists('serviceId', Service)),
+  ServiceControllers.retrieve,
+);
+
 export const ServiceRoutes = {
   host,
-  user: Router().get(
-    '/',
-    purifyRequest(QueryValidations.list, ServiceValidations.list),
-    ServiceControllers.list,
-  ),
+  user,
 };

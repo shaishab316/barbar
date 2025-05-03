@@ -42,10 +42,12 @@ export const SpecialistServices = {
 
     return {
       meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
       },
       specialists,
     };
