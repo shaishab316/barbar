@@ -7,7 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
 
 export const SalonServices = {
-  async create(salonData: TSalon) {
+  async upsert(salonData: TSalon) {
     return Salon.findOneAndUpdate({ host: salonData.host }, salonData, {
       upsert: true,
       new: true,

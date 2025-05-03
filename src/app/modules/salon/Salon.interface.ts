@@ -9,15 +9,14 @@ export type TSalon = {
   host: Types.ObjectId;
   name: string;
   banner: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
+  location: TLocation;
   gender: EUserGender;
   gallery: {
     image: string;
     _id: Types.ObjectId;
   }[];
+  contacts: string[];
+  website?: string;
   rating: number;
   businessHours: TBusinessHours;
 
@@ -31,4 +30,10 @@ export type TBusinessHours = {
     end: string;
     isOpen: boolean;
   };
+};
+
+export type TLocation = {
+  type: string;
+  coordinates: [number, number];
+  address: string;
 };

@@ -16,8 +16,8 @@ host.patch(
   capture({
     fields: [{ name: 'banner', maxCount: 1, width: 720, height: 360 }],
   }),
-  purifyRequest(SalonValidations.create),
-  SalonControllers.create,
+  purifyRequest(SalonValidations.upsert),
+  SalonControllers.upsert,
 );
 
 host.post(

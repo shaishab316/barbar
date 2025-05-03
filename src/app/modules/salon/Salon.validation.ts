@@ -3,7 +3,7 @@ import { EUserGender } from '../user/User.enum';
 import { week } from './Salon.constant';
 
 export const SalonValidations = {
-  create: z.object({
+  upsert: z.object({
     body: z.object({
       name: z
         .string({ required_error: 'name is missing' })
@@ -12,11 +12,11 @@ export const SalonValidations = {
         .string({ required_error: 'banner is missing' })
         .min(1, 'banner is missing'),
       location: z.object({
-        type: z.literal('Point'),
         coordinates: z.tuple([
           z.number().min(-180).max(180), // Longitude
           z.number().min(-90).max(90), // Latitude
         ]),
+        address: z.string().optional(),
       }),
       gender: z.nativeEnum(EUserGender),
       businessHours: z.object(
@@ -35,6 +35,8 @@ export const SalonValidations = {
           ]),
         ),
       ),
+      contacts: z.array(z.string()).optional(),
+      website: z.string().optional(),
     }),
   }),
 };

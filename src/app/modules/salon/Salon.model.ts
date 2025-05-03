@@ -1,7 +1,20 @@
 import { Schema, model } from 'mongoose';
-import { TSalon } from './Salon.interface';
+import { TLocation, TSalon } from './Salon.interface';
 import { EUserGender } from '../user/User.enum';
 import { week } from './Salon.constant';
+
+const locationSchema = new Schema<TLocation>({
+  type: {
+    type: String,
+    enum: ['Point'],
+    default: 'Point',
+  },
+  coordinates: {
+    type: [Number], // [longitude, latitude]
+    required: true,
+  },
+  address: String,
+});
 
 const salonSchema = new Schema<TSalon>(
   {
@@ -19,15 +32,8 @@ const salonSchema = new Schema<TSalon>(
       required: true,
     },
     location: {
-      type: {
-        type: String,
-        required: true,
-        enum: ['Point'],
-      },
-      coordinates: {
-        type: [Number],
-        required: true,
-      },
+      type: locationSchema,
+      required: true,
     },
     gallery: [
       {
@@ -59,6 +65,13 @@ const salonSchema = new Schema<TSalon>(
         ]),
       ),
     },
+    contacts: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    website: String,
   },
   { timestamps: true, versionKey: false },
 );
