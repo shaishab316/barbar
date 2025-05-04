@@ -1,6 +1,9 @@
+/* eslint-disable no-console */
 import { AnyZodObject } from 'zod';
 import catchAsync from '../../util/server/catchAsync';
 import config from '../../config';
+
+const keys = ['body', 'query', 'params', 'cookies'] as const;
 
 /**
  * Middleware to purify and validate the request {body, cookies, query, params} using multiple Zod schemas.
@@ -19,26 +22,19 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
         schemas.map(schema => schema.parseAsync(req)),
       );
 
-      req.body = Object.assign({}, req.body, ...results.map(r => r.body));
-      req.query = Object.assign({}, req.query, ...results.map(r => r.query));
-      req.params = Object.assign({}, req.params, ...results.map(r => r.params));
-      req.cookies = Object.assign(
-        {},
-        req.cookies,
-        ...results.map(r => r.cookies),
-      );
+      keys.forEach(key => {
+        req[key] = Object.assign(
+          {},
+          req[key],
+          ...results.map(result => result?.[key] ?? {}),
+        );
+      });
 
       next();
     },
-    (error, { body, query, params, cookies }, _, next) => {
+    (error, req, _, next) => {
       if (config.server.node_env === 'development')
-        // eslint-disable-next-line no-console
-        console.log({
-          body,
-          query,
-          params,
-          cookies,
-        });
+        keys.forEach(key => console.log(`${key} :`, req[key]));
 
       next(error);
     },
