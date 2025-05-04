@@ -8,6 +8,7 @@ import { TUser } from '../user/User.interface';
 import { EUserRole } from '../user/User.enum';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
+import Salon from '../salon/Salon.model';
 
 export const ServiceServices = {
   async create(serviceData: TService, userId: Types.ObjectId) {
@@ -45,7 +46,7 @@ export const ServiceServices = {
 
   async authorize(salonId: Types.ObjectId, user: TUser) {
     if (user.role !== EUserRole.ADMIN) {
-      const salon = (await SalonServices.salon(salonId))!;
+      const salon = (await Salon.findById(salonId))!;
 
       if (salon.host.toString() !== user._id!.toString())
         throw new ServerError(
