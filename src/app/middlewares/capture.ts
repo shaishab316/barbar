@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import path from 'path';
-import multer, { FileFilterCallback, Field } from 'multer';
+import multer, { FileFilterCallback, Field, memoryStorage } from 'multer';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../errors/ServerError';
 import { createDir } from '../../util/file/createDir';
@@ -29,17 +29,17 @@ const capture = ({
   const uploadDir = path.join(process.cwd(), 'uploads', 'images');
   createDir(uploadDir);
 
-  const storage = multer.memoryStorage();
+  const storage = memoryStorage();
 
   const fileFilter = (_req: any, file: any, cb: FileFilterCallback) => {
-    if (!file.mimetype.startsWith('image/')) {
+    if (!file.mimetype.startsWith('image/'))
       return cb(
         new ServerError(
           StatusCodes.BAD_REQUEST,
-          'Only image files are allowed',
+          `\`${file.originalname}\` is not an image`,
         ),
       );
-    }
+
     cb(null, true);
   };
 
@@ -83,11 +83,10 @@ const capture = ({
                   .withMetadata()
                   .toFormat('jpeg', { quality: 80 });
 
-                if (field.width || field.height) {
+                if (field.width || field.height)
                   processor.resize(field.width, field.height, {
                     fit: 'inside',
                   });
-                }
 
                 await processor.toFile(filePath);
                 req.tempFiles.push(`/images/${fileName}`);

@@ -30,16 +30,7 @@ export const UserValidations = {
           required_error: 'Phone number is missing',
         })
         .min(1, 'Phone number is missing'),
-      gender: z
-        .string({
-          required_error: 'Gender is missing',
-        })
-        .refine(
-          val => Object.values(EUserGender).includes(val as EUserGender),
-          {
-            message: 'Give a valid gender',
-          },
-        ),
+      gender: z.nativeEnum(EUserGender),
       birthDate: z
         .string({
           required_error: 'Birth date is missing',
@@ -54,15 +45,7 @@ export const UserValidations = {
       name: z.string().optional(),
       avatar: z.string().optional(),
       phone: z.string().optional(),
-      gender: z
-        .string()
-        .refine(
-          val => Object.values(EUserGender).includes(val as EUserGender),
-          {
-            message: 'Give a valid gender',
-          },
-        )
-        .optional(),
+      gender: z.nativeEnum(EUserGender).optional(),
       birthDate: z.string().transform(date).optional(),
     }),
   }),

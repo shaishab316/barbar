@@ -1,5 +1,6 @@
 import { AnyZodObject } from 'zod';
 import catchAsync from '../../util/server/catchAsync';
+import config from '../../config';
 
 /**
  * Middleware to purify and validate the request {body, cookies, query, params} using multiple Zod schemas.
@@ -13,20 +14,33 @@ import catchAsync from '../../util/server/catchAsync';
  */
 const purifyRequest = (...schemas: AnyZodObject[]) =>
   catchAsync(async (req, _, next) => {
-    const results = await Promise.all(
-      schemas.map(schema => schema.parseAsync(req)),
-    );
+    try {
+      const results = await Promise.all(
+        schemas.map(schema => schema.parseAsync(req)),
+      );
 
-    req.body = Object.assign({}, req.body, ...results.map(r => r.body));
-    req.query = Object.assign({}, req.query, ...results.map(r => r.query));
-    req.params = Object.assign({}, req.params, ...results.map(r => r.params));
-    req.cookies = Object.assign(
-      {},
-      req.cookies,
-      ...results.map(r => r.cookies),
-    );
+      req.body = Object.assign({}, req.body, ...results.map(r => r.body));
+      req.query = Object.assign({}, req.query, ...results.map(r => r.query));
+      req.params = Object.assign({}, req.params, ...results.map(r => r.params));
+      req.cookies = Object.assign(
+        {},
+        req.cookies,
+        ...results.map(r => r.cookies),
+      );
 
-    next();
+      next();
+    } catch (error) {
+      if (config.server.node_env === 'development')
+        // eslint-disable-next-line no-console
+        console.log({
+          body: req.body,
+          query: req.query,
+          params: req.params,
+          cookies: req.cookies,
+        });
+
+      next(error);
+    }
   });
 
 export default purifyRequest;
