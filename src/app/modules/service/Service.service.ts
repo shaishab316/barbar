@@ -4,6 +4,10 @@ import Service from './Service.model';
 import { SalonServices } from '../salon/Salon.service';
 import deleteFile from '../../../util/file/deleteFile';
 import { TList } from '../query/Query.interface';
+import { TUser } from '../user/User.interface';
+import { EUserRole } from '../user/User.enum';
+import ServerError from '../../../errors/ServerError';
+import { StatusCodes } from 'http-status-codes';
 
 export const ServiceServices = {
   async create(serviceData: TService, userId: Types.ObjectId) {
@@ -14,8 +18,10 @@ export const ServiceServices = {
     return Service.create(serviceData);
   },
 
-  async edit(serviceId: Types.ObjectId, serviceData: TService) {
+  async edit(serviceId: Types.ObjectId, serviceData: TService, user: TUser) {
     const service = (await Service.findById(serviceId))!;
+
+    await this.authorize(service.salon, user);
 
     const oldBanner = service.banner;
 
@@ -27,10 +33,26 @@ export const ServiceServices = {
     return service;
   },
 
-  async delete(serviceId: Types.ObjectId) {
-    const { banner } = (await Service.findByIdAndDelete(serviceId))!;
+  async delete(serviceId: Types.ObjectId, user: TUser) {
+    const service = (await Service.findById(serviceId))!;
 
-    return deleteFile(banner);
+    await this.authorize(service.salon, user);
+
+    await Service.findByIdAndDelete(serviceId);
+
+    return deleteFile(service.banner);
+  },
+
+  async authorize(salonId: Types.ObjectId, user: TUser) {
+    if (user.role !== EUserRole.ADMIN) {
+      const salon = (await SalonServices.salon(salonId))!;
+
+      if (salon.host.toString() !== user._id!.toString())
+        throw new ServerError(
+          StatusCodes.FORBIDDEN,
+          "You can't access this resource!",
+        );
+    }
   },
 
   async list({ page, limit, salon }: TList & { salon: Types.ObjectId }) {

@@ -4,6 +4,7 @@ import { SalonRoutes } from '../salon/Salon.route';
 import { CategoryRoutes } from '../category/Category.route';
 import { ServiceRoutes } from '../service/Service.route';
 import { SpecialistRoutes } from '../specialist/Specialist.route';
+import { PackageRoutes } from '../package/Package.route';
 
 const routes: TRoute[] = [
   {
@@ -15,12 +16,16 @@ const routes: TRoute[] = [
     route: CategoryRoutes.host,
   },
   {
+    path: '/specialists',
+    route: SpecialistRoutes,
+  },
+  {
     path: '/services',
     route: ServiceRoutes.host,
   },
   {
-    path: '/specialists',
-    route: SpecialistRoutes,
+    path: '/packages',
+    route: PackageRoutes.host,
   },
 ];
 

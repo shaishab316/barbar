@@ -17,8 +17,8 @@ export const ServiceControllers = {
     });
   }),
 
-  edit: catchAsync(async ({ body, params }, res) => {
-    const data = await ServiceServices.edit(params.serviceId, body);
+  edit: catchAsync(async ({ body, params, user }, res) => {
+    const data = await ServiceServices.edit(params.serviceId, body, user!);
 
     serveResponse(res, {
       message: 'Service updated successfully!',
@@ -26,8 +26,8 @@ export const ServiceControllers = {
     });
   }),
 
-  delete: catchAsync(async ({ params }, res) => {
-    await ServiceServices.delete(params.serviceId);
+  delete: catchAsync(async ({ params, user }, res) => {
+    await ServiceServices.delete(params.serviceId, user!);
 
     serveResponse(res, {
       message: 'Service deleted successfully!',
