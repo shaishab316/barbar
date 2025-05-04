@@ -13,8 +13,8 @@ import config from '../../config';
  * @return Middleware function to purify the request.
  */
 const purifyRequest = (...schemas: AnyZodObject[]) =>
-  catchAsync(async (req, _, next) => {
-    try {
+  catchAsync(
+    async (req, _, next) => {
       const results = await Promise.all(
         schemas.map(schema => schema.parseAsync(req)),
       );
@@ -29,18 +29,19 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
       );
 
       next();
-    } catch (error) {
+    },
+    (error, { body, query, params, cookies }, _, next) => {
       if (config.server.node_env === 'development')
         // eslint-disable-next-line no-console
         console.log({
-          body: req.body,
-          query: req.query,
-          params: req.params,
-          cookies: req.cookies,
+          body,
+          query,
+          params,
+          cookies,
         });
 
       next(error);
-    }
-  });
+    },
+  );
 
 export default purifyRequest;
