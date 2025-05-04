@@ -7,6 +7,8 @@ import { QueryValidations } from '../query/Query.validation';
 import Salon from './Salon.model';
 import { ServiceControllers } from '../service/Service.controller';
 import { PackageControllers } from '../package/Package.controller';
+import { AppointmentValidations } from '../appointment/Appointment.validation';
+import { AppointmentControllers } from '../appointment/Appointment.controller';
 
 /** Host routes */
 const host = Router();
@@ -63,6 +65,15 @@ user.get(
     QueryValidations.list,
   ),
   PackageControllers.list,
+);
+
+user.post(
+  '/:salonId/appointments/create',
+  purifyRequest(
+    QueryValidations.exists('salonId', Salon),
+    AppointmentValidations.create,
+  ),
+  AppointmentControllers.create,
 );
 
 export const SalonRoutes = {

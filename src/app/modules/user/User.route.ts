@@ -4,11 +4,16 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import { TRoute } from '../../../types/route.types';
 import { ProfileRoutes } from '../profile/Profile.route';
+import { AppointmentRoutes } from '../appointment/Appointment.route';
 
 const userRoutes: TRoute[] = [
   {
     path: '/profile',
     route: ProfileRoutes,
+  },
+  {
+    path: '/appointments',
+    route: AppointmentRoutes,
   },
 ];
 
