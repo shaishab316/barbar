@@ -10,7 +10,7 @@ export const UserControllers = {
 
     serveResponse(res, {
       statusCode: StatusCodes.CREATED,
-      message: 'User registered successfully!',
+      message: `${body.role.charAt(0).toUpperCase() + body.role.slice(1)} registered successfully!`,
       data,
     });
   }),

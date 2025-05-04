@@ -3,7 +3,7 @@ import { EUserGender, EUserRole } from './User.enum';
 import { date } from '../../../util/transform/date';
 
 export const UserValidations = {
-  create: z.object({
+  createUser: z.object({
     body: z.object({
       name: z
         .string({
@@ -36,7 +36,23 @@ export const UserValidations = {
           required_error: 'Birth date is missing',
         })
         .transform(date),
-      role: z.enum([EUserRole.USER, EUserRole.HOST]).default(EUserRole.USER),
+      role: z.literal(EUserRole.USER).default(EUserRole.USER),
+    }),
+  }),
+
+  createHost: z.object({
+    body: z.object({
+      email: z
+        .string({
+          required_error: 'Email is missing',
+        })
+        .email('Give a valid email'),
+      password: z
+        .string({
+          required_error: 'Password is missing',
+        })
+        .min(6, 'Password must be at least 6 characters long'),
+      role: z.literal(EUserRole.HOST).default(EUserRole.HOST),
     }),
   }),
 

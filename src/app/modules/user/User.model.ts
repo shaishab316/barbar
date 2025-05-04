@@ -6,10 +6,7 @@ import config from '../../../config';
 
 const userSchema = new Schema<TUser>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
+    name: String,
     email: {
       type: String,
       required: true,
@@ -29,19 +26,12 @@ const userSchema = new Schema<TUser>(
       enum: Object.values(EUserRole),
       default: EUserRole.USER,
     },
-    phone: {
-      type: String,
-      required: true,
-    },
+    phone: String,
     gender: {
       type: String,
       enum: Object.values(EUserGender),
-      required: true,
     },
-    birthDate: {
-      type: Date,
-      required: true,
-    },
+    birthDate: Date,
   },
   {
     timestamps: true,

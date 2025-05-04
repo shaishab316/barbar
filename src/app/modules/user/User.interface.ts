@@ -4,14 +4,14 @@ import { EUserGender, EUserRole } from './User.enum';
 export type TUser = {
   _id?: Types.ObjectId;
 
-  name: string;
+  name?: string;
   email: string;
   password: string;
-  avatar: string;
+  avatar?: string;
   role: EUserRole;
-  phone: string;
-  gender: EUserGender;
-  birthDate: Date;
+  phone?: string;
+  gender?: EUserGender;
+  birthDate?: Date;
 
   createdAt?: Date;
   updatedAt?: Date;

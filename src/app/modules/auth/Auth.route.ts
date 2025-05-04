@@ -17,7 +17,13 @@ router.post(
   capture({
     fields: [{ name: 'avatar', maxCount: 1, width: 300 }],
   }),
-  purifyRequest(UserValidations.create),
+  purifyRequest(UserValidations.createUser),
+  UserControllers.create,
+);
+
+router.post(
+  '/register/host',
+  purifyRequest(UserValidations.createHost),
   UserControllers.create,
 );
 
