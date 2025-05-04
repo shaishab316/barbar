@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { createToken, verifyToken } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import config from '../../../config';
 import { Response } from 'express';
 import { userExcludeFields } from '../user/User.constant';
@@ -26,13 +26,10 @@ export const AuthServices = {
     });
   },
 
-  async resetPassword(email: string, password: string) {
-    return User.updateOne(
-      { email },
-      {
-        $set: { password },
-      },
-    );
+  async resetPassword(user: TUser & Document, password: string) {
+    user.password = password;
+
+    return user.save();
   },
 
   async refreshToken(refreshToken: string) {

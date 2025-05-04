@@ -32,7 +32,7 @@ export const AuthControllers = {
   }),
 
   resetPassword: catchAsync(async ({ body, user }, res) => {
-    await AuthServices.resetPassword(user!.email!, body.password);
+    await AuthServices.resetPassword(user as any, body.password);
 
     serveResponse(res, {
       message: 'Password reset successfully!',
