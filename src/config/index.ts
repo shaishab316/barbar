@@ -36,6 +36,7 @@ const config = {
       success: env('payment success url', `${href}/payment/success`),
       cancel: env('payment cancel url', `${href}/payment/cancel`),
     },
+    api_doc: env('api doc', ''),
   },
   allowed_origins: env('allowed origins', ['*']),
   bcrypt_salt_rounds: env('bcrypt salt rounds', 10),
