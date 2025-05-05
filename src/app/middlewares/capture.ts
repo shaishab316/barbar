@@ -36,7 +36,7 @@ const capture = ({
       return cb(
         new ServerError(
           StatusCodes.BAD_REQUEST,
-          `\`${file.originalname}\` is not an image`,
+          `\`${file.originalname}\` is not an image. mimetype: ${file.mimetype}`,
         ),
       );
 
