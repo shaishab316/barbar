@@ -36,7 +36,7 @@ router.post(
 
 router.post('/logout', AuthControllers.logout);
 
-router.use('/otp', OtpRoutes);
+router.use('/otp', OtpRoutes.user);
 
 router.post(
   '/reset-password',

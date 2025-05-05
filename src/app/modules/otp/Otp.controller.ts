@@ -19,4 +19,14 @@ export const OtpControllers = {
       data: { resetToken },
     });
   }),
+
+  list: catchAsync(async ({ query }, res) => {
+    const { meta, otps } = await OtpServices.list(query);
+
+    serveResponse(res, {
+      message: 'OTPs retrieved successfully!',
+      meta,
+      data: otps,
+    });
+  }),
 };

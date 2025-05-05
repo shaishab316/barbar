@@ -10,6 +10,8 @@ import { StatusCodes } from 'http-status-codes';
 import { Types } from 'mongoose';
 import { createToken } from '../auth/Auth.utils';
 import { ETokenType } from '../auth/Auth.enum';
+import { TList } from '../query/Query.interface';
+import { TOtp } from './Otp.interface';
 
 export const OtpServices = {
   async send(email: string) {
@@ -38,7 +40,7 @@ export const OtpServices = {
     await sendEmail({
       to: email,
       subject: `Your ${config.server.name} password reset OTP is ⚡ ${otp} ⚡.`,
-      html: OtpTemplates.reset(user.name, otp),
+      html: OtpTemplates.reset(user?.name ?? 'Mr. ' + user.role, otp),
     });
   },
 
@@ -54,5 +56,34 @@ export const OtpServices = {
     await validOtp.deleteOne();
 
     return createToken({ userId: user }, ETokenType.RESET);
+  },
+
+  async list({ page, limit, email }: TList & { email: string }) {
+    const filter: Partial<TOtp> = {};
+
+    if (email) {
+      const user = await User.findOne({ email }).select('_id');
+
+      if (user) filter.user = user._id;
+    }
+
+    const otps = await Otp.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('user', 'name email avatar');
+
+    const total = await Otp.countDocuments(filter);
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      otps,
+    };
   },
 };

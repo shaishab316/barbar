@@ -22,4 +22,10 @@ export const OtpValidations = {
         .transform(upper),
     }),
   }),
+
+  list: z.object({
+    query: z.object({
+      email: z.string().email('Give a valid email').optional(),
+    }),
+  }),
 };

@@ -4,21 +4,38 @@ import { OtpValidations } from './Otp.validation';
 import { otpLimiter } from './Otp.utils';
 import { OtpControllers } from './Otp.controller';
 import { temUser } from '../../middlewares/temUser';
+import config from '../../../config';
+import { QueryValidations } from '../query/Query.validation';
 
-const router = Router();
+/** User routes */
+const user = Router();
 
-router.post(
+user.post(
   '/send',
   otpLimiter,
   purifyRequest(OtpValidations.send),
   OtpControllers.send,
 );
 
-router.post(
+user.post(
   '/verify',
   purifyRequest(OtpValidations.verify),
   temUser(),
   OtpControllers.verify,
 );
 
-export const OtpRoutes = router;
+/** Admin routes */
+const admin = Router();
+
+//! for testing only
+if (config.server.node_env === 'development')
+  admin.get(
+    '/',
+    purifyRequest(QueryValidations.list, OtpValidations.list),
+    OtpControllers.list,
+  );
+
+export const OtpRoutes = {
+  user,
+  admin,
+};

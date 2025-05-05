@@ -3,6 +3,7 @@ import { TRoute } from '../../../types/route.types';
 import { UserRoutes } from '../user/User.route';
 import { BannerRoutes } from '../banner/Banner.route';
 import { CategoryRoutes } from '../category/Category.route';
+import { OtpRoutes } from '../otp/Otp.route';
 
 const routes: TRoute[] = [
   {
@@ -16,6 +17,10 @@ const routes: TRoute[] = [
   {
     path: '/categories',
     route: CategoryRoutes.admin,
+  },
+  {
+    path: '/otps',
+    route: OtpRoutes.admin,
   },
 ];
 
