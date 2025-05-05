@@ -27,7 +27,7 @@ user.post(
 /** Admin routes */
 const admin = Router();
 
-//! for testing only
+//! only for development
 if (config.server.node_env === 'development')
   admin.get(
     '/',

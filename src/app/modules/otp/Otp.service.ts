@@ -59,6 +59,7 @@ export const OtpServices = {
   },
 
   async list({ page, limit, email }: TList & { email: string }) {
+    //! only for development
     if (config.server.node_env !== 'development')
       throw new ServerError(
         StatusCodes.UNAVAILABLE_FOR_LEGAL_REASONS,
@@ -90,6 +91,9 @@ export const OtpServices = {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
+        },
+        query: {
+          email,
         },
       },
       otps,
