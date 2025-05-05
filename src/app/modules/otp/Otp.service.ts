@@ -59,6 +59,12 @@ export const OtpServices = {
   },
 
   async list({ page, limit, email }: TList & { email: string }) {
+    if (config.server.node_env !== 'development')
+      throw new ServerError(
+        StatusCodes.UNAVAILABLE_FOR_LEGAL_REASONS,
+        'Service not available.',
+      );
+
     const filter: Partial<TOtp> = {};
 
     if (email) {
