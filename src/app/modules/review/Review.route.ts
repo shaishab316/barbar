@@ -7,12 +7,6 @@ import Salon from '../salon/Salon.model';
 
 const user = Router();
 
-user.patch(
-  '/:salonId',
-  purifyRequest(ReviewValidations.store),
-  ReviewControllers.store,
-);
-
 user.delete(
   '/:reviewId/delete',
   purifyRequest(QueryValidations.exists('reviewId', Salon)),

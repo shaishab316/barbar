@@ -8,13 +8,12 @@ import { StatusCodes } from 'http-status-codes';
 import { EUserRole } from '../user/User.enum';
 
 export const ReviewServices = {
-  async store(reviewData: TReview) {
-    const { user, salon } = reviewData;
-
-    return Review.findOneAndUpdate({ user, salon }, reviewData, {
-      upsert: true,
-      new: true,
-    });
+  async store({ user, salon, rating, comment }: TReview) {
+    return Review.findOneAndUpdate(
+      { user, salon },
+      { rating, comment },
+      { upsert: true, new: true },
+    );
   },
 
   async delete(reviewId: Types.ObjectId, user: TUser & Document) {
