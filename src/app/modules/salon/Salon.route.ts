@@ -9,6 +9,8 @@ import { ServiceControllers } from '../service/Service.controller';
 import { PackageControllers } from '../package/Package.controller';
 import { AppointmentValidations } from '../appointment/Appointment.validation';
 import { AppointmentControllers } from '../appointment/Appointment.controller';
+import { ReviewRoutes } from '../review/Review.route';
+import auth from '../../middlewares/auth';
 
 /** Host routes */
 const host = Router();
@@ -49,6 +51,7 @@ user.get(
   SalonControllers.retrieve,
 );
 
+/** Service Routes */
 user.get(
   '/:salonId/services',
   purifyRequest(
@@ -58,6 +61,7 @@ user.get(
   ServiceControllers.list,
 );
 
+/** Package Routes */
 user.get(
   '/:salonId/packages',
   purifyRequest(
@@ -67,6 +71,7 @@ user.get(
   PackageControllers.list,
 );
 
+/** Appointment Routes */
 user.post(
   '/:salonId/appointments/create',
   purifyRequest(
@@ -75,6 +80,9 @@ user.post(
   ),
   AppointmentControllers.create,
 );
+
+/** Review Routes */
+user.use('/', auth(), ReviewRoutes.salon);
 
 export const SalonRoutes = {
   host,
