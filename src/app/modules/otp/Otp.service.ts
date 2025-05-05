@@ -64,7 +64,10 @@ export const OtpServices = {
     if (email) {
       const user = await User.findOne({ email }).select('_id');
 
-      if (user) filter.user = user._id;
+      if (!user)
+        throw new ServerError(StatusCodes.NOT_FOUND, 'User not found!');
+
+      filter.user = user._id;
     }
 
     const otps = await Otp.find(filter)
