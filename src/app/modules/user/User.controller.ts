@@ -19,7 +19,7 @@ export const UserControllers = {
       statusCode: StatusCodes.CREATED,
       message: `${body.role.charAt(0).toUpperCase() + body.role.slice(1)} registered successfully!`,
       data: {
-        accessToken,
+        token: accessToken,
         user,
       },
     });
