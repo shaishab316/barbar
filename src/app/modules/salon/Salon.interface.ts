@@ -8,6 +8,7 @@ export type TSalon = {
 
   host: Types.ObjectId;
   name: string;
+  description: string;
   banner: string;
   location: TLocation;
   gender: EUserGender;

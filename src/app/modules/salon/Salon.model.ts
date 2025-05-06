@@ -27,6 +27,10 @@ const salonSchema = new Schema<TSalon>(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     banner: {
       type: String,
       required: true,

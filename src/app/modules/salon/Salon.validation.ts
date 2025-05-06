@@ -8,6 +8,7 @@ export const SalonValidations = {
   upsert: z.object({
     body: z.object({
       name: z.string().optional(),
+      description: z.string().optional(),
       banner: z.string().optional(),
       location: z
         .object({
