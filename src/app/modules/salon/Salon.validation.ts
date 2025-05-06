@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { EUserGender } from '../user/User.enum';
 import { week } from './Salon.constant';
 import { json } from '../../../util/transform/json';
+import { lower } from '../../../util/transform/lower';
 
 export const SalonValidations = {
   upsert: z.object({
@@ -23,7 +24,11 @@ export const SalonValidations = {
           address: z.string().optional(),
         })
         .optional(),
-      gender: z.nativeEnum(EUserGender).optional(),
+      gender: z
+        .string()
+        .transform(lower)
+        .pipe(z.nativeEnum(EUserGender))
+        .optional(),
       businessHours: z
         .string()
         .transform(json)

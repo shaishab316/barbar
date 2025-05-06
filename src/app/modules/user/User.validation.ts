@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { EUserGender, EUserRole } from './User.enum';
 import { date } from '../../../util/transform/date';
+import { lower } from '../../../util/transform/lower';
 
 export const UserValidations = {
   createUser: z.object({
@@ -30,7 +31,7 @@ export const UserValidations = {
           required_error: 'Phone number is missing',
         })
         .min(1, 'Phone number is missing'),
-      gender: z.nativeEnum(EUserGender),
+      gender: z.string().transform(lower).pipe(z.nativeEnum(EUserGender)),
       birthDate: z
         .string({
           required_error: 'Birth date is missing',
@@ -61,7 +62,11 @@ export const UserValidations = {
       name: z.string().optional(),
       avatar: z.string().optional(),
       phone: z.string().optional(),
-      gender: z.nativeEnum(EUserGender).optional(),
+      gender: z
+        .string()
+        .transform(lower)
+        .pipe(z.nativeEnum(EUserGender))
+        .optional(),
       birthDate: z.string().transform(date).optional(),
     }),
   }),

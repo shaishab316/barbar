@@ -4,6 +4,7 @@ import { oid } from '../../../util/transform/oid';
 import { exists } from '../../../util/db/exists';
 import Category from '../category/Category.model';
 import ms from 'ms';
+import { lower } from '../../../util/transform/lower';
 
 export const ServiceValidations = {
   create: z.object({
@@ -26,7 +27,7 @@ export const ServiceValidations = {
           required_error: 'Duration is missing',
         })
         .min(ms('1m'), 'Duration must be at least 1 minute'),
-      gender: z.nativeEnum(EUserGender),
+      gender: z.string().transform(lower).pipe(z.nativeEnum(EUserGender)),
     }),
   }),
 
@@ -40,7 +41,11 @@ export const ServiceValidations = {
         .number()
         .min(ms('1m'), 'Duration must be at least 1 minute')
         .optional(),
-      gender: z.nativeEnum(EUserGender).optional(),
+      gender: z
+        .string()
+        .transform(lower)
+        .pipe(z.nativeEnum(EUserGender))
+        .optional(),
     }),
   }),
 };
