@@ -32,11 +32,13 @@ export const ReviewServices = {
   },
 
   async list({ page, limit, salon }: TList & { salon?: Types.ObjectId }) {
-    const reviews = await Review.find({ salon })
+    const filter = salon ? { salon } : {};
+
+    const reviews = await Review.find(filter)
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await Review.countDocuments({ salon });
+    const total = await Review.countDocuments(filter);
 
     return {
       meta: {

@@ -5,12 +5,22 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import Salon from '../salon/Salon.model';
 
+/** User Routes */
 const user = Router();
 
 user.delete(
   '/:reviewId/delete',
   purifyRequest(QueryValidations.exists('reviewId', Salon)),
   ReviewControllers.delete,
+);
+
+/** Admin Routes */
+const admin = Router();
+
+admin.get(
+  '/',
+  purifyRequest(QueryValidations.list, ReviewValidations.list),
+  ReviewControllers.list,
 );
 
 /** Salon Routes */
@@ -37,4 +47,5 @@ salon.patch(
 export const ReviewRoutes = {
   user,
   salon,
+  admin,
 };

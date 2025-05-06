@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { oid } from '../../../util/transform/oid';
+import { exists } from '../../../util/db/exists';
+import Salon from '../salon/Salon.model';
 
 export const ReviewValidations = {
   store: z.object({
@@ -14,6 +17,12 @@ export const ReviewValidations = {
           required_error: 'Comment is missing',
         })
         .min(1, 'Comment is missing'),
+    }),
+  }),
+
+  list: z.object({
+    query: z.object({
+      salon: z.string().transform(oid).refine(exists(Salon)).optional(),
     }),
   }),
 };

@@ -16,6 +16,7 @@ const reviewSchema = new Schema<TReview>(
       type: Schema.Types.ObjectId,
       ref: 'Salon',
       required: true,
+      autopopulate: { select: 'name banner' },
     },
     rating: {
       type: Number,
