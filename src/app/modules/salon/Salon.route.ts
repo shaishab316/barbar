@@ -11,6 +11,7 @@ import { AppointmentValidations } from '../appointment/Appointment.validation';
 import { AppointmentControllers } from '../appointment/Appointment.controller';
 import { ReviewRoutes } from '../review/Review.route';
 import auth from '../../middlewares/auth';
+import { SpecialistControllers } from '../specialist/Specialist.controller';
 
 /** Host routes */
 const host = Router();
@@ -49,6 +50,20 @@ user.get(
   '/:salonId',
   purifyRequest(QueryValidations.exists('salonId', Salon)),
   SalonControllers.retrieve,
+);
+
+/** Gallery Routes */
+user.get(
+  '/:salonId/gallery',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  SalonControllers.gallery,
+);
+
+/** Specialist Routes */
+user.get(
+  '/:salonId/specialists',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  SpecialistControllers.retrieve,
 );
 
 /** Service Routes */

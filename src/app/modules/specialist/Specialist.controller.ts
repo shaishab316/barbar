@@ -40,4 +40,13 @@ export const SpecialistControllers = {
       data: specialists,
     });
   }),
+
+  retrieve: catchAsync(async ({ params }, res) => {
+    const data = await SpecialistServices.retrieve(params.salonId);
+
+    serveResponse(res, {
+      message: 'Specialist retrieved successfully!',
+      data,
+    });
+  }),
 };

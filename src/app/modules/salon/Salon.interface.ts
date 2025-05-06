@@ -16,9 +16,10 @@ export type TSalon = {
     image: string;
     _id: Types.ObjectId;
   }[];
-  contacts: string[];
+  contact: string;
   website?: string;
   rating: number;
+  ratingCount: number;
   businessHours: TBusinessHours;
 
   createdAt?: Date;

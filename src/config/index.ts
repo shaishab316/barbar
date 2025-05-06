@@ -85,6 +85,7 @@ const config = {
       'default service duration',
       '30m',
     ),
+    location_distance: env('location distance', 5000),
   },
 };
 

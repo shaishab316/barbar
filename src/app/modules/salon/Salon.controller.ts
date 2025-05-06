@@ -59,4 +59,13 @@ export const SalonControllers = {
       data,
     });
   }),
+
+  gallery: catchAsync(async ({ params }, res) => {
+    const data = await SalonServices.gallery(params.salonId);
+
+    serveResponse(res, {
+      message: 'Gallery retrieved successfully!',
+      data,
+    });
+  }),
 };

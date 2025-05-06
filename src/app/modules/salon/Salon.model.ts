@@ -49,8 +49,14 @@ const salonSchema = new Schema<TSalon>(
     ],
     rating: {
       type: Number,
-      min: 1,
+      min: 0,
       max: 5,
+      default: 0,
+    },
+    ratingCount: {
+      type: Number,
+      min: 0,
+      default: 0,
     },
     gender: {
       type: String,
@@ -69,12 +75,7 @@ const salonSchema = new Schema<TSalon>(
         ]),
       ),
     },
-    contacts: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
+    contact: String,
     website: String,
   },
   { timestamps: true, versionKey: false },

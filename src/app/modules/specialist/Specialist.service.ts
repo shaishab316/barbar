@@ -52,4 +52,8 @@ export const SpecialistServices = {
       specialists,
     };
   },
+
+  async retrieve(salon: Types.ObjectId) {
+    return Specialist.find({ salon });
+  },
 };
