@@ -99,8 +99,7 @@ const capture = ({
           }),
         );
 
-        if (req.body.data) req.body = json(req.body.data);
-        Object.assign(req.body, images);
+        Object.assign(req.body, json(req.body.data) ?? {}, images);
 
         next();
       } catch (error) {
