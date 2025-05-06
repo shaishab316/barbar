@@ -35,7 +35,7 @@ admin.delete(
 
 export const CategoryRoutes = {
   admin,
-  host: Router().get(
+  user: Router().get(
     '/',
     purifyRequest(QueryValidations.list),
     CategoryControllers.list,

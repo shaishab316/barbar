@@ -5,6 +5,7 @@ import { AuthRoutes } from '../auth/Auth.route';
 import { SalonRoutes } from '../salon/Salon.route';
 import { ServiceRoutes } from '../service/Service.route';
 import { PackageRoutes } from '../package/Package.route';
+import { CategoryRoutes } from '../category/Category.route';
 
 const routes: TRoute[] = [
   {
@@ -26,6 +27,10 @@ const routes: TRoute[] = [
   {
     path: '/packages',
     route: PackageRoutes.user,
+  },
+  {
+    path: '/categories',
+    route: CategoryRoutes.user,
   },
 ];
 
