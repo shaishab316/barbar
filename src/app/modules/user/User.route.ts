@@ -5,6 +5,7 @@ import { QueryValidations } from '../query/Query.validation';
 import { TRoute } from '../../../types/route.types';
 import { ProfileRoutes } from '../profile/Profile.route';
 import { AppointmentRoutes } from '../appointment/Appointment.route';
+import { ChatRoutes } from '../chat/Chat.route';
 
 const userRoutes: TRoute[] = [
   {
@@ -14,6 +15,10 @@ const userRoutes: TRoute[] = [
   {
     path: '/appointments',
     route: AppointmentRoutes,
+  },
+  {
+    path: '/chats',
+    route: ChatRoutes,
   },
 ];
 

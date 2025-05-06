@@ -44,7 +44,8 @@ export const SalonServices = {
   async list({ page, limit }: TList) {
     const salons = await Salon.find()
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .select('name banner rating location');
 
     const total = await Salon.countDocuments();
 
