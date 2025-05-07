@@ -11,4 +11,22 @@ export const ChatControllers = {
       data,
     });
   }),
+
+  list: catchAsync(async ({ query, user }, res) => {
+    const { chats, meta } = await ChatServices.list(query, user!._id!);
+
+    serveResponse(res, {
+      message: 'Chats retrieved successfully!',
+      meta,
+      data: chats,
+    });
+  }),
+
+  delete: catchAsync(async ({ user, params }, res) => {
+    await ChatServices.delete(params.chatId, user!._id!);
+
+    serveResponse(res, {
+      message: 'Chat deleted successfully!',
+    });
+  }),
 };
