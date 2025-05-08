@@ -28,9 +28,7 @@ export const SalonServices = {
   async deleteFromGallery(host: Types.ObjectId, imageId: Types.ObjectId) {
     const salon = await this.salon(host);
 
-    const image = salon?.gallery.find(
-      ({ _id }) => _id.toString() === imageId.toString(),
-    )?.image;
+    const image = salon?.gallery?.find(({ _id }) => _id.equals(imageId))?.image;
 
     if (!image) throw new ServerError(StatusCodes.NOT_FOUND, 'Image not found');
 

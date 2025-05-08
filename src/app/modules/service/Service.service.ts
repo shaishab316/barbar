@@ -47,7 +47,7 @@ export const ServiceServices = {
     if (user.role !== EUserRole.ADMIN) {
       const salon = (await Salon.findById(salonId))!;
 
-      if (salon.host.toString() !== user._id!.toString())
+      if (!salon.host.equals(user._id))
         throw new ServerError(
           StatusCodes.FORBIDDEN,
           "You can't access this resource!",

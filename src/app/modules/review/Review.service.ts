@@ -19,10 +19,7 @@ export const ReviewServices = {
   async delete(reviewId: Types.ObjectId, user: TUser & Document) {
     const review = (await Review.findById(reviewId))!;
 
-    if (
-      user.role !== EUserRole.ADMIN ||
-      review.user.toString() !== user._id!.toString()
-    )
+    if (user.role !== EUserRole.ADMIN || !review.user.equals(user._id))
       throw new ServerError(
         StatusCodes.FORBIDDEN,
         'You are not authorized to delete this review.',

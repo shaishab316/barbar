@@ -6,7 +6,7 @@ import { TList } from '../query/Query.interface';
 
 export const ChatServices = {
   async create(users: Types.ObjectId[]) {
-    if (users[0]?.toString() === users[1]?.toString())
+    if (users[0].equals(users[1]))
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
         'You cannot create a chat with yourself',
