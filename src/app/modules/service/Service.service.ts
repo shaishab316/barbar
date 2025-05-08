@@ -56,7 +56,9 @@ export const ServiceServices = {
   },
 
   async list(filter: TService) {
-    return await Service.find(filter);
+    return await Service.find(filter)
+      .select('name banner price duration')
+      .lean();
   },
 
   async categories(salonId: Types.ObjectId) {

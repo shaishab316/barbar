@@ -49,6 +49,10 @@ export const ServiceControllers = {
       salon: params.salonId,
     });
 
+    services.map(service => {
+      service.duration = ms(service.duration, { long: true }) as any;
+    });
+
     serveResponse(res, {
       message: 'Services retrieved successfully!',
       data: services,
