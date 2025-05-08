@@ -3,7 +3,6 @@ import { TService } from './Service.interface';
 import Service from './Service.model';
 import { SalonServices } from '../salon/Salon.service';
 import deleteFile from '../../../util/file/deleteFile';
-import { TList } from '../query/Query.interface';
 import { TUser } from '../user/User.interface';
 import { EUserRole } from '../user/User.enum';
 import ServerError from '../../../errors/ServerError';
@@ -56,27 +55,36 @@ export const ServiceServices = {
     }
   },
 
-  async list({ page, limit, salon }: TList & { salon: Types.ObjectId }) {
-    const services = await Service.find({ salon })
-      .skip((page - 1) * limit)
-      .limit(limit);
+  async list(filter: TService) {
+    return await Service.find(filter);
+  },
 
-    const total = await Service.countDocuments({ salon });
-
-    return {
-      meta: {
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
-        query: {
-          salon,
+  async categories(salonId: Types.ObjectId) {
+    return Service.aggregate([
+      { $match: { salon: salonId } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'categoryDetails',
         },
       },
-      services,
-    };
+      { $unwind: '$categoryDetails' },
+      {
+        $group: {
+          _id: '$category',
+          name: { $first: '$categoryDetails.name' },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          count: 1,
+        },
+      },
+    ]);
   },
 
   async retrieve(serviceId: Types.ObjectId) {

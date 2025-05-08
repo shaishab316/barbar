@@ -48,4 +48,15 @@ export const ServiceValidations = {
         .optional(),
     }),
   }),
+
+  list: z.object({
+    query: z.object({
+      category: z.string().transform(oid).refine(exists(Category)).optional(),
+      gender: z
+        .string()
+        .transform(lower)
+        .pipe(z.nativeEnum(EUserGender))
+        .optional(),
+    }),
+  }),
 };

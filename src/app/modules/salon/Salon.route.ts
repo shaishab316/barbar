@@ -12,6 +12,7 @@ import { AppointmentControllers } from '../appointment/Appointment.controller';
 import { ReviewRoutes } from '../review/Review.route';
 import auth from '../../middlewares/auth';
 import { SpecialistControllers } from '../specialist/Specialist.controller';
+import { ServiceValidations } from '../service/Service.validation';
 
 /** Host routes */
 const host = Router();
@@ -67,11 +68,18 @@ user.get(
 );
 
 /** Service Routes */
+
+user.get(
+  '/:salonId/categories',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  ServiceControllers.categories,
+);
+
 user.get(
   '/:salonId/services',
   purifyRequest(
     QueryValidations.exists('salonId', Salon),
-    QueryValidations.list,
+    ServiceValidations.list,
   ),
   ServiceControllers.list,
 );
