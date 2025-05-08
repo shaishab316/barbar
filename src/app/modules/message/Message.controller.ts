@@ -1,16 +1,19 @@
-import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { MessageServices } from './Message.service';
 
 export const MessageControllers = {
-  // {{key}}: catchAsync(async (req, res) => {
-  //   const data = await MessageServices.{{key}}();
-  //
-  //   serveResponse(res, {
-  //     // statusCode: StatusCodes.OK,
-  //     message: 'Message [value] successfully!',
-  //     data,
-  //   });
-  // }),
+  list: catchAsync(async ({ query, params, user }, res) => {
+    const { messages, meta } = await MessageServices.list({
+      ...query,
+      salon: params.salonId,
+      user: user!._id!,
+    });
+
+    serveResponse(res, {
+      message: 'Messages retrieved successfully!',
+      meta,
+      data: messages,
+    });
+  }),
 };
