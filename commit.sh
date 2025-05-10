@@ -11,11 +11,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 DIR=$(pwd)
+
+# Check if there are staged changes and unstaged files
+STAGED_FILES=$(git diff --cached --name-only)
 DIFF=$(git diff)
 NEW_FILES=$(git ls-files --others --exclude-standard)
 
 # Exit if no changes or new files are detected
-if [ -z "$DIFF" ] && [ -z "$NEW_FILES" ]; then
+if [ -z "$STAGED_FILES" ] && [ -z "$DIFF" ] && [ -z "$NEW_FILES" ]; then
   echo -e "${YELLOW}No changes or new files detected. Exiting.${NC}"
   exit 1
 fi
@@ -29,23 +32,35 @@ escape_json() {
   echo "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/\n/\\n/g' -e 's/\t/\\t/g'
 }
 
-# Read new files content and escape for JSON compatibility
-read_new_files_content() {
-  NEW_FILE_CONTENTS=""
-  for FILE in $NEW_FILES; do
-    if [ -f "$FILE" ]; then
-      FILE_CONTENT=$(cat "$FILE")
-      ESCAPED_CONTENT=$(escape_json "$FILE_CONTENT")
-      NEW_FILE_CONTENTS+="$FILE:\n$ESCAPED_CONTENT\n\n"
-    fi
-  done
-  echo "$NEW_FILE_CONTENTS"
+# Get the diff of staged files to provide detailed changes
+get_staged_diff() {
+  STAGED_DIFF=$(git diff --cached)  # This will show the diff of staged files
+  echo "$STAGED_DIFF"
+}
+
+# Get the diff of unstaged files to provide detailed changes
+get_unstaged_diff() {
+  UNSTAGED_DIFF=$(git diff)  # This will show the diff of unstaged files
+  echo "$UNSTAGED_DIFF"
 }
 
 # Generate commit message using AI
 generate_commit_message() {
-  ESCAPED_DIFF=$(escape_json "$DIFF")
-  ESCAPED_NEW_FILES_CONTENT=$(read_new_files_content)
+  if [ -n "$STAGED_FILES" ]; then
+    # Get the staged diff content
+    STAGED_DIFF=$(get_staged_diff)
+    ESCAPED_STAGED_DIFF=$(escape_json "$STAGED_DIFF")
+
+    # Use the staged diff directly for more accurate commit message generation
+    MESSAGE="Generate a concise commit message summarizing the following staged changes: \n\n$ESCAPED_STAGED_DIFF"
+  elif [ -n "$DIFF" ]; then
+    # Get the unstaged diff content
+    UNSTAGED_DIFF=$(get_unstaged_diff)
+    ESCAPED_UNSTAGED_DIFF=$(escape_json "$UNSTAGED_DIFF")
+
+    # Use the unstaged diff directly for more accurate commit message generation
+    MESSAGE="Generate a concise commit message summarizing the following unstaged changes: \n\n$ESCAPED_UNSTAGED_DIFF"
+  fi
 
   # Make API request to Gemini and capture the response
   AI_RESPONSE=$(curl -s -X POST "$AI_API_ENDPOINT?key=$AI_API_KEY" \
@@ -53,7 +68,7 @@ generate_commit_message() {
     -d '{
       "contents": [{
         "parts": [{
-          "text": "Generate a concise commit message summarizing the following code changes and new files content: \n\n'"$ESCAPED_DIFF"' \n\n New files content: \n\n'"$ESCAPED_NEW_FILES_CONTENT"'"
+          "text": "'"$MESSAGE"'"
         }]
       }]
     }')
@@ -65,7 +80,7 @@ generate_commit_message() {
   [ -z "$COMMIT_MSG" ] && COMMIT_MSG="Auto-generated commit for changes in $DIR"
 }
 
-# Generate commit message
+# If there are staged files, process them, otherwise fallback to unstaged changes
 generate_commit_message
 
 # Show the generated commit message
@@ -79,8 +94,13 @@ echo -e "${YELLOW}Press Enter to confirm the commit message or Esc to cancel.${N
 while true; do
   read -rsn1 input
   if [[ $input == "" ]]; then  # Enter pressed, proceed with commit
-    git add . && git commit -m "$COMMIT_MSG" && git push
-    echo -e "${GREEN}Changes committed and pushed successfully!${NC}"
+    if [ -n "$STAGED_FILES" ]; then
+      git commit -m "$COMMIT_MSG" && git push
+      echo -e "${GREEN}Staged changes committed and pushed successfully!${NC}"
+    else
+      git add . && git commit -m "$COMMIT_MSG" && git push
+      echo -e "${GREEN}Changes committed and pushed successfully!${NC}"
+    fi
     break
   elif [[ $input == $'\e' ]]; then  # Esc pressed, skip commit
     echo -e "${RED}Commit skipped. Exiting...${NC}"
