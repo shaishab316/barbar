@@ -87,6 +87,11 @@ const config = {
     ),
     location_distance: env('location distance', 5000),
   },
+  ai: {
+    gemini: {
+      key: env('gemini key', ''),
+    },
+  },
 };
 
 export default config;
