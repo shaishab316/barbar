@@ -9,6 +9,12 @@ const chatSocket: TSocketHandler = (io, socket) => {
   const { user } = socket.data;
 
   socket.on('join', async ({ chatId }: { chatId: string }) => {
+    if (!chatId)
+      return socketError(
+        socket,
+        `❌ Invalid join payload from: ${socket.id} chatId: ${chatId}`,
+      );
+
     try {
       const chat = await Chat.findOne({
         _id: chatId.oid,
@@ -61,7 +67,7 @@ const chatSocket: TSocketHandler = (io, socket) => {
     if (!messageId)
       return socketError(
         socket,
-        `❌ Invalid delete request from: ${socket.id}`,
+        `❌ Invalid delete request from: ${socket.id} messageId: ${messageId}`,
       );
 
     try {
