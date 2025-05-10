@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Chat from './Chat.model';
 import Message from '../message/Message.model';
 import { TSocketHandler } from '../socket/Socket.interface';
@@ -30,40 +29,44 @@ const chatSocket: TSocketHandler = (io, socket) => {
     }
   });
 
-  socket.on('sendMessage', async ({ content, chatId }) => {
-    if (!content || !chatId)
-      return socketError(
-        socket,
-        `❌ Invalid message payload from: ${socket.id} content: ${content}, chatId: ${chatId}`,
-      );
+  socket.on(
+    'sendMessage',
+    async ({ content, chatId }: { content: string; chatId: string }) => {
+      if (!content || !chatId)
+        return socketError(
+          socket,
+          `❌ Invalid message payload from: ${socket.id} content: ${content}, chatId: ${chatId}`,
+        );
 
-    try {
-      const chat = await Chat.findOne({
-        _id: chatId.oid,
-        users: { $all: [user._id.oid] },
-      }).lean();
+      try {
+        const chat = await Chat.findOne({
+          _id: chatId.oid,
+          users: { $all: [user._id.oid] },
+        }).lean();
 
-      if (!chat) return socketError(socket, `❌ Chat room ${chatId} not found`);
+        if (!chat)
+          return socketError(socket, `❌ Chat room ${chatId} not found`);
 
-      const message = await Message.create({
-        chat: chatId,
-        content,
-        sender: user._id,
-      });
+        const message = await Message.create({
+          chat: chatId,
+          content,
+          sender: user._id,
+        });
 
-      updateInbox(io, chat.users);
+        updateInbox(io, chat.users);
 
-      io.to(chatId).emit('messageReceived', message);
+        io.to(chatId).emit('messageReceived', message);
 
-      socketInfo(
-        `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
-      );
-    } catch (error: any) {
-      socketError(socket, `❌ Error sending message: ${error.message}`);
-    }
-  });
+        socketInfo(
+          `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
+        );
+      } catch (error: any) {
+        socketError(socket, `❌ Error sending message: ${error.message}`);
+      }
+    },
+  );
 
-  socket.on('deleteMessage', async ({ messageId }) => {
+  socket.on('deleteMessage', async ({ messageId }: { messageId: string }) => {
     if (!messageId)
       return socketError(
         socket,
