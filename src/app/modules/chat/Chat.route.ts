@@ -4,6 +4,7 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import User from '../user/User.model';
 import Chat from './Chat.model';
+import { MessageControllers } from '../message/Message.controller';
 
 const router = Router();
 
@@ -19,6 +20,13 @@ router.delete(
   '/:chatId/delete',
   purifyRequest(QueryValidations.exists('chatId', Chat)),
   ChatControllers.delete,
+);
+
+/** Message routes */
+router.get(
+  '/:chatId/messages',
+  purifyRequest(QueryValidations.exists('chatId', Chat)),
+  MessageControllers.list,
 );
 
 export const ChatRoutes = router;

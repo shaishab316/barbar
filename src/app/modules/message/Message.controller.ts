@@ -6,7 +6,7 @@ export const MessageControllers = {
   list: catchAsync(async ({ query, params, user }, res) => {
     const { messages, meta } = await MessageServices.list({
       ...query,
-      salon: params.salonId,
+      chat: params.chatId,
       user: user!._id!,
     });
 

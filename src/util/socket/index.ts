@@ -6,6 +6,7 @@ import { logger, errorLogger } from '../logger/logger';
 import User from '../../app/modules/user/User.model';
 import { verifyToken } from '../../app/modules/auth/Auth.utils';
 import { ETokenType } from '../../app/modules/auth/Auth.enum';
+import chatSocket from '../../app/modules/chat/Chat.socket';
 
 export let io: Server | null;
 
@@ -25,7 +26,8 @@ const socket = (server: http.Server) => {
 
   io.on('connection', async socket => {
     try {
-      const token = socket.handshake.auth?.token;
+      const token = socket.handshake.query?.token as string;
+
       if (!token) {
         logger.info(colors.yellow(`🔑 No token, disconnecting: ${socket.id}`));
         socket.disconnect();
@@ -33,9 +35,9 @@ const socket = (server: http.Server) => {
       }
 
       // Authenticate user
-      const { email } = verifyToken(token, ETokenType.ACCESS);
+      const { userId } = verifyToken(token, ETokenType.ACCESS);
 
-      const user = await User.findOne({ email });
+      const user = await User.findById(userId);
 
       if (!user) {
         logger.info(
@@ -52,11 +54,12 @@ const socket = (server: http.Server) => {
       // Attach email to socket data for easy access
       socket.data.user = user;
 
-      onlineUsers.add(email);
+      onlineUsers.add(userId);
 
       io?.emit('onlineUsers', Array.from(onlineUsers));
 
       /** write socket handlers :> handler(socket, io!) */
+      chatSocket(socket, io!);
 
       // Handle disconnection
       socket.on('disconnect', () => {
@@ -64,7 +67,7 @@ const socket = (server: http.Server) => {
           colors.red(`👤 User disconnected: ${user.email} (${socket.id})`),
         );
 
-        onlineUsers.delete(email);
+        onlineUsers.delete(userId);
         io?.emit('onlineUsers', Array.from(onlineUsers));
       });
     } catch (error) {

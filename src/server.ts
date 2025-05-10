@@ -1,4 +1,8 @@
 import './util/prototype';
 import startServer from './util/server/startServer';
+import socket from './util/socket';
 
-startServer();
+startServer().then(server => {
+  /** Micro services */
+  socket(server);
+});
