@@ -3,34 +3,33 @@ import Chat from './Chat.model';
 import Message from '../message/Message.model';
 import { TSocketHandler } from '../socket/Socket.interface';
 import { Server } from 'socket.io';
+import { socketError, socketInfo } from '../socket/Socket.utils';
 
 const chatSocket: TSocketHandler = (io, socket) => {
   const { user } = socket.data;
 
-  socket.on('subscribeToChat', async ({ chatId }: { chatId: string }) => {
+  socket.on('join', async ({ chatId }: { chatId: string }) => {
     try {
       const chat = await Chat.findOne({
         _id: chatId.oid,
         users: { $all: [user._id.oid] },
       });
 
-      if (!chat) {
-        console.log(`❌ Chat room ${chatId} not found`);
-        return;
-      }
+      if (!chat) return socketError(socket, `❌ Chat room ${chatId} not found`);
 
       socket.join(chatId);
-      console.log(`${user.name ?? 'Unknown'} subscribed to chat: ${chatId}`);
-    } catch (error) {
-      console.log(error);
+      socketInfo(`${user.name ?? 'Unknown'} join to chat: ${chatId}`);
+    } catch (error: any) {
+      socketError(socket, error.message);
     }
   });
 
   socket.on('sendMessage', async ({ content, chatId }) => {
-    if (!content || !chatId) {
-      console.log(`❌ Invalid message payload from: ${socket.id}`);
-      return;
-    }
+    if (!content || !chatId)
+      return socketError(
+        socket,
+        `❌ Invalid message payload from: ${socket.id} content: ${content}, chatId: ${chatId}`,
+      );
 
     try {
       const chat = await Chat.findOne({
@@ -38,67 +37,59 @@ const chatSocket: TSocketHandler = (io, socket) => {
         users: { $all: [user._id.oid] },
       }).lean();
 
-      if (!chat) {
-        console.log(`❌ Chat room ${chatId} not found`);
-        return;
-      }
+      if (!chat) return socketError(socket, `❌ Chat room ${chatId} not found`);
 
-      const newMessage = await Message.create({
+      const message = await Message.create({
         chat: chatId,
         content,
         sender: user._id,
       });
 
-      await updateInbox(io, chat.users);
+      updateInbox(io, chat.users);
 
-      io.to(chatId).emit('chatMessageReceived', {
-        sender: user,
-        content,
-        _id: newMessage._id,
-        updatedAt: newMessage.createdAt,
-      });
+      io.to(chatId).emit('messageReceived', message);
 
-      console.log(`🚀 New text message sent successfully to room ${chatId}`);
+      socketInfo(
+        `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
+      );
     } catch (error: any) {
-      console.error(`❌ Error sending message: ${error.message || error}`);
+      socketError(socket, `❌ Error sending message: ${error.message}`);
     }
   });
 
-  socket.on('deleteMessage', async ({ messageId, roomId: chatId }) => {
-    if (!messageId || !chatId) {
-      console.log(`❌ Invalid delete request from: ${socket.id}`);
-      return;
-    }
+  socket.on('deleteMessage', async ({ messageId }) => {
+    if (!messageId)
+      return socketError(
+        socket,
+        `❌ Invalid delete request from: ${socket.id}`,
+      );
 
     try {
       const message = await Message.findOne({
         _id: messageId.oid,
-        chat: chatId.oid,
         sender: user._id.oid,
       }).populate('chat', 'users');
 
-      if (!message) {
-        console.log(`❌ Message ${messageId} not found`);
-        return;
-      }
+      if (!message)
+        return socketError(socket, `❌ Message ${messageId} not found`);
 
       await Message.findByIdAndDelete(messageId);
 
-      io.to(chatId).emit('messageDeleted', { messageId, roomId: chatId });
+      io.to(message.chat._id.toString()).emit('messageDeleted', {
+        messageId,
+      });
 
-      await updateInbox(io, (message.chat as any).users);
+      updateInbox(io, (message.chat as any).users);
 
-      console.log(`✅ Message ${messageId} deleted successfully`);
+      socketInfo(`✅ Message ${messageId} deleted successfully`);
     } catch (error: any) {
-      console.error(`❌ Error deleting message: ${error.message || error}`);
+      socketError(socket, `❌ Error deleting message: ${error.message}`);
     }
   });
 };
 
-const updateInbox = async (io: Server, users: any[]) => {
-  await Promise.all(
-    users.map(user => io.to(user.toString()).emit('inboxUpdated')),
-  );
+const updateInbox = (io: Server, users: any[]) => {
+  users.map(user => io.to(user.toString()).emit('inboxUpdated'));
 };
 
 export default chatSocket;
