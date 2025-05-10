@@ -57,7 +57,7 @@ export const UserControllers = {
   }),
 
   me: catchAsync(({ user }: any, res) => {
-    userExcludeFields.forEach(field => delete (user as any)[field]);
+    userExcludeFields.forEach(field => (user[field] = undefined));
 
     serveResponse(res, {
       message: 'Profile fetched successfully!',
