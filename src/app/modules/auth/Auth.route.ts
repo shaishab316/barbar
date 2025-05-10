@@ -4,69 +4,43 @@ import { AuthValidations } from './Auth.validation';
 import auth from '../../middlewares/auth';
 import { UserControllers } from '../user/User.controller';
 import { UserValidations } from '../user/User.validation';
-import imageUploader from '../../middlewares/imageUploader';
+import capture from '../../middlewares/capture';
 import purifyRequest from '../../middlewares/purifyRequest';
-import { EUserRole } from '../user/User.enum';
+import { temUser } from '../../middlewares/temUser';
+import { OtpRoutes } from '../otp/Otp.route';
+import { ETokenType } from './Auth.enum';
 
 const router = express.Router();
 
 router.post(
   '/register',
-  imageUploader({
-    width: 300,
-    height: 300,
+  capture({
+    fields: [{ name: 'avatar', maxCount: 1, width: 300 }],
   }),
-  purifyRequest(UserValidations.create),
+  purifyRequest(UserValidations.createUser),
   UserControllers.create,
 );
 
-router.patch(
-  '/edit',
-  auth(EUserRole.USER, EUserRole.ADMIN),
-  imageUploader({
-    width: 300,
-    height: 300,
-  }),
-  purifyRequest(UserValidations.edit),
-  UserControllers.edit,
+router.post(
+  '/register/host',
+  purifyRequest(UserValidations.createHost),
+  UserControllers.create,
 );
 
 router.post(
   '/login',
   purifyRequest(AuthValidations.login),
+  temUser('+password'),
   AuthControllers.login,
-);
-
-router.post(
-  '/login/:provider',
-  purifyRequest(AuthValidations.loginWith),
-  AuthControllers.loginWith,
 );
 
 router.post('/logout', AuthControllers.logout);
 
-router.patch(
-  '/change-password',
-  auth(EUserRole.USER, EUserRole.ADMIN),
-  purifyRequest(AuthValidations.passwordChange),
-  AuthControllers.changePassword,
-);
-
-router.post(
-  '/send-otp',
-  purifyRequest(AuthValidations.sendOtp),
-  AuthControllers.sendOtp,
-);
-
-router.post(
-  '/verify-otp',
-  purifyRequest(AuthValidations.verifyOtp),
-  AuthControllers.verifyOtp,
-);
+router.use('/otp', OtpRoutes.user);
 
 router.post(
   '/reset-password',
-  auth(EUserRole.USER, EUserRole.ADMIN),
+  auth([], ETokenType.RESET),
   purifyRequest(AuthValidations.resetPassword),
   AuthControllers.resetPassword,
 );

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { RequestHandler } from 'express';
+import { ErrorRequestHandler, RequestHandler } from 'express';
 
 /**
  * Wraps an Express request handler to catch and handle async errors
@@ -8,12 +8,17 @@ import { RequestHandler } from 'express';
  * @returns A wrapped request handler that catches async errors
  */
 const catchAsync =
-  (fn: RequestHandler): RequestHandler =>
+  (
+    fn: RequestHandler<any, any, any, any>,
+    errFn: ErrorRequestHandler | null = null,
+  ): RequestHandler =>
   async (req, res, next) => {
     try {
-      await fn(req, res, next);
+      await fn(req as any, res, next);
     } catch (error) {
-      next(error);
+      if (errFn) await errFn(error, req, res, next);
+      else next(error);
     }
   };
+
 export default catchAsync;

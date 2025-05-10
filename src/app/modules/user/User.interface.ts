@@ -1,18 +1,18 @@
 import { Types } from 'mongoose';
-import { EUserRole, EUserStatus } from './User.enum';
+import { EUserGender, EUserRole } from './User.enum';
 
 export type TUser = {
   _id?: Types.ObjectId;
-  name: string;
+
+  name?: string;
+  email: string;
+  password: string;
   avatar?: string;
-  email?: string;
-  password?: string;
   role: EUserRole;
-  status: EUserStatus;
-  otp?: number;
-  otpExp?: Date;
-  googleId?: string;
-  facebookId?: string;
+  phone?: string;
+  gender?: EUserGender;
+  birthDate?: Date;
+
   createdAt?: Date;
   updatedAt?: Date;
 };

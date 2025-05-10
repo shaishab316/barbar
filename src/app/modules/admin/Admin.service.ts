@@ -1,7 +1,6 @@
 import colors from 'colors';
 import { errorLogger } from '../../../util/logger/logger';
 import User from '../user/User.model';
-import { EUserRole } from '../user/User.enum';
 import { logger } from '../../../util/logger/logger';
 import { adminData } from './Admin.constant';
 
@@ -16,7 +15,7 @@ export const AdminServices = {
   async seed() {
     try {
       const hasAdmin = await User.exists({
-        role: EUserRole.ADMIN,
+        email: adminData.email,
       });
 
       if (hasAdmin) return;

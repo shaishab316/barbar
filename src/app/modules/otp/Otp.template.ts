@@ -1,7 +1,8 @@
+import ms from 'ms';
 import config from '../../../config';
 
-export const AuthTemplates = {
-  otp: (userName: string, otp: string, type: 'reset' | 'active') => /*html*/ `
+export const OtpTemplates = {
+  reset: (userName: string, otp: string) => /*html*/ `
   	<!DOCTYPE html>
 		<html lang="en">
   		<head>
@@ -10,7 +11,7 @@ export const AuthTemplates = {
   				name="viewport"
   				content="width=device-width, initial-scale=1.0"
   			/>
-  			<title>${config.server.name} - ${type === 'reset' ? 'Password Reset' : 'Account Activation'} Verification</title>
+  			<title>${config.server.name} - Password Reset Verification</title>
 				<base href="${config.server.href}" />
 				<style>
 					* {
@@ -132,11 +133,6 @@ export const AuthTemplates = {
 					  border: 1px solid #fed7aa;
 					}
 
-					.info-card.warning {
-					  background-color: #fff1f2;
-					  border: 1px solid #fecdd3;
-					}
-
 					.info-icon {
 					  display: table-cell;
 					  vertical-align: top;
@@ -183,9 +179,6 @@ export const AuthTemplates = {
 					.icon.shield {
 					  color: #f59e0b;
 					}
-					.icon.warning {
-					  color: #ef4444;
-					}
 					.icon.support {
 					  color: #6b7280;
 					}
@@ -199,7 +192,7 @@ export const AuthTemplates = {
   				<div class="card">
   					<div class="header">
   						<img src="${config.server.logo}" class="logo" alt="${config.server.name} Logo" />
-  						<h1>${type === 'reset' ? 'Password Reset' : 'Account Activation'}</h1>
+  						<h1>Password Reset</h1>
   						<p>Verification Required</p>
   					</div>
 
@@ -214,12 +207,12 @@ export const AuthTemplates = {
 
   						<div class="otp-container">
   							<div class="otp-numbers">
-  								<span class="otp-number">${otp[0]}</span>
-  								<span class="otp-number">${otp[1]}</span>
-  								<span class="otp-number">${otp[2]}</span>
-  								<span class="otp-number">${otp[3]}</span>
-  								<span class="otp-number">${otp[4]}</span>
-  								<span class="otp-number">${otp[5]}</span>
+  								${otp
+                    .split('')
+                    .map(
+                      (number: string) =>
+                        `<span class="otp-number">${number}</span>`,
+                    )}
   							</div>
   						</div>
 
@@ -230,7 +223,7 @@ export const AuthTemplates = {
   							<div class="info-content">
   								<h3>Time Sensitive</h3>
   								<p>
-  									This code will expire in 10 minutes for security
+  									This code will expire in ${ms(ms(config.otp.exp), { long: true })} for security
   								</p>
   							</div>
   						</div>
@@ -244,18 +237,6 @@ export const AuthTemplates = {
   								<p>
   									Never share this code with anyone. Our team will
   									never ask for your verification code.
-  								</p>
-  							</div>
-  						</div>
-
-  						<div class="info-card warning">
-  							<div class="info-icon">
-  								<span class="icon warning"></span>
-  							</div>
-  							<div class="info-content">
-  								<h3>Didn't ${type === 'reset' ? 'Request' : 'Create'} an Account?</h3>
-  								<p>
-  									If you didn't ${type === 'reset' ? 'request' : 'create'} an account with us, you can safely ignore this email.
   								</p>
   							</div>
   						</div>

@@ -4,15 +4,11 @@ import config from '../../../config';
 import serveResponse from '../../../util/server/serveResponse';
 
 export const AuthControllers = {
-  login: catchAsync(async ({ body }, res) => {
-    const data = await AuthServices.login(body.email);
-
-    if (!data)
-      return serveResponse(res, {
-        message: 'Send Otp successfully! Check your email.',
-      });
-
-    const { accessToken, refreshToken, user } = data;
+  login: catchAsync(async (req, res) => {
+    const { accessToken, refreshToken, user } = await AuthServices.login(
+      req.user!,
+      req.body.password,
+    );
 
     AuthServices.setRefreshToken(res, refreshToken);
 
@@ -35,37 +31,8 @@ export const AuthControllers = {
     });
   }),
 
-  changePassword: catchAsync(async (req, res) => {
-    await AuthServices.changePassword(req.user!._id!, req.body);
-
-    serveResponse(res, {
-      message: 'Password changed successfully!',
-    });
-  }),
-
-  sendOtp: catchAsync(async ({ body }, res) => {
-    await AuthServices.sendOtp(body.email, 'reset');
-
-    serveResponse(res, {
-      message: 'Send Otp successfully! Check your email.',
-    });
-  }),
-
-  verifyOtp: catchAsync(async ({ body }, res) => {
-    const { accessToken, refreshToken, user } = await AuthServices.verifyOtp(
-      body.email,
-    );
-
-    AuthServices.setRefreshToken(res, refreshToken);
-
-    serveResponse(res, {
-      message: 'Otp verified successfully!',
-      data: { token: accessToken, user },
-    });
-  }),
-
   resetPassword: catchAsync(async ({ body, user }, res) => {
-    await AuthServices.resetPassword(user!.email!, body.password);
+    await AuthServices.resetPassword(user as any, body.password);
 
     serveResponse(res, {
       message: 'Password reset successfully!',
@@ -80,18 +47,6 @@ export const AuthControllers = {
     serveResponse(res, {
       message: 'AccessToken generated successfully!',
       data: { token: accessToken },
-    });
-  }),
-
-  loginWith: catchAsync(async (req, res) => {
-    const { accessToken, refreshToken, user } =
-      await AuthServices.loginWith(req);
-
-    AuthServices.setRefreshToken(res, refreshToken);
-
-    serveResponse(res, {
-      message: 'Login successfully!',
-      data: { token: accessToken, user },
     });
   }),
 };

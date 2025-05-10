@@ -7,7 +7,7 @@ import getIpAddress from '../util/server/getIpAddress';
 const ip_address = env('ip address', getIpAddress());
 const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
 const href = env('href', `http://${ip_address}:${port}`);
-const name = env('name', 'Campus Couch');
+const name = env('name', 'BarBar');
 const email = env('email user', 'admin@gmail.com');
 
 /**
@@ -36,6 +36,7 @@ const config = {
       success: env('payment success url', `${href}/payment/success`),
       cancel: env('payment cancel url', `${href}/payment/cancel`),
     },
+    api_doc: env('api doc', ''),
   },
   allowed_origins: env('allowed origins', ['*']),
   bcrypt_salt_rounds: env('bcrypt salt rounds', 10),
@@ -47,6 +48,10 @@ const config = {
     refresh_token: {
       secret: env('jwt refresh secret', genSecret()),
       expire_in: env<ms.StringValue>('jwt refresh expire in', '30d'),
+    },
+    reset_token: {
+      secret: env('jwt reset secret', genSecret()),
+      expire_in: env<ms.StringValue>('jwt reset expire in', '10m'),
     },
   },
   payment: {
@@ -68,6 +73,24 @@ const config = {
     name: env('admin name', 'Mr. Admin'),
     email: env('admin email', email),
     password: env('admin password', genSecret(4)),
+  },
+  otp: {
+    exp: env<ms.StringValue>('otp expire in', '10m'),
+    length: env('otp length', 6),
+    limit: env('otp limit', 2),
+    window: env<ms.StringValue>('otp window', '10s'),
+  },
+  salon: {
+    default_service_duration: env<ms.StringValue>(
+      'default service duration',
+      '30m',
+    ),
+    location_distance: env('location distance', 5000),
+  },
+  ai: {
+    gemini: {
+      key: env('gemini key', ''),
+    },
   },
 };
 

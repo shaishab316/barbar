@@ -23,7 +23,7 @@ const defaultError: TErrorHandler = {
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, _) => {
   /** delete uploaded files */
-  req.body?.images?.forEach(deleteFile);
+  req.tempFiles?.forEach(deleteFile);
 
   if (config.server.node_env === 'development')
     console.log(colors.red('🚨 globalErrorHandler ~~ '), error);

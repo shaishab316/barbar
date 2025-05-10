@@ -13,7 +13,7 @@ const deleteFile = async (file: string) => {
   logger.info(colors.yellow(`🗑️ Deleting file: ${filePath}`));
   try {
     await fs.unlink(filePath);
-    logger.info(colors.green('✔ File deleted successfully'));
+    logger.info(colors.green(`✔ File deleted successfully: ${filePath}`));
   } catch (error) {
     errorLogger.error(
       colors.red(`❌ Failed to delete file: ${filePath}`),

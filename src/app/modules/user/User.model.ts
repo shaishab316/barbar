@@ -1,45 +1,37 @@
 import { model, Schema } from 'mongoose';
 import { TUser } from './User.interface';
 import { UserMiddlewares } from './User.middleware';
-import { EUserRole, EUserStatus } from './User.enum';
+import { EUserGender, EUserRole } from './User.enum';
 import config from '../../../config';
+
 const userSchema = new Schema<TUser>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
+    name: String,
     email: {
       type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      select: false,
     },
     avatar: {
       type: String,
       default: config.server.default_avatar,
     },
-    password: {
-      type: String,
-      select: false,
-    },
     role: {
       type: String,
-      enum: [EUserRole.ADMIN, EUserRole.USER],
+      enum: Object.values(EUserRole),
       default: EUserRole.USER,
     },
-    googleId: {
+    phone: String,
+    gender: {
       type: String,
-      select: false,
+      enum: Object.values(EUserGender),
     },
-    facebookId: {
-      type: String,
-      select: false,
-    },
-    status: {
-      type: String,
-      enum: [EUserStatus.ACTIVE, EUserStatus.INACTIVE],
-      default: EUserStatus.INACTIVE,
-    },
-    otp: Number,
-    otpExp: Date,
+    birthDate: Date,
   },
   {
     timestamps: true,

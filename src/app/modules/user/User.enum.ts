@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 export enum EUserRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  USER = 'user',
+  ADMIN = 'admin',
+  HOST = 'host',
 }
 
-export enum EUserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+export enum EUserGender {
+  MALE = 'male',
+  FEMALE = 'female',
 }

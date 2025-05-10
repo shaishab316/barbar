@@ -1,36 +1,31 @@
 import { Router } from 'express';
-import { AuthRoutes } from '../app/modules/auth/Auth.route';
-import { UserRoutes } from '../app/modules/user/User.route';
 import auth from '../app/middlewares/auth';
 import { EUserRole } from '../app/modules/user/User.enum';
 import { TRoute } from '../types/route.types';
-import AdminRoutes from '../app/modules/admin/Admin.routes';
-import serveResponse from '../util/server/serveResponse';
+import AdminRoutes from '../app/modules/admin/Admin.route';
+import HostRoutes from '../app/modules/host/Host.route';
+import { UserRoutes } from '../app/modules/user/User.route';
+import PublicRoutes from '../app/modules/public/Public.route';
 
 const routes: TRoute[] = [
   {
-    path: '/auth',
-    route: AuthRoutes,
+    path: '/',
+    route: PublicRoutes,
   },
   {
-    path: '/profile',
-    middlewares: [auth(EUserRole.USER, EUserRole.ADMIN)],
+    path: '/',
+    middlewares: [auth()],
     route: UserRoutes.user,
   },
   {
-    path: '/admin',
-    middlewares: [auth(EUserRole.ADMIN)],
-    route: AdminRoutes,
+    path: '/host',
+    middlewares: [auth([EUserRole.HOST])],
+    route: HostRoutes,
   },
   {
-    path: '/me',
-    middlewares: [auth(EUserRole.USER, EUserRole.ADMIN)],
-    route: Router().get('/', ({ user }, res) => {
-      serveResponse(res, {
-        message: 'Profile fetched successfully!',
-        data: user,
-      });
-    }),
+    path: '/admin',
+    middlewares: [auth([EUserRole.ADMIN])],
+    route: AdminRoutes,
   },
 ];
 

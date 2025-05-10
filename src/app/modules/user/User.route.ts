@@ -1,9 +1,26 @@
 import { Router } from 'express';
 import { UserControllers } from './User.controller';
-import imageUploader from '../../middlewares/imageUploader';
 import purifyRequest from '../../middlewares/purifyRequest';
-import { UserValidations } from './User.validation';
 import { QueryValidations } from '../query/Query.validation';
+import { TRoute } from '../../../types/route.types';
+import { ProfileRoutes } from '../profile/Profile.route';
+import { AppointmentRoutes } from '../appointment/Appointment.route';
+import { ChatRoutes } from '../chat/Chat.route';
+
+const userRoutes: TRoute[] = [
+  {
+    path: '/profile',
+    route: ProfileRoutes,
+  },
+  {
+    path: '/appointments',
+    route: AppointmentRoutes,
+  },
+  {
+    path: '/chats',
+    route: ChatRoutes,
+  },
+];
 
 export const UserRoutes = {
   admin: Router().get(
@@ -11,13 +28,5 @@ export const UserRoutes = {
     purifyRequest(QueryValidations.list),
     UserControllers.list,
   ),
-  user: Router().patch(
-    '/edit',
-    imageUploader({
-      width: 300,
-      height: 300,
-    }),
-    purifyRequest(UserValidations.edit),
-    UserControllers.edit,
-  ),
+  user: Router().inject(userRoutes),
 };

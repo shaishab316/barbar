@@ -1,39 +1,46 @@
 import { TUser } from './User.interface';
 import User from './User.model';
 import { StatusCodes } from 'http-status-codes';
-import { Request } from 'express';
 import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
-import { AuthServices } from '../auth/Auth.service';
+import { userExcludeFields } from './User.constant';
+import bcrypt from 'bcrypt';
+import { Document } from 'mongoose';
+import { TList } from '../query/Query.interface';
 
 export const UserServices = {
-  async create(userData: Partial<TUser>) {
-    const user = await User.findOne({ email: userData.email });
+  async create(user: TUser) {
+    const hasUser = await User.exists({ email: user.email });
 
-    if (user)
+    if (hasUser)
       throw new ServerError(StatusCodes.CONFLICT, 'User already exists');
 
-    await User.create(userData);
-
-    await AuthServices.sendOtp(userData.email!, 'active');
+    return User.create(user);
   },
 
-  async edit(req: Request) {
-    const userData = req.body as Partial<TUser>;
-
-    const oldAvatar = req?.user?.avatar;
-
-    const updatedUser = await User.findByIdAndUpdate(req?.user!._id, userData, {
+  async edit(user: TUser & { oldAvatar: string }) {
+    const updatedUser = await User.findByIdAndUpdate(user!._id, user, {
       new: true,
-      runValidators: true,
-    }).select('name avatar email role');
+    }).select('-' + userExcludeFields.join(' -'));
 
-    if (userData?.avatar) await deleteFile(oldAvatar!);
+    if (user.avatar) await deleteFile(user.oldAvatar);
 
     return updatedUser;
   },
 
-  async list({ page, limit }: Record<string, any>) {
+  async changePassword(
+    user: TUser & Document,
+    { newPassword, oldPassword }: Record<string, string>,
+  ) {
+    if (!(await bcrypt.compare(oldPassword, user.password!)))
+      throw new ServerError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
+
+    user.password = newPassword;
+
+    await user.save();
+  },
+
+  async list({ page, limit }: TList) {
     const users = await User.find()
       .skip((page - 1) * limit)
       .limit(limit);
@@ -42,10 +49,12 @@ export const UserServices = {
 
     return {
       meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
       },
       users,
     };
