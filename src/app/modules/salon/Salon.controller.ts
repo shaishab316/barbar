@@ -2,12 +2,17 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { SalonServices } from './Salon.service';
+import { UserServices } from '../user/User.service';
 
 export const SalonControllers = {
   upsert: catchAsync(async ({ body, user }, res) => {
     body.host = user?._id;
 
     const data = await SalonServices.upsert(body);
+    await UserServices.edit({
+      _id: user?._id,
+      name: body.name,
+    } as any);
 
     serveResponse(res, {
       statusCode: StatusCodes.CREATED,
