@@ -1,8 +1,8 @@
-import './util/prototype';
+import './util/prototype'; //! must be first
 import startServer from './util/server/startServer';
-import socket from './util/socket';
+import { SocketService } from './app/modules/socket/Socket.service';
 
 startServer().then(server => {
   /** Micro services */
-  socket(server);
+  SocketService.init(server);
 });

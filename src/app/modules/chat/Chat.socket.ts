@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
-import { DefaultEventsMap, Server, Socket } from 'socket.io';
 import Chat from './Chat.model';
 import { TUser } from '../user/User.interface';
 import Message from '../message/Message.model';
+import { TSocketHandler } from '../socket/Socket.interface';
 
-const chatSocket = (
-  socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
-  io: Server,
-) => {
-  console.log(`Socket connected: ${socket.id}`);
-
+const chatSocket: TSocketHandler = (io, socket) => {
   // User subscribes to inbox updates
   socket.on('subscribeToInbox', () => {
     const userEmail = socket.data.user.email;
