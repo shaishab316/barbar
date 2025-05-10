@@ -3,11 +3,14 @@ import Message from '../message/Message.model';
 import { TSocketHandler } from '../socket/Socket.interface';
 import { Server } from 'socket.io';
 import { socketError, socketInfo } from '../socket/Socket.utils';
+import { json } from '../../../util/transform/json';
 
 const chatSocket: TSocketHandler = (io, socket) => {
   const { user } = socket.data;
 
-  socket.on('join', async ({ chatId }: { chatId: string }) => {
+  socket.on('join', async (payload: any) => {
+    const { chatId } = json(payload) as { chatId: string };
+
     if (!chatId)
       return socketError(
         socket,
@@ -29,44 +32,47 @@ const chatSocket: TSocketHandler = (io, socket) => {
     }
   });
 
-  socket.on(
-    'sendMessage',
-    async ({ content, chatId }: { content: string; chatId: string }) => {
-      if (!content || !chatId)
-        return socketError(
-          socket,
-          `❌ Invalid message payload from: ${socket.id} content: ${content}, chatId: ${chatId}`,
-        );
+  socket.on('sendMessage', async (payload: any) => {
+    const { content, chatId } = json(payload) as {
+      content: string;
+      chatId: string;
+    };
 
-      try {
-        const chat = await Chat.findOne({
-          _id: chatId.oid,
-          users: { $all: [user._id.oid] },
-        }).lean();
+    if (!content || !chatId)
+      return socketError(
+        socket,
+        `❌ Invalid message payload from: ${socket.id} content: ${content}, chatId: ${chatId}`,
+      );
 
-        if (!chat)
-          return socketError(socket, `❌ Chat room ${chatId} not found`);
+    try {
+      const chat = await Chat.findOne({
+        _id: chatId.oid,
+        users: { $all: [user._id.oid] },
+      }).lean();
 
-        const message = await Message.create({
-          chat: chatId,
-          content,
-          sender: user._id,
-        });
+      if (!chat) return socketError(socket, `❌ Chat room ${chatId} not found`);
 
-        updateInbox(io, chat.users);
+      const message = await Message.create({
+        chat: chatId,
+        content,
+        sender: user._id,
+      });
 
-        io.to(chatId).emit('messageReceived', message);
+      updateInbox(io, chat.users);
 
-        socketInfo(
-          `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
-        );
-      } catch (error: any) {
-        socketError(socket, `❌ Error sending message: ${error.message}`);
-      }
-    },
-  );
+      io.to(chatId).emit('messageReceived', message);
 
-  socket.on('deleteMessage', async ({ messageId }: { messageId: string }) => {
+      socketInfo(
+        `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
+      );
+    } catch (error: any) {
+      socketError(socket, `❌ Error sending message: ${error.message}`);
+    }
+  });
+
+  socket.on('deleteMessage', async (payload: any) => {
+    const { messageId } = json(payload) as { messageId: string };
+
     if (!messageId)
       return socketError(
         socket,
