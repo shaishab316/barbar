@@ -43,18 +43,13 @@ export const SalonServices = {
   async list({
     page,
     limit,
+    sort,
     longitude,
     latitude,
   }: TList & Record<string, any>) {
     const filter: any = {};
 
-    if (longitude || latitude) {
-      if (!longitude || !latitude)
-        throw new ServerError(
-          StatusCodes.BAD_REQUEST,
-          `${!longitude ? 'longitude' : 'latitude'} is missing`,
-        );
-
+    if (longitude && latitude)
       filter.location = {
         $near: {
           $geometry: {
@@ -64,11 +59,11 @@ export const SalonServices = {
           $maxDistance: config.salon.location_distance,
         },
       };
-    }
 
     const salons = await Salon.find(filter)
       .skip((page - 1) * limit)
       .limit(limit)
+      .sort(sort)
       .select('name banner rating location');
 
     const total = await Salon.countDocuments(filter);
