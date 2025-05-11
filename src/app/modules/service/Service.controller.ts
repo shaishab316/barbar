@@ -55,6 +55,9 @@ export const ServiceControllers = {
 
     serveResponse(res, {
       message: 'Services retrieved successfully!',
+      meta: {
+        query,
+      },
       data: services,
     });
   }),
