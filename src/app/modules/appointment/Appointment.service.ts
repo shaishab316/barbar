@@ -59,8 +59,13 @@ export const AppointmentServices = {
     state: EAppointmentState,
     user: TUser,
   ) {
+    const filter: any = { _id: appointmentId };
+
     //! USER can only cancel appointments
-    if (user?.role === EUserRole.USER) state = EAppointmentState.CANCELLED;
+    if (user?.role === EUserRole.USER) {
+      state = EAppointmentState.CANCELLED;
+      filter.user = user._id;
+    }
 
     //! HOST can only change his own salon's appointments
     if (user?.role === EUserRole.HOST) {
@@ -72,14 +77,13 @@ export const AppointmentServices = {
       });
 
       //! it's not his own salon appointment
-      if (!appointment) state = EAppointmentState.CANCELLED;
+      if (!appointment) {
+        state = EAppointmentState.CANCELLED;
+        filter.user = user._id;
+      }
     }
 
-    return Appointment.findByIdAndUpdate(
-      appointmentId,
-      { state },
-      { new: true },
-    );
+    return Appointment.findOneAndUpdate(filter, { state }, { new: true });
   },
 
   async list({ page, limit, ...filter }: TList) {

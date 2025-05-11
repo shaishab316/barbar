@@ -26,7 +26,7 @@ export const AppointmentControllers = {
     );
 
     serveResponse(res, {
-      message: `Appointment ${params.state} successfully!`,
+      message: `Appointment ${data?.state} successfully!`,
       data,
     });
   }),
