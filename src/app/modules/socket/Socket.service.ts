@@ -11,7 +11,9 @@ const onlineUsers = new Set<string>();
 export const SocketService = {
   init(server: http.Server) {
     if (!io) {
-      io = new Server(server, { cors: { origin: config.allowed_origins } });
+      io = new Server(server, {
+        cors: { origin: config.server.allowed_origins },
+      });
       socketInfo('🔑 Socket server initialized');
     }
 

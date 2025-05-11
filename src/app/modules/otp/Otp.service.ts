@@ -60,7 +60,7 @@ export const OtpServices = {
 
   async list({ page, limit, email }: TList & { email: string }) {
     //! only for development
-    if (config.server.node_env !== 'development')
+    if (!config.server.isDevelopment)
       throw new ServerError(
         StatusCodes.UNAVAILABLE_FOR_LEGAL_REASONS,
         'Service not available.',

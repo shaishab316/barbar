@@ -20,7 +20,7 @@ export const AuthServices = {
 
   async setRefreshToken(res: Response, refreshToken: string) {
     res.cookie('refreshToken', refreshToken, {
-      secure: config.server.node_env !== 'development',
+      secure: !config.server.isDevelopment,
       maxAge: verifyToken(refreshToken, ETokenType.REFRESH).exp! * 1000,
       httpOnly: true,
     });

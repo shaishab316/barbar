@@ -22,7 +22,7 @@ app.use(express.static('uploads'), express.static('public'));
 // Configure middleware
 app.use(
   cors({
-    origin: config.allowed_origins,
+    origin: config.server.allowed_origins,
     credentials: true,
   }),
 

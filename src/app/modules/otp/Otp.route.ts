@@ -28,7 +28,7 @@ user.post(
 const admin = Router();
 
 //! only for development
-if (config.server.node_env === 'development')
+if (config.server.isDevelopment)
   admin.get(
     '/',
     purifyRequest(QueryValidations.list, OtpValidations.list),

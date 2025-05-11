@@ -4,6 +4,7 @@ import type ms from 'ms';
 import { genSecret } from '../util/crypto/genSecret';
 import getIpAddress from '../util/server/getIpAddress';
 
+const node_env = env<string>('node env', 'development');
 const ip_address = env('ip address', getIpAddress());
 const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
 const href = env('href', `http://${ip_address}:${port}`);
@@ -18,12 +19,14 @@ const email = env('email user', 'admin@gmail.com');
  */
 const config = {
   server: {
-    developer: env('developer', 'Shaishab Chandra Shil'),
-    node_env: env('node env', 'development'),
+    name,
     ip_address,
     port,
+    node_env,
+    isDevelopment: node_env !== 'production',
+    allowed_origins: env('allowed origins', ['*']),
+    developer: env('developer', 'Shaishab Chandra Shil'),
     href,
-    name,
     logo: env('logo', '/images/logo.png'),
     default_avatar: env('default avatar', '/images/placeholder.png'),
   },
@@ -38,7 +41,6 @@ const config = {
     },
     api_doc: env('api doc', ''),
   },
-  allowed_origins: env('allowed origins', ['*']),
   bcrypt_salt_rounds: env('bcrypt salt rounds', 10),
   jwt: {
     access_token: {

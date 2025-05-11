@@ -33,7 +33,7 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
       next();
     },
     (error, req, _, next) => {
-      if (config.server.node_env === 'development')
+      if (config.server.isDevelopment)
         keys.forEach(key => console.log(`${key} :`, req[key]));
 
       next(error);

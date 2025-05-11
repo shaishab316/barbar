@@ -9,7 +9,7 @@ const { host, port, user, pass, from } = config.email;
 const transporter = nodemailer.createTransport({
   host,
   port,
-  secure: config.server.node_env === 'production',
+  secure: false,
   auth: {
     user,
     pass,

@@ -25,7 +25,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, _) => {
   /** delete uploaded files */
   req.tempFiles?.forEach(deleteFile);
 
-  if (config.server.node_env === 'development')
+  if (config.server.isDevelopment)
     console.log(colors.red('🚨 globalErrorHandler ~~ '), error);
   else errorLogger.error(colors.red('🚨 globalErrorHandler ~~ '), error);
 
@@ -35,7 +35,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, _) => {
     success: false,
     message,
     errorMessages,
-    stack: config.server.node_env === 'development' && error.stack,
+    stack: config.server.isDevelopment && error.stack,
   });
 };
 

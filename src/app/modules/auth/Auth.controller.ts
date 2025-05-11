@@ -22,7 +22,7 @@ export const AuthControllers = {
     Object.keys(req.cookies).forEach(cookie =>
       res.clearCookie(cookie, {
         httpOnly: true,
-        secure: config.server.node_env !== 'development',
+        secure: !config.server.isDevelopment,
       }),
     );
 

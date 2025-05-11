@@ -16,8 +16,7 @@ export default function shutdownServer(
 ) {
   if (err) errorLogger.error(colors.red(`${signal} occurred: `), err);
 
-  if (signal === 'uncaughtException' && config.server.node_env === 'production')
-    return;
+  if (signal === 'uncaughtException' && !config.server.isDevelopment) return;
 
   logger.info(colors.magenta(`🔴 Shutting down server due to ${signal}...`));
 
