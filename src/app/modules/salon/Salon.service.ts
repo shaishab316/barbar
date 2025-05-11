@@ -64,11 +64,13 @@ export const SalonServices = {
       .sort(sort)
       .select('name banner rating location');
 
-    delete filter.location;
+    //! countDocuments() does not support geo query
+    if (longitude && latitude) delete filter.location;
 
     const total = await Salon.countDocuments(filter);
 
     return {
+      salons,
       meta: {
         pagination: {
           page,
@@ -77,7 +79,6 @@ export const SalonServices = {
           totalPages: Math.ceil(total / limit),
         },
       },
-      salons,
     };
   },
 
