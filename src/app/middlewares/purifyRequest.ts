@@ -25,6 +25,7 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
       keys.forEach(key => {
         req[key] = Object.assign(
           {},
+          key === 'params' && req.params,
           ...results.map(result => result?.[key] ?? {}),
         );
       });
