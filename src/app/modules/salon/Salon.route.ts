@@ -45,7 +45,11 @@ host.delete(
 /** User routes */
 const user = Router();
 
-user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
+user.get(
+  '/',
+  purifyRequest(QueryValidations.list, SalonValidations.list),
+  SalonControllers.list,
+);
 
 user.get(
   '/:salonId',

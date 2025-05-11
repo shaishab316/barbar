@@ -5,7 +5,6 @@ import { TList } from '../query/Query.interface';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
-import config from '../../../config';
 
 export const SalonServices = {
   async upsert(salonData: TSalon) {
@@ -51,12 +50,11 @@ export const SalonServices = {
 
     if (longitude && latitude)
       filter.location = {
-        $near: {
+        $nearSphere: {
           $geometry: {
             type: 'Point',
             coordinates: [longitude, latitude],
           },
-          $maxDistance: config.salon.location_distance,
         },
       };
 
@@ -65,6 +63,8 @@ export const SalonServices = {
       .limit(limit)
       .sort(sort)
       .select('name banner rating location');
+
+    delete filter.location;
 
     const total = await Salon.countDocuments(filter);
 

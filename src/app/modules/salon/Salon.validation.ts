@@ -61,8 +61,8 @@ export const SalonValidations = {
 
   list: z.object({
     query: z.object({
-      longitude: z.number().min(-180).max(180).optional(),
-      latitude: z.number().min(-90).max(90).optional(),
+      longitude: z.coerce.number().min(-180).max(180).optional(),
+      latitude: z.coerce.number().min(-90).max(90).optional(),
       sort: z.string().default('-createdAt'),
     }),
   }),
