@@ -4,6 +4,11 @@ import Service from '../service/Service.model';
 import { EAppointmentState, EAppointmentType } from './Appointment.enum';
 import { TAppointment } from './Appointment.interface';
 import Appointment from './Appointment.model';
+import { TList } from '../query/Query.interface';
+import { Types } from 'mongoose';
+import { TUser } from '../user/User.interface';
+import { EUserRole } from '../user/User.enum';
+import { SalonServices } from '../salon/Salon.service';
 
 export const AppointmentServices = {
   async create(appointmentData: TAppointment) {
@@ -49,7 +54,52 @@ export const AppointmentServices = {
     return Appointment.create(appointmentData);
   },
 
-  async changeState(appointmentId: string, state: EAppointmentState) {
-    return Appointment.findByIdAndUpdate(appointmentId, { state });
+  async changeState(
+    appointmentId: Types.ObjectId,
+    state: EAppointmentState,
+    user: TUser,
+  ) {
+    //! USER can only cancel appointments
+    if (user?.role === EUserRole.USER) state = EAppointmentState.CANCELLED;
+
+    //! HOST can only change his own salon's appointments
+    if (user?.role === EUserRole.HOST) {
+      const salon = await SalonServices.salon(user._id!);
+
+      const appointment = await Appointment.findOne({
+        _id: appointmentId,
+        salon: salon._id,
+      });
+
+      //! it's not his own salon appointment
+      if (!appointment) state = EAppointmentState.CANCELLED;
+    }
+
+    return Appointment.findByIdAndUpdate(
+      appointmentId,
+      { state },
+      { new: true },
+    );
+  },
+
+  async list({ page, limit, ...filter }: TList) {
+    const appointments = await Appointment.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await Appointment.countDocuments(filter);
+
+    return {
+      meta: {
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+        query: filter,
+      },
+      appointments,
+    };
   },
 };

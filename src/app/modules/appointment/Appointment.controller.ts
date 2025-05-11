@@ -2,8 +2,6 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { AppointmentServices } from './Appointment.service';
-import { EUserRole } from '../user/User.enum';
-import { EAppointmentState } from './Appointment.enum';
 
 export const AppointmentControllers = {
   create: catchAsync(async ({ body, user, params }, res) => {
@@ -21,17 +19,26 @@ export const AppointmentControllers = {
   }),
 
   changeState: catchAsync(async ({ params, user }, res) => {
-    //! USER can only cancel appointments
-    if (user?.role === EUserRole.USER)
-      params.state = EAppointmentState.CANCELLED;
-
     const data = await AppointmentServices.changeState(
       params.appointmentId,
       params.state,
+      user!,
     );
 
     serveResponse(res, {
       message: `Appointment ${params.state} successfully!`,
+      data,
+    });
+  }),
+
+  myAppointments: catchAsync(async ({ query, user }, res) => {
+    const data = await AppointmentServices.list({
+      ...query,
+      user: user!._id,
+    });
+
+    serveResponse(res, {
+      message: 'My appointments retrieved successfully!',
       data,
     });
   }),

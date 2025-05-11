@@ -7,7 +7,13 @@ import Appointment from './Appointment.model';
 
 const router = Router();
 
-router.patch(
+router.get(
+  '/my-appointments',
+  purifyRequest(QueryValidations.list),
+  AppointmentControllers.myAppointments,
+);
+
+router.post(
   '/:appointmentId/:state',
   purifyRequest(
     QueryValidations.exists('appointmentId', Appointment),
