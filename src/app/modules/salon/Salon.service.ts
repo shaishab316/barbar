@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { RootFilterQuery, Types } from 'mongoose';
 import { TSalon } from './Salon.interface';
 import Salon from './Salon.model';
 import { TList } from '../query/Query.interface';
@@ -46,7 +46,7 @@ export const SalonServices = {
     longitude,
     latitude,
   }: TList & Record<string, any>) {
-    const filter: any = {};
+    const filter: RootFilterQuery<TSalon> = {};
 
     if (longitude && latitude)
       filter.location = {
