@@ -43,10 +43,18 @@ export const SalonServices = {
     page,
     limit,
     sort,
+    field,
+    search,
     longitude,
     latitude,
   }: TList & Record<string, any>) {
     const filter: RootFilterQuery<TSalon> = {};
+
+    if (search)
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
 
     if (longitude && latitude)
       filter.location = {
@@ -62,7 +70,7 @@ export const SalonServices = {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
-      .select('name banner rating location');
+      .select(field);
 
     //! countDocuments() does not support geo query
     if (longitude && latitude) delete filter.location;
@@ -77,6 +85,12 @@ export const SalonServices = {
           limit,
           total,
           totalPages: Math.ceil(total / limit),
+        },
+        query: {
+          field,
+          search,
+          longitude,
+          latitude,
         },
       },
     };

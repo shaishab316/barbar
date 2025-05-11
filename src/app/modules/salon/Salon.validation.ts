@@ -64,6 +64,8 @@ export const SalonValidations = {
       longitude: z.coerce.number().min(-180).max(180).optional(),
       latitude: z.coerce.number().min(-90).max(90).optional(),
       sort: z.string().default('-createdAt'),
+      search: z.string().trim().optional(),
+      field: z.string().default('name banner rating location'),
     }),
   }),
 };
