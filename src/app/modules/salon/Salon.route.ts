@@ -97,6 +97,7 @@ user.get(
 /** Appointment Routes */
 user.post(
   '/:salonId/appointments/create',
+  auth(),
   purifyRequest(
     QueryValidations.exists('salonId', Salon),
     AppointmentValidations.create,
