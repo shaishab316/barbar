@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { AppointmentServices } from './Appointment.service';
+import ServerError from '../../../errors/ServerError';
 
 export const AppointmentControllers = {
   create: catchAsync(async ({ body, user, params }, res) => {
@@ -25,12 +26,15 @@ export const AppointmentControllers = {
       user!,
     );
 
+    if (!data)
+      throw new ServerError(
+        StatusCodes.FORBIDDEN,
+        "You can't change other's appointments!",
+      );
+
     serveResponse(res, {
-      statusCode: data ? StatusCodes.OK : StatusCodes.FORBIDDEN,
-      message: data
-        ? `Appointment ${data?.state} successfully!`
-        : "You can't change other's appointment state!",
-      data: data ?? undefined,
+      message: `Appointment ${data?.state} successfully!`,
+      data,
     });
   }),
 
