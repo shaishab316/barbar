@@ -26,8 +26,11 @@ export const AppointmentControllers = {
     );
 
     serveResponse(res, {
-      message: `Appointment ${data?.state} successfully!`,
-      data,
+      statusCode: data ? StatusCodes.OK : StatusCodes.FORBIDDEN,
+      message: data
+        ? `Appointment ${data?.state} successfully!`
+        : "You can't change other's appointment state!",
+      data: data ?? undefined,
     });
   }),
 
