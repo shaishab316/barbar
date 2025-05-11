@@ -1,6 +1,7 @@
 import colors from 'colors';
 import { Server } from 'http';
 import { errorLogger, logger } from '../logger/logger';
+import config from '../../config';
 
 /**
  * Shuts down the server
@@ -14,6 +15,9 @@ export default function shutdownServer(
   err?: Error,
 ) {
   if (err) errorLogger.error(colors.red(`${signal} occurred: `), err);
+
+  if (signal === 'uncaughtException' && config.server.node_env === 'production')
+    return;
 
   logger.info(colors.magenta(`🔴 Shutting down server due to ${signal}...`));
 
