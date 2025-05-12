@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { TAppointment } from './Appointment.interface';
 import { EAppointmentState, EAppointmentType } from './Appointment.enum';
+import autoPopulate from 'mongoose-autopopulate';
 
 const appointmentSchema = new Schema<TAppointment>(
   {
@@ -13,6 +14,7 @@ const appointmentSchema = new Schema<TAppointment>(
       type: Schema.Types.ObjectId,
       ref: 'Salon',
       required: true,
+      autopopulate: { select: 'name banner location' },
     },
     specialist: {
       type: Schema.Types.ObjectId,
@@ -37,6 +39,7 @@ const appointmentSchema = new Schema<TAppointment>(
       {
         type: Schema.Types.ObjectId,
         ref: 'Service',
+        autopopulate: { select: 'name' },
       },
     ],
     package: {
@@ -52,6 +55,8 @@ const appointmentSchema = new Schema<TAppointment>(
   },
   { timestamps: true, versionKey: false },
 );
+
+appointmentSchema.plugin(autoPopulate);
 
 const Appointment = model<TAppointment>('Appointment', appointmentSchema);
 
