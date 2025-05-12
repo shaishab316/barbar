@@ -141,4 +141,29 @@ export const SalonServices = {
 
     return salon?.gallery;
   },
+
+  async byCategory(categoryId: Types.ObjectId) {
+    return await Salon.aggregate([
+      {
+        $lookup: {
+          from: 'services',
+          localField: '_id',
+          foreignField: 'salon',
+          as: 'services',
+        },
+      },
+      { $unwind: '$services' },
+      { $match: { 'services.category': categoryId } },
+      { $project: { name: 1, banner: 1, location: 1, rating: 1 } },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          banner: { $first: '$banner' },
+          location: { $first: '$location' },
+          rating: { $first: '$rating' },
+        },
+      },
+    ]);
+  },
 };

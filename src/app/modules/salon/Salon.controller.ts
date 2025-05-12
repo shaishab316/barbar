@@ -73,4 +73,13 @@ export const SalonControllers = {
       data,
     });
   }),
+
+  byCategory: catchAsync(async ({ params }, res) => {
+    const data = await SalonServices.byCategory(params.categoryId);
+
+    serveResponse(res, {
+      message: 'Salons retrieved successfully!',
+      data,
+    });
+  }),
 };
