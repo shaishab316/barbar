@@ -51,7 +51,7 @@ export const ServiceValidations = {
 
   list: z.object({
     query: z.object({
-      field: z.string().default('name banner price duration'),
+      fields: z.string().default('name banner price duration'),
       category: z.string().transform(oid).refine(exists(Category)).optional(),
       gender: z
         .string()

@@ -55,8 +55,8 @@ export const ServiceServices = {
     }
   },
 
-  async list({ field, ...filter }: any) {
-    return await Service.find(filter).select(field).lean();
+  async list({ fields, ...filter }: any) {
+    return await Service.find(filter).select(fields).lean();
   },
 
   async categories(salonId: Types.ObjectId) {

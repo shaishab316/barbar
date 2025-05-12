@@ -43,7 +43,7 @@ export const SalonServices = {
     page,
     limit,
     sort,
-    field,
+    fields,
     search,
     longitude,
     latitude,
@@ -70,7 +70,7 @@ export const SalonServices = {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sort)
-      .select(field);
+      .select(fields);
 
     //! countDocuments() does not support geo query
     if (longitude && latitude) delete filter.location;
@@ -87,7 +87,7 @@ export const SalonServices = {
           totalPages: Math.ceil(total / limit),
         },
         query: {
-          field,
+          fields,
           search,
           longitude,
           latitude,
