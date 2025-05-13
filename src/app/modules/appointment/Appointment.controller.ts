@@ -3,6 +3,8 @@ import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { AppointmentServices } from './Appointment.service';
 import ServerError from '../../../errors/ServerError';
+import { EAppointmentState } from './Appointment.enum';
+import { SalonServices } from '../salon/Salon.service';
 
 export const AppointmentControllers = {
   create: catchAsync(async ({ body, user, params }, res) => {
@@ -38,15 +40,57 @@ export const AppointmentControllers = {
     });
   }),
 
-  myAppointments: catchAsync(async ({ query, user }, res) => {
-    const data = await AppointmentServices.list({
+  listForUser: catchAsync(async ({ query, user }, res) => {
+    const { appointments, meta } = await AppointmentServices.list({
       ...query,
       user: user!._id,
     });
 
     serveResponse(res, {
       message: 'My appointments retrieved successfully!',
-      data,
+      meta,
+      data: appointments,
+    });
+  }),
+
+  list: catchAsync(async ({ query }, res) => {
+    const { appointments, meta } = await AppointmentServices.list(query);
+
+    const pending = await AppointmentServices.total({
+      state: EAppointmentState.PENDING,
+    });
+    const cancelled = await AppointmentServices.total({
+      state: EAppointmentState.CANCELLED,
+    });
+    const approved = await AppointmentServices.total({
+      state: EAppointmentState.APPROVED,
+    });
+
+    (meta as any).total = {
+      pending,
+      cancelled,
+      approved,
+    };
+
+    serveResponse(res, {
+      message: 'Appointments retrieved successfully!',
+      meta,
+      data: appointments,
+    });
+  }),
+
+  listForHost: catchAsync(async ({ query, user }, res) => {
+    const salon = await SalonServices.salon(user!._id!);
+
+    const { appointments, meta } = await AppointmentServices.list({
+      ...query,
+      salon: salon?._id ?? null,
+    });
+
+    serveResponse(res, {
+      message: 'Appointments retrieved successfully!',
+      meta,
+      data: appointments,
     });
   }),
 };

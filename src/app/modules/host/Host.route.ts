@@ -4,6 +4,7 @@ import { SalonRoutes } from '../salon/Salon.route';
 import { ServiceRoutes } from '../service/Service.route';
 import { SpecialistRoutes } from '../specialist/Specialist.route';
 import { PackageRoutes } from '../package/Package.route';
+import { AppointmentRoutes } from '../appointment/Appointment.route';
 
 const routes: TRoute[] = [
   {
@@ -21,6 +22,10 @@ const routes: TRoute[] = [
   {
     path: '/packages',
     route: PackageRoutes.host,
+  },
+  {
+    path: '/appointments',
+    route: AppointmentRoutes.host,
   },
 ];
 

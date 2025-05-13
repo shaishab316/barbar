@@ -106,4 +106,8 @@ export const AppointmentServices = {
       appointments,
     };
   },
+
+  async total(filter: any) {
+    return Appointment.countDocuments(filter);
+  },
 };

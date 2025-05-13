@@ -26,4 +26,14 @@ export const AppointmentValidations = {
       state: z.string().transform(lower).pipe(z.nativeEnum(EAppointmentState)),
     }),
   }),
+
+  list: z.object({
+    query: z.object({
+      state: z
+        .string()
+        .transform(lower)
+        .pipe(z.nativeEnum(EAppointmentState))
+        .optional(),
+    }),
+  }),
 };

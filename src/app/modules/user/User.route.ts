@@ -14,7 +14,7 @@ const userRoutes: TRoute[] = [
   },
   {
     path: '/appointments',
-    route: AppointmentRoutes,
+    route: AppointmentRoutes.user,
   },
   {
     path: '/chats',
