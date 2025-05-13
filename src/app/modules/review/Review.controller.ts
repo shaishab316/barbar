@@ -17,23 +17,25 @@ export const ReviewControllers = {
   }),
 
   list: catchAsync(async ({ query }, res) => {
-    const data = await ReviewServices.list(query);
+    const { meta, reviews } = await ReviewServices.list(query);
 
     serveResponse(res, {
       message: 'Reviews retrieved successfully!',
-      data,
+      meta,
+      data: reviews,
     });
   }),
 
   retrieve: catchAsync(async ({ params, query }, res) => {
-    const data = await ReviewServices.list({
+    const { meta, reviews } = await ReviewServices.list({
       ...query,
       salon: params.salonId,
     });
 
     serveResponse(res, {
       message: 'Reviews retrieved successfully!',
-      data,
+      meta,
+      data: reviews,
     });
   }),
 
