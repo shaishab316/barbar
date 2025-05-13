@@ -7,7 +7,9 @@ import { ProfileRoutes } from '../profile/Profile.route';
 import { AppointmentRoutes } from '../appointment/Appointment.route';
 import { ChatRoutes } from '../chat/Chat.route';
 import { UserValidations } from './User.validation';
+import User from './User.model';
 
+/** User Routes */
 const userRoutes: TRoute[] = [
   {
     path: '/profile',
@@ -23,11 +25,22 @@ const userRoutes: TRoute[] = [
   },
 ];
 
+/** Admin Routes */
+const admin = Router();
+
+admin.get(
+  '/',
+  purifyRequest(QueryValidations.list, UserValidations.list),
+  UserControllers.list,
+);
+
+admin.delete(
+  '/:userId/delete',
+  purifyRequest(QueryValidations.exists('userId', User)),
+  UserControllers.delete,
+);
+
 export const UserRoutes = {
-  admin: Router().get(
-    '/',
-    purifyRequest(QueryValidations.list, UserValidations.list),
-    UserControllers.list,
-  ),
+  admin,
   user: Router().inject(userRoutes),
 };

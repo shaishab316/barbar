@@ -82,4 +82,12 @@ export const SalonControllers = {
       data,
     });
   }),
+
+  delete: catchAsync(async ({ params }, res) => {
+    const salon = await SalonServices.delete(params.salonId);
+
+    serveResponse(res, {
+      message: `${salon?.name ?? 'Salon'} deleted successfully!`,
+    });
+  }),
 };

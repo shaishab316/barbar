@@ -6,6 +6,7 @@ import { CategoryRoutes } from '../category/Category.route';
 import { OtpRoutes } from '../otp/Otp.route';
 import { ReviewRoutes } from '../review/Review.route';
 import { AppointmentRoutes } from '../appointment/Appointment.route';
+import { SalonRoutes } from '../salon/Salon.route';
 
 const routes: TRoute[] = [
   {
@@ -31,6 +32,10 @@ const routes: TRoute[] = [
   {
     path: '/appointments',
     route: AppointmentRoutes.admin,
+  },
+  {
+    path: '/salons',
+    route: SalonRoutes.admin,
   },
 ];
 

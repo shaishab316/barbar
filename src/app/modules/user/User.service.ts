@@ -5,7 +5,7 @@ import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
 import { userExcludeFields } from './User.constant';
 import bcrypt from 'bcrypt';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
 
 export const UserServices = {
@@ -68,5 +68,13 @@ export const UserServices = {
       },
       users,
     };
+  },
+
+  async delete(userId: Types.ObjectId) {
+    const user = await User.findByIdAndDelete(userId);
+
+    if (user?.avatar) await deleteFile(user.avatar);
+
+    return user;
   },
 };

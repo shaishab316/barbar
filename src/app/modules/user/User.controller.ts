@@ -64,4 +64,12 @@ export const UserControllers = {
       data: user,
     });
   }),
+
+  delete: catchAsync(async ({ params }, res) => {
+    const user = await UserServices.delete(params.userId);
+
+    serveResponse(res, {
+      message: `${user?.name ?? 'User'} deleted successfully!`,
+    });
+  }),
 };

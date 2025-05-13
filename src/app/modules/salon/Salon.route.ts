@@ -112,7 +112,17 @@ user.post(
 /** Review Routes */
 user.use('/', auth(), ReviewRoutes.salon);
 
+/** Admin Routes */
+const admin = Router();
+
+admin.delete(
+  '/:salonId/delete',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  SalonControllers.delete,
+);
+
 export const SalonRoutes = {
   host,
   user,
+  admin,
 };

@@ -5,6 +5,10 @@ import { TList } from '../query/Query.interface';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
+import Service from '../service/Service.model';
+import Appointment from '../appointment/Appointment.model';
+import Review from '../review/Review.model';
+import Specialist from '../specialist/Specialist.model';
 
 export const SalonServices = {
   async upsert(salonData: TSalon) {
@@ -165,5 +169,18 @@ export const SalonServices = {
         },
       },
     ]);
+  },
+
+  async delete(salonId: Types.ObjectId) {
+    const salon = await Salon.findByIdAndDelete(salonId);
+
+    if (salon?.banner) await deleteFile(salon?.banner);
+
+    await Service.deleteMany({ salon: salonId });
+    await Appointment.deleteMany({ salon: salonId });
+    await Review.deleteMany({ salon: salonId });
+    await Specialist.deleteMany({ salon: salonId });
+
+    return salon;
   },
 };
