@@ -34,6 +34,7 @@ export const AppointmentValidations = {
         .transform(lower)
         .pipe(z.nativeEnum(EAppointmentState))
         .optional(),
+      search: z.string().trim().optional(),
     }),
   }),
 };

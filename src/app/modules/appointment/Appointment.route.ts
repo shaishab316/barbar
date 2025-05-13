@@ -29,7 +29,7 @@ const admin = Router();
 admin.get(
   '/',
   purifyRequest(QueryValidations.list, AppointmentValidations.list),
-  AppointmentControllers.list,
+  AppointmentControllers.listForAdmin,
 );
 
 /** Host Routes */

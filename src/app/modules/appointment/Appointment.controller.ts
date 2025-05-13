@@ -53,28 +53,25 @@ export const AppointmentControllers = {
     });
   }),
 
-  list: catchAsync(async ({ query }, res) => {
+  listForAdmin: catchAsync(async ({ query }, res) => {
     const { appointments, meta } = await AppointmentServices.list(query);
 
-    const pending = await AppointmentServices.total({
-      state: EAppointmentState.PENDING,
-    });
-    const cancelled = await AppointmentServices.total({
-      state: EAppointmentState.CANCELLED,
-    });
-    const approved = await AppointmentServices.total({
-      state: EAppointmentState.APPROVED,
-    });
-
-    (meta as any).total = {
-      pending,
-      cancelled,
-      approved,
-    };
+    const [pending, cancelled, approved] = await Promise.all([
+      AppointmentServices.total({ state: EAppointmentState.PENDING }),
+      AppointmentServices.total({ state: EAppointmentState.CANCELLED }),
+      AppointmentServices.total({ state: EAppointmentState.APPROVED }),
+    ]);
 
     serveResponse(res, {
       message: 'Appointments retrieved successfully!',
-      meta,
+      meta: {
+        ...meta,
+        total: {
+          pending,
+          cancelled,
+          approved,
+        },
+      },
       data: appointments,
     });
   }),
@@ -84,7 +81,7 @@ export const AppointmentControllers = {
 
     const { appointments, meta } = await AppointmentServices.list({
       ...query,
-      salon: salon?._id ?? null,
+      salon: salon?._id,
     });
 
     serveResponse(res, {
