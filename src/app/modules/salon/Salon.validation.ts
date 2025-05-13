@@ -11,19 +11,23 @@ export const SalonValidations = {
       description: z.string().optional(),
       banner: z.string().optional(),
       location: z
-        .object({
-          coordinates: z.tuple([
-            z
-              .number()
-              .min(-180, { message: 'Longitude must be ≥ -180' })
-              .max(180, { message: 'Longitude must be ≤ 180' }),
-            z
-              .number()
-              .min(-90, { message: 'Latitude must be ≥ -90' })
-              .max(90, { message: 'Latitude must be ≤ 90' }),
-          ]),
-          address: z.string().optional(),
-        })
+        .any()
+        .transform(json)
+        .pipe(
+          z.object({
+            coordinates: z.tuple([
+              z.coerce
+                .number()
+                .min(-180, { message: 'Longitude must be ≥ -180' })
+                .max(180, { message: 'Longitude must be ≤ 180' }),
+              z.coerce
+                .number()
+                .min(-90, { message: 'Latitude must be ≥ -90' })
+                .max(90, { message: 'Latitude must be ≤ 90' }),
+            ]),
+            address: z.string().optional(),
+          }),
+        )
         .optional(),
       gender: z
         .string()
@@ -61,8 +65,16 @@ export const SalonValidations = {
 
   list: z.object({
     query: z.object({
-      longitude: z.coerce.number().min(-180).max(180).optional(),
-      latitude: z.coerce.number().min(-90).max(90).optional(),
+      longitude: z.coerce
+        .number()
+        .min(-180, { message: 'Longitude must be ≥ -180' })
+        .max(180, { message: 'Longitude must be ≤ 180' })
+        .optional(),
+      latitude: z.coerce
+        .number()
+        .min(-90, { message: 'Latitude must be ≥ -90' })
+        .max(90, { message: 'Latitude must be ≤ 90' })
+        .optional(),
       sort: z.string().default('-createdAt'),
       search: z.string().trim().optional(),
       fields: z.string().default('name banner rating location'),
