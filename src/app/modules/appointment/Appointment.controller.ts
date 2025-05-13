@@ -5,6 +5,8 @@ import { AppointmentServices } from './Appointment.service';
 import ServerError from '../../../errors/ServerError';
 import { EAppointmentState } from './Appointment.enum';
 import { SalonServices } from '../salon/Salon.service';
+import { NotificationServices } from '../notification/Notification.service';
+import Salon from '../salon/Salon.model';
 
 export const AppointmentControllers = {
   create: catchAsync(async ({ body, user, params }, res) => {
@@ -12,6 +14,13 @@ export const AppointmentControllers = {
       ...body,
       user: user?._id,
       salon: params.salonId,
+    });
+
+    const salon = await Salon.findById(params.salonId);
+
+    await NotificationServices.create({
+      title: `${user?.name} has made an appointment`,
+      description: `${user?.name} has made an appointment on ${salon?.name} at ${new Date()}`,
     });
 
     serveResponse(res, {

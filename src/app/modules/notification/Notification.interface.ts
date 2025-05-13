@@ -5,7 +5,7 @@ export type TNotification = {
 
   title: string;
   description: string;
-  unRead: boolean;
+  unRead?: boolean;
 
   createdAt?: Date;
   updatedAt?: Date;
