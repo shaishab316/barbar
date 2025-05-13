@@ -6,6 +6,7 @@ import { TRoute } from '../../../types/route.types';
 import { ProfileRoutes } from '../profile/Profile.route';
 import { AppointmentRoutes } from '../appointment/Appointment.route';
 import { ChatRoutes } from '../chat/Chat.route';
+import { UserValidations } from './User.validation';
 
 const userRoutes: TRoute[] = [
   {
@@ -25,7 +26,7 @@ const userRoutes: TRoute[] = [
 export const UserRoutes = {
   admin: Router().get(
     '/',
-    purifyRequest(QueryValidations.list),
+    purifyRequest(QueryValidations.list, UserValidations.list),
     UserControllers.list,
   ),
   user: Router().inject(userRoutes),

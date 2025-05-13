@@ -40,12 +40,22 @@ export const UserServices = {
     await user.save();
   },
 
-  async list({ page, limit }: TList) {
-    const users = await User.find()
+  async list({ page, limit, search }: TList) {
+    const filter: any = {};
+
+    if (search)
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+      ];
+
+    const users = await User.find(filter)
+      .select('-' + userExcludeFields.join(' -'))
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await User.countDocuments();
+    const total = await User.countDocuments(filter);
 
     return {
       meta: {
