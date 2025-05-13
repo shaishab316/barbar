@@ -12,6 +12,10 @@ const bannerSchema = new Schema<TBanner>(
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true, versionKey: false },
 );
