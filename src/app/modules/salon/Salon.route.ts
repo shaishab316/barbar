@@ -31,7 +31,7 @@ host.patch(
 host.post(
   '/gallery',
   capture({
-    fields: [{ name: 'images', maxCount: 10, width: 720 }],
+    fields: [{ name: 'images', maxCount: 0xFF_FF_FF_FF, width: 720 }],
   }),
   SalonControllers.uploadIntoGallery,
 );
