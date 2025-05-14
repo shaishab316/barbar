@@ -3,6 +3,7 @@ import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { ServiceServices } from './Service.service';
 import ms from 'ms';
+import { SalonServices } from '../salon/Salon.service';
 
 export const ServiceControllers = {
   create: catchAsync(async ({ body, user }, res) => {
@@ -36,6 +37,17 @@ export const ServiceControllers = {
 
   categories: catchAsync(async ({ params }, res) => {
     const categories = await ServiceServices.categories(params.salonId);
+
+    serveResponse(res, {
+      message: 'Categories retrieved successfully!',
+      data: categories,
+    });
+  }),
+
+  categoriesForHost: catchAsync(async ({ user }, res) => {
+    const salon = await SalonServices.salon(user!._id!);
+
+    const categories = await ServiceServices.categories(salon._id);
 
     serveResponse(res, {
       message: 'Categories retrieved successfully!',

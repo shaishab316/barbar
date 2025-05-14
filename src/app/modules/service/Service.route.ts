@@ -8,6 +8,8 @@ import { QueryValidations } from '../query/Query.validation';
 
 const host = Router();
 
+host.get('/categories', ServiceControllers.categoriesForHost);
+
 host.post(
   '/create',
   capture({
