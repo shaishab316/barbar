@@ -4,13 +4,26 @@ import { ReviewValidations } from './Review.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import Salon from '../salon/Salon.model';
+import Review from './Review.model';
 
 /** User Routes */
 const user = Router();
 
+user.post(
+  '/:reviewId/like',
+  purifyRequest(QueryValidations.exists('reviewId', Review)),
+  ReviewControllers.like,
+);
+
+user.post(
+  '/:reviewId/unlike',
+  purifyRequest(QueryValidations.exists('reviewId', Review)),
+  ReviewControllers.unlike,
+);
+
 user.delete(
   '/:reviewId/delete',
-  purifyRequest(QueryValidations.exists('reviewId', Salon)),
+  purifyRequest(QueryValidations.exists('reviewId', Review)),
   ReviewControllers.delete,
 );
 

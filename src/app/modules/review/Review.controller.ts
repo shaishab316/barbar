@@ -46,4 +46,20 @@ export const ReviewControllers = {
       message: 'Review deleted successfully!',
     });
   }),
+
+  like: catchAsync(async ({ params, user }, res) => {
+    await ReviewServices.like(params.reviewId, user!._id!);
+
+    serveResponse(res, {
+      message: 'Review liked successfully!',
+    });
+  }),
+
+  unlike: catchAsync(async ({ params, user }, res) => {
+    await ReviewServices.unlike(params.reviewId, user!._id!);
+
+    serveResponse(res, {
+      message: 'Review unlike successfully!',
+    });
+  }),
 };

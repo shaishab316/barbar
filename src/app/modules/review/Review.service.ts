@@ -52,4 +52,32 @@ export const ReviewServices = {
       reviews,
     };
   },
+
+  async like(reviewId: Types.ObjectId, userId: Types.ObjectId) {
+    return Review.findOneAndUpdate(
+      {
+        _id: reviewId,
+        likedBy: { $ne: userId },
+      },
+      {
+        $inc: { likes: 1 },
+        $addToSet: { likedBy: userId },
+      },
+      { new: true },
+    );
+  },
+
+  async unlike(reviewId: Types.ObjectId, userId: Types.ObjectId) {
+    return Review.findOneAndUpdate(
+      {
+        _id: reviewId,
+        likedBy: userId,
+      },
+      {
+        $inc: { likes: -1 },
+        $pull: { likedBy: userId },
+      },
+      { new: true },
+    );
+  },
 };
