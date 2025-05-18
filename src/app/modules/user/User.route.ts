@@ -8,6 +8,7 @@ import { AppointmentRoutes } from '../appointment/Appointment.route';
 import { ChatRoutes } from '../chat/Chat.route';
 import { UserValidations } from './User.validation';
 import User from './User.model';
+import { BookmarkRoutes } from '../bookmark/Bookmark.route';
 
 /** User Routes */
 const userRoutes: TRoute[] = [
@@ -22,6 +23,10 @@ const userRoutes: TRoute[] = [
   {
     path: '/chats',
     route: ChatRoutes,
+  },
+  {
+    path: '/bookmarks',
+    route: BookmarkRoutes,
   },
 ];
 
