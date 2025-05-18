@@ -166,9 +166,8 @@ export const AppointmentServices = {
   },
 
   async retrieve(appointmentId: Types.ObjectId) {
-    return Appointment.findOne({ _id: appointmentId }).populate(
-      'specialist',
-      'name',
-    );
+    return Appointment.findOne({ _id: appointmentId })
+      .populate('specialist', 'name')
+      .populate('user', 'name phone');
   },
 };

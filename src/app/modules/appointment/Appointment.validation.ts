@@ -7,6 +7,7 @@ import { date } from '../../../util/transform/date';
 import Service from '../service/Service.model';
 import Package from '../package/Package.model';
 import { lower } from '../../../util/transform/lower';
+import { EUserRole } from '../user/User.enum';
 
 export const AppointmentValidations = {
   create: z.object({
@@ -35,6 +36,16 @@ export const AppointmentValidations = {
         .pipe(z.nativeEnum(EAppointmentState))
         .optional(),
       search: z.string().trim().optional(),
+    }),
+  }),
+
+  receipt: z.object({
+    query: z.object({
+      role: z
+        .string()
+        .transform(lower)
+        .default(EUserRole.USER)
+        .pipe(z.nativeEnum(EUserRole)),
     }),
   }),
 };

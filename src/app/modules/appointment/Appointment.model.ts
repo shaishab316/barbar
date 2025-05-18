@@ -14,7 +14,7 @@ const appointmentSchema = new Schema<TAppointment>(
       type: Schema.Types.ObjectId,
       ref: 'Salon',
       required: true,
-      autopopulate: { select: 'name banner location' },
+      autopopulate: { select: 'name banner location contact' },
     },
     specialist: {
       type: Schema.Types.ObjectId,

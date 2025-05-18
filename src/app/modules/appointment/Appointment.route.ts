@@ -20,6 +20,15 @@ user.get(
   AppointmentControllers.retrieve,
 );
 
+user.get(
+  '/:appointmentId/receipt',
+  purifyRequest(
+    QueryValidations.exists('appointmentId', Appointment),
+    AppointmentValidations.receipt,
+  ),
+  AppointmentControllers.receipt,
+);
+
 user.post(
   '/:appointmentId/:state',
   purifyRequest(
