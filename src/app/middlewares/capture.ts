@@ -32,7 +32,12 @@ const capture = ({
   const storage = memoryStorage();
 
   const fileFilter = (_req: any, file: any, cb: FileFilterCallback) => {
-    if (!file.mimetype.startsWith('image/'))
+    if (
+      !file.originalname.match(
+        /\.(jpg|jpeg|png|gif|bmp|tiff|tif|svg|ico|webp|avif|cur|pcx)$/,
+      ) ||
+      !file.mimetype.startsWith('image/')
+    )
       return cb(
         new ServerError(
           StatusCodes.BAD_REQUEST,
