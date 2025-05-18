@@ -75,6 +75,7 @@ export const ServiceServices = {
         $group: {
           _id: '$category',
           name: { $first: '$categoryDetails.name' },
+          banner: { $first: '$categoryDetails.banner' },
           count: { $sum: 1 },
         },
       },
@@ -82,6 +83,7 @@ export const ServiceServices = {
         $project: {
           name: 1,
           count: 1,
+          banner: 1,
         },
       },
     ]);
