@@ -165,8 +165,18 @@ export const AppointmentServices = {
     return Appointment.countDocuments(filter);
   },
 
-  async retrieve(appointmentId: Types.ObjectId) {
-    return Appointment.findOne({ _id: appointmentId })
+  async retrieve(appointmentId: Types.ObjectId, user: TUser) {
+    const filter: any = { _id: appointmentId };
+
+    if (user?.role === EUserRole.USER) {
+      filter.user = user._id;
+    } else if (user?.role === EUserRole.HOST) {
+      const salon = await SalonServices.salon(user._id!);
+
+      filter.salon = salon?._id;
+    }
+
+    return Appointment.findOne(filter)
       .populate('specialist', 'name')
       .populate('user', 'name phone');
   },

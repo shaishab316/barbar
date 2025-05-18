@@ -102,8 +102,17 @@ export const AppointmentControllers = {
     });
   }),
 
-  retrieve: catchAsync(async ({ params }, res) => {
-    const data = await AppointmentServices.retrieve(params.appointmentId);
+  retrieve: catchAsync(async ({ params, user }, res) => {
+    const data = await AppointmentServices.retrieve(
+      params.appointmentId,
+      user!,
+    );
+
+    if (!data)
+      throw new ServerError(
+        StatusCodes.UNAUTHORIZED,
+        "You can't retrieve other's appointments!",
+      );
 
     serveResponse(res, {
       message: 'Appointment retrieved successfully!',
@@ -111,8 +120,17 @@ export const AppointmentControllers = {
     });
   }),
 
-  receipt: catchAsync(async ({ params, query }, res) => {
-    const appointment: any = await AppointmentServices.retrieve(params.appointmentId);
+  receipt: catchAsync(async ({ params, query, user }, res) => {
+    const appointment: any = await AppointmentServices.retrieve(
+      params.appointmentId,
+      user!,
+    );
+
+    if (!appointment)
+      throw new ServerError(
+        StatusCodes.UNAUTHORIZED,
+        "You can't retrieve other's appointments!",
+      );
 
     const receipt = await AppointmentTemplates.receipt(
       appointment,
