@@ -39,7 +39,7 @@ const appointmentSchema = new Schema<TAppointment>(
       {
         type: Schema.Types.ObjectId,
         ref: 'Service',
-        autopopulate: { select: 'name' },
+        autopopulate: { select: 'name price' },
       },
     ],
     package: {

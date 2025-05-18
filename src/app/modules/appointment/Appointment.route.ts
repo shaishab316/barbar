@@ -14,6 +14,12 @@ user.get(
   AppointmentControllers.listForUser,
 );
 
+user.get(
+  '/:appointmentId',
+  purifyRequest(QueryValidations.exists('appointmentId', Appointment)),
+  AppointmentControllers.retrieve,
+);
+
 user.post(
   '/:appointmentId/:state',
   purifyRequest(

@@ -164,4 +164,11 @@ export const AppointmentServices = {
   async total(filter: any) {
     return Appointment.countDocuments(filter);
   },
+
+  async retrieve(appointmentId: Types.ObjectId) {
+    return Appointment.findOne({ _id: appointmentId }).populate(
+      'specialist',
+      'name',
+    );
+  },
 };

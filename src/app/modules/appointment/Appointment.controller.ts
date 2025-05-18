@@ -99,4 +99,13 @@ export const AppointmentControllers = {
       data: appointments,
     });
   }),
+
+  retrieve: catchAsync(async ({ params }, res) => {
+    const data = await AppointmentServices.retrieve(params.appointmentId);
+
+    serveResponse(res, {
+      message: 'Appointment retrieved successfully!',
+      data,
+    });
+  }),
 };
