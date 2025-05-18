@@ -1,5 +1,6 @@
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
+import { SalonServices } from '../salon/Salon.service';
 import { ReviewServices } from './Review.service';
 
 export const ReviewControllers = {
@@ -30,6 +31,28 @@ export const ReviewControllers = {
     const { meta, reviews } = await ReviewServices.list({
       ...query,
       salon: params.salonId,
+    });
+
+    serveResponse(res, {
+      message: 'Reviews retrieved successfully!',
+      meta,
+      data: reviews,
+    });
+  }),
+
+  retrieveForHost: catchAsync(async ({ user, query }, res) => {
+    const salon = await SalonServices.salon(user!._id!);
+
+    if (!salon) {
+      return serveResponse(res, {
+        statusCode: 404,
+        message: 'Salon not found!',
+      });
+    }
+
+    const { meta, reviews } = await ReviewServices.list({
+      ...query,
+      salon: salon._id,
     });
 
     serveResponse(res, {

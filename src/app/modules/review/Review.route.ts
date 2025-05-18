@@ -57,8 +57,18 @@ salon.patch(
   ReviewControllers.store,
 );
 
+/** host routes */
+const host = Router();
+
+host.get(
+  '/',
+  purifyRequest(QueryValidations.list),
+  ReviewControllers.retrieveForHost,
+);
+
 export const ReviewRoutes = {
   user,
   salon,
   admin,
+  host,
 };

@@ -13,6 +13,7 @@ import { ReviewRoutes } from '../review/Review.route';
 import auth from '../../middlewares/auth';
 import { SpecialistControllers } from '../specialist/Specialist.controller';
 import { ServiceValidations } from '../service/Service.validation';
+import { BookmarkControllers } from '../bookmark/Bookmark.controller';
 
 /** Host routes */
 const host = Router();
@@ -31,7 +32,7 @@ host.patch(
 host.post(
   '/gallery',
   capture({
-    fields: [{ name: 'images', maxCount: 0xFF_FF_FF_FF, width: 720 }],
+    fields: [{ name: 'images', maxCount: 0xff_ff_ff_ff, width: 720 }],
   }),
   SalonControllers.uploadIntoGallery,
 );
@@ -111,6 +112,13 @@ user.post(
 
 /** Review Routes */
 user.use('/', auth(), ReviewRoutes.salon);
+
+/** Bookmark Routes */
+user.post(
+  '/:salonId/bookmarks',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  BookmarkControllers.add,
+);
 
 /** Admin Routes */
 const admin = Router();
