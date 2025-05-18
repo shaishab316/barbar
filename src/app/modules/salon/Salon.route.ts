@@ -115,7 +115,7 @@ user.use('/', auth(), ReviewRoutes.salon);
 
 /** Bookmark Routes */
 user.post(
-  '/:salonId/bookmarks',
+  '/:salonId/bookmark',
   purifyRequest(QueryValidations.exists('salonId', Salon)),
   BookmarkControllers.add,
 );
