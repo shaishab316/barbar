@@ -1,7 +1,7 @@
 {
-  "name": "campus-couch",
+  "name": "barbar",
   "version": "1.0.0",
-  "description": "Elevate your space with stylish, affordable furniture tailored for students and young professionals.",
+  "description": "Barbar is an online platform for discovering and booking hair salons and barbershops.",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
@@ -65,6 +65,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "openai": "^4.89.0",
+    "puppeteer": "^24.8.2",
     "sharp": "^0.33.5",
     "socket.io": "^4.7.5",
     "stripe": "^17.2.1",
