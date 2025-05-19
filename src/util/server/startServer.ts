@@ -8,6 +8,10 @@ import connectDB from './connectDB';
 import { AdminServices } from '../../app/modules/admin/Admin.service';
 import killPort from 'kill-port';
 
+const {
+  server: { port, ip_address, name },
+} = config;
+
 /**
  * Starts the server
  *
@@ -16,16 +20,14 @@ import killPort from 'kill-port';
  */
 export default async function startServer() {
   try {
-    await killPort(3000);
+    await killPort(port);
 
     await connectDB();
     await AdminServices.seed();
 
-    const server = createServer(app).listen(3000, '0.0.0.0', () => {
+    const server = createServer(app).listen(port, ip_address, () => {
       logger.info(
-        colors.yellow(
-          `🚀 ${config.server.name} is running on http://localhost:3000`,
-        ),
+        colors.yellow(`🚀 ${name} is running on http://${ip_address}:${port}`),
       );
     });
 

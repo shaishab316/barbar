@@ -6,6 +6,8 @@ import { genSecret } from '../util/crypto/genSecret';
 const node_env = env<string>('node env', 'development');
 const name = env('name', 'BarBar');
 const email = env('email user', 'admin@gmail.com');
+const ip_address = env('ip address', '0.0.0.0');
+const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
 
 /**
  * Configuration object for the application
@@ -17,6 +19,8 @@ const config = {
   server: {
     name,
     node_env,
+    ip_address,
+    port,
     isDevelopment: node_env !== 'production',
     allowed_origins: env('allowed origins', ['*']),
     developer: env('developer', 'Shaishab Chandra Shil'),
@@ -29,6 +33,7 @@ const config = {
       'database url',
       `mongodb://127.0.0.1:27017/${name.toLowerCase().replace(' ', '-')}`,
     ),
+    redis: env('redis url', 'redis://127.0.0.1:6379'),
     payment: {
       success: env('payment success url', `/payment/success`),
       cancel: env('payment cancel url', `/payment/cancel`),
