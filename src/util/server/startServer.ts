@@ -7,6 +7,7 @@ import shutdownServer from './shutdownServer';
 import connectDB from './connectDB';
 import { AdminServices } from '../../app/modules/admin/Admin.service';
 import killPort from 'kill-port';
+import { redisClient } from '../redisClient';
 
 const {
   server: { port, ip_address, name },
@@ -24,6 +25,7 @@ export default async function startServer() {
 
     await connectDB();
     await AdminServices.seed();
+    await redisClient.connect();
 
     const server = createServer(app).listen(port, ip_address, () => {
       logger.info(
@@ -33,8 +35,8 @@ export default async function startServer() {
 
     ['SIGTERM', 'SIGINT', 'unhandledRejection', 'uncaughtException'].forEach(
       signal =>
-        process.on(signal, (err?: Error) => {
-          shutdownServer(server, signal, err);
+        process.on(signal, async (err?: Error) => {
+          await shutdownServer(server, signal, err);
         }),
     );
 

@@ -33,7 +33,7 @@ const config = {
       'database url',
       `mongodb://127.0.0.1:27017/${name.toLowerCase().replace(' ', '-')}`,
     ),
-    redis: env('redis url', 'redis://127.0.0.1:6379'),
+    redis: env('redis url', 'redis://redis:6379'),
     payment: {
       success: env('payment success url', `/payment/success`),
       cancel: env('payment cancel url', `/payment/cancel`),

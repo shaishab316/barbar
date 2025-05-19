@@ -25,6 +25,10 @@ class RedisClient {
       url: config.url.redis,
     });
     this.client.on('error', console.error);
+    this.client.on('connect', () => console.log('Redis client connected'));
+    this.client.on('disconnect', () =>
+      console.log('Redis client disconnected'),
+    );
   }
 
   static getInstance() {
