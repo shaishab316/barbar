@@ -2,7 +2,6 @@ import colors from 'colors';
 import { Server } from 'http';
 import { errorLogger, logger } from '../logger/logger';
 import config from '../../config';
-import { redisClient } from '../redisClient';
 
 /**
  * Shuts down the server
@@ -16,8 +15,6 @@ export default async function shutdownServer(
   err?: Error,
 ) {
   if (err) errorLogger.error(colors.red(`${signal} occurred: `), err);
-
-  await redisClient.disconnect();
 
   if (signal === 'uncaughtException' && !config.server.isDevelopment) return;
 
