@@ -8,10 +8,6 @@ import connectDB from './connectDB';
 import { AdminServices } from '../../app/modules/admin/Admin.service';
 import killPort from 'kill-port';
 
-const {
-  server: { port, ip_address, href, name },
-} = config;
-
 /**
  * Starts the server
  *
@@ -20,13 +16,17 @@ const {
  */
 export default async function startServer() {
   try {
-    await killPort(port);
+    await killPort(3000);
 
     await connectDB();
     await AdminServices.seed();
 
-    const server = createServer(app).listen(port, ip_address, () => {
-      logger.info(colors.yellow(`🚀 ${name} is running on ${href}`));
+    const server = createServer(app).listen(3000, '0.0.0.0', () => {
+      logger.info(
+        colors.yellow(
+          `🚀 ${config.server.name} is running on http://localhost:3000`,
+        ),
+      );
     });
 
     ['SIGTERM', 'SIGINT', 'unhandledRejection', 'uncaughtException'].forEach(

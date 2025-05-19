@@ -2,12 +2,8 @@ import './configure';
 import env from '../util/env/env';
 import type ms from 'ms';
 import { genSecret } from '../util/crypto/genSecret';
-import getIpAddress from '../util/server/getIpAddress';
 
 const node_env = env<string>('node env', 'development');
-const ip_address = env('ip address', getIpAddress());
-const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
-const href = env('href', `http://${ip_address}:${port}`);
 const name = env('name', 'BarBar');
 const email = env('email user', 'admin@gmail.com');
 
@@ -20,13 +16,11 @@ const email = env('email user', 'admin@gmail.com');
 const config = {
   server: {
     name,
-    ip_address,
-    port,
     node_env,
     isDevelopment: node_env !== 'production',
     allowed_origins: env('allowed origins', ['*']),
     developer: env('developer', 'Shaishab Chandra Shil'),
-    href,
+    href: 'http://localhost:3000',
     logo: env('logo', '/images/logo.png'),
     default_avatar: env('default avatar', '/images/placeholder.png'),
   },
@@ -36,8 +30,8 @@ const config = {
       `mongodb://127.0.0.1:27017/${name.toLowerCase().replace(' ', '-')}`,
     ),
     payment: {
-      success: env('payment success url', `${href}/payment/success`),
-      cancel: env('payment cancel url', `${href}/payment/cancel`),
+      success: env('payment success url', `/payment/success`),
+      cancel: env('payment cancel url', `/payment/cancel`),
     },
     api_doc: env('api doc', ''),
   },

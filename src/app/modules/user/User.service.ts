@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
 import { userExcludeFields } from './User.constant';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { Document, Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
 

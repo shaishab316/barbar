@@ -1,5 +1,5 @@
 import User from '../user/User.model';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { createToken, verifyToken } from './Auth.utils';
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
