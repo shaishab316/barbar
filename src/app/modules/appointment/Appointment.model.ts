@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { TAppointment } from './Appointment.interface';
 import { EAppointmentState, EAppointmentType } from './Appointment.enum';
 import autoPopulate from 'mongoose-autopopulate';
+import { AppointmentMiddlewares } from './Appointment.middleware';
 
 const appointmentSchema = new Schema<TAppointment>(
   {
@@ -58,6 +59,8 @@ const appointmentSchema = new Schema<TAppointment>(
   },
   { timestamps: true, versionKey: false },
 );
+
+AppointmentMiddlewares.schema(appointmentSchema);
 
 appointmentSchema.plugin(autoPopulate);
 

@@ -40,17 +40,7 @@ export const AppointmentServices = {
         'Invalid appointment type',
       );
 
-    const appointment = await Appointment.create(appointmentData);
-
-    const fullAppointment = await this.retrieve(appointment._id);
-
-    const receipt = await AppointmentTemplates.receipt(fullAppointment).toPdf();
-    const receiptPath = await savePdf(receipt, `${appointment._id}.pdf`);
-
-    appointment.receipt = receiptPath;
-    await appointment.save();
-
-    return appointment;
+    return Appointment.create(appointmentData);
   },
 
   async changeState(
@@ -169,5 +159,11 @@ export const AppointmentServices = {
     return Appointment.findById(appointmentId)
       .populate('specialist', 'name')
       .populate('user', 'name phone');
+  },
+
+  async saveReceipt(appointmentId: Types.ObjectId) {
+    const appointment = await this.retrieve(appointmentId);
+    const receipt = await AppointmentTemplates.receipt(appointment).toPdf();
+    await savePdf(receipt, `${appointmentId}.pdf`);
   },
 };
