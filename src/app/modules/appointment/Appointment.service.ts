@@ -164,6 +164,6 @@ export const AppointmentServices = {
   async saveReceipt(appointmentId: Types.ObjectId) {
     const appointment = await this.retrieve(appointmentId);
     const receipt = await AppointmentTemplates.receipt(appointment).toPdf();
-    await savePdf(receipt, `${appointmentId}.pdf`);
+    return savePdf(receipt, `${appointmentId}.pdf`);
   },
 };
