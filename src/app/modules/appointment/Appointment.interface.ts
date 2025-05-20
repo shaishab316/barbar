@@ -12,7 +12,8 @@ export type TAppointment = {
   type: EAppointmentType;
   services?: Types.ObjectId[];
   package?: Types.ObjectId;
-  state: EAppointmentState; 
+  receipt?: string;
+  state: EAppointmentState;
 
   createdAt?: Date;
   updatedAt?: Date;

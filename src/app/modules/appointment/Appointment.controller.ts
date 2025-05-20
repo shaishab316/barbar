@@ -7,8 +7,6 @@ import { EAppointmentState } from './Appointment.enum';
 import { SalonServices } from '../salon/Salon.service';
 import { NotificationServices } from '../notification/Notification.service';
 import Salon from '../salon/Salon.model';
-import { AppointmentTemplates } from './Appointment.template';
-import { EUserRole } from '../user/User.enum';
 
 export const AppointmentControllers = {
   create: catchAsync(async ({ body, user, params }, res) => {
@@ -109,23 +107,5 @@ export const AppointmentControllers = {
       message: 'Appointment retrieved successfully!',
       data,
     });
-  }),
-
-  receipt: catchAsync(async ({ params, query }, res) => {
-    const appointment: any = await AppointmentServices.retrieve(
-      params.appointmentId,
-    );
-
-    const receipt = await AppointmentTemplates.receipt(
-      appointment,
-      query?.role as EUserRole,
-    ).toPdf();
-
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="appointment-${appointment?.salon?.name}-${appointment?._id}.pdf"`,
-    });
-
-    res.send(receipt);
   }),
 };

@@ -6,11 +6,6 @@ import { SalonRoutes } from '../salon/Salon.route';
 import { ServiceRoutes } from '../service/Service.route';
 import { PackageRoutes } from '../package/Package.route';
 import { CategoryRoutes } from '../category/Category.route';
-import purifyRequest from '../../middlewares/purifyRequest';
-import { QueryValidations } from '../query/Query.validation';
-import { AppointmentValidations } from '../appointment/Appointment.validation';
-import { AppointmentControllers } from '../appointment/Appointment.controller';
-import Appointment from '../appointment/Appointment.model';
 
 const routes: TRoute[] = [
   {
@@ -36,17 +31,6 @@ const routes: TRoute[] = [
   {
     path: '/categories',
     route: CategoryRoutes.user,
-  },
-  {
-    path: '/',
-    route: Router().get(
-      '/appointments/:appointmentId/receipt',
-      purifyRequest(
-        QueryValidations.exists('appointmentId', Appointment),
-        AppointmentValidations.receipt,
-      ),
-      AppointmentControllers.receipt,
-    ),
   },
 ];
 

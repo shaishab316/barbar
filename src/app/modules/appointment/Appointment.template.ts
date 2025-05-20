@@ -1,8 +1,7 @@
 import { genSecret } from '../../../util/crypto/genSecret';
-import { EUserRole } from '../user/User.enum';
 
 export const AppointmentTemplates = {
-  receipt: (appointment: any, role: EUserRole) => /* html */ `
+  receipt: (appointment: any) => /* html */ `
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -226,9 +225,15 @@ export const AppointmentTemplates = {
                 <p>${appointment?.user?.name ?? 'Unknown'}</p>
               </div>
               <div class="info-item">
-                <p>Phone</p>
+                <p>Salon Phone</p>
                 <p>
-                  ${(role === EUserRole.USER ? appointment?.salon?.contact : appointment?.user?.phone) ?? 'Unknown'}
+                  ${appointment?.salon?.contact ?? 'Unknown'}
+                </p>
+              </div>
+              <div class="info-item">
+                <p>User Phone</p>
+                <p>
+                  ${appointment?.user?.phone ?? 'Unknown'}
                 </p>
               </div>
               <div class="info-item">

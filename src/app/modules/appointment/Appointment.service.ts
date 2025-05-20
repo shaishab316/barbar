@@ -8,6 +8,8 @@ import { Types } from 'mongoose';
 import { TUser } from '../user/User.interface';
 import { EUserRole } from '../user/User.enum';
 import { SalonServices } from '../salon/Salon.service';
+import { AppointmentTemplates } from './Appointment.template';
+import { savePdf } from '../../../util/file/savePdf';
 
 export const AppointmentServices = {
   async create(appointmentData: TAppointment) {
@@ -20,21 +22,11 @@ export const AppointmentServices = {
       delete appointmentData.package;
 
       const aggregateResult = await Service.aggregate([
-        {
-          $match: {
-            _id: { $in: appointmentData.services },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: '$price' },
-          },
-        },
+        { $match: { _id: { $in: appointmentData.services } } },
+        { $group: { _id: null, totalAmount: { $sum: '$price' } } },
       ]);
 
       const totalAmount = aggregateResult[0]?.totalAmount;
-
       if (!totalAmount)
         throw new ServerError(
           StatusCodes.BAD_REQUEST,
@@ -42,15 +34,23 @@ export const AppointmentServices = {
         );
 
       appointmentData.amount = totalAmount;
-    } else {
+    } else
       throw new ServerError(
         StatusCodes.BAD_REQUEST,
         'Invalid appointment type',
       );
-      /** @todo implement package */
-    }
 
-    return Appointment.create(appointmentData);
+    const appointment = await Appointment.create(appointmentData);
+
+    const fullAppointment = await this.retrieve(appointment._id);
+
+    const receipt = await AppointmentTemplates.receipt(fullAppointment).toPdf();
+    const receiptPath = await savePdf(receipt, `${appointment._id}.pdf`);
+
+    appointment.receipt = receiptPath;
+    await appointment.save();
+
+    return appointment;
   },
 
   async changeState(

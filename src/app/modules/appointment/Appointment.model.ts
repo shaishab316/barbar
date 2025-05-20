@@ -46,6 +46,9 @@ const appointmentSchema = new Schema<TAppointment>(
       type: Schema.Types.ObjectId,
       ref: 'Package',
     },
+    receipt: {
+      type: String,
+    },
     state: {
       type: String,
       enum: Object.values(EAppointmentState),
