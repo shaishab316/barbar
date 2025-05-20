@@ -225,13 +225,7 @@ export const AppointmentTemplates = {
                 <p>${appointment?.user?.name ?? 'Unknown'}</p>
               </div>
               <div class="info-item">
-                <p>Salon Phone</p>
-                <p>
-                  ${appointment?.salon?.contact ?? 'Unknown'}
-                </p>
-              </div>
-              <div class="info-item">
-                <p>User Phone</p>
+                <p>Phone</p>
                 <p>
                   ${appointment?.user?.phone ?? 'Unknown'}
                 </p>
@@ -239,6 +233,12 @@ export const AppointmentTemplates = {
               <div class="info-item">
                 <p>Salon</p>
                 <p>${appointment?.salon?.name ?? 'Unknown'}</p>
+              </div>
+              <div class="info-item">
+                <p>Contact</p>
+                <p>
+                  ${appointment?.salon?.contact ?? 'Unknown'}
+                </p>
               </div>
               <div class="info-item">
                 <p>Address</p>
