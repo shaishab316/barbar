@@ -7,7 +7,6 @@ import { Morgan } from './util/logger/morgen';
 import cookieParser from 'cookie-parser';
 import ServerError from './errors/ServerError';
 import config from './config';
-import path from 'path';
 
 /**
  * The main application instance
@@ -18,8 +17,7 @@ import path from 'path';
 const app = express();
 
 // Serve static files
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-app.use('/public', express.static(path.join(process.cwd(), 'public')));
+app.use(express.static('public'), express.static('uploads'));
 
 // Configure middleware
 app.use(

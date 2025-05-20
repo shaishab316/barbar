@@ -5,7 +5,7 @@ import { AppointmentServices } from './Appointment.service';
 export const AppointmentMiddlewares = {
   schema: (schema: Schema<TAppointment>) => {
     schema.pre('save', function (next) {
-      if (!this.receipt) this.receipt = `/uploads/pdf/${this._id}.pdf`;
+      if (!this.receipt) this.receipt = `/pdf/${this._id}.pdf`;
 
       next();
     });
