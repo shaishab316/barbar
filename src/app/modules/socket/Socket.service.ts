@@ -32,6 +32,9 @@ export const SocketService = {
       socket.on('leave', (payload: any) => {
         const { chatId } = json(payload) as { chatId: string };
         socket.leave(chatId);
+        socketInfo(
+          `👤 User (${user?.name ?? 'Unknown'}) left from room: (${chatId})`,
+        );
       });
 
       socket.on('disconnect', () => {
