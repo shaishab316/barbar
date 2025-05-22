@@ -2,9 +2,10 @@ import http from 'http';
 import { Server, Socket } from 'socket.io';
 import config from '../../../config';
 import auth from '../../middlewares/socketAuth';
-import { socketHandlers } from './Socket.constant';
+import socketHandlers from './Socket.pulgin';
 import { socketError, socketInfo } from './Socket.utils';
 import { json } from '../../../util/transform/json';
+import { TSocketHandler } from './Socket.interface';
 
 export let io: Server | null;
 const onlineUsers = new Set<string>();
@@ -66,7 +67,7 @@ export const SocketService = {
   },
 
   pulgin(io: Server, socket: Socket) {
-    socketHandlers.forEach(handler => {
+    socketHandlers?.forEach((handler: TSocketHandler) => {
       try {
         handler(io!, socket);
       } catch (error: any) {
