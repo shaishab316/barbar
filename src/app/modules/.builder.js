@@ -107,6 +107,8 @@ export const ${mName}Middlewares = {
   lib: () => '',
 
   template: mName => /*javascript*/ `export const ${mName}Templates = {};`,
+
+  enum: mName => /*javascript*/ `export enum E${mName} {}`,
 };
 
 inquirer
@@ -128,6 +130,7 @@ inquirer
         { name: 'Controller', value: 'controller', checked: true },
         { name: 'Service', value: 'service', checked: true },
         { name: 'Validation', value: 'validation', checked: true },
+        { name: 'Enum', value: 'enum', checked: false },
         { name: 'Utils', value: 'utils', checked: false },
         { name: 'Lib', value: 'lib', checked: false },
         { name: 'Template', value: 'template', checked: false },
