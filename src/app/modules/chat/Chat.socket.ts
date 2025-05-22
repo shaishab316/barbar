@@ -58,11 +58,6 @@ const chatSocket: TSocketHandler = (io, socket) => {
         sender: user._id,
       });
 
-      await Chat.findByIdAndUpdate(chatId, {
-        lastMessage: message._id,
-        updatedAt: new Date(),
-      });
-
       updateInbox(io, chat.users);
 
       io.to(chatId).emit('messageReceived', message);

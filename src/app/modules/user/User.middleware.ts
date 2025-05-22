@@ -6,12 +6,14 @@ import { TUser } from './User.interface';
 export const UserMiddlewares = {
   schema: (schema: Schema<TUser>) => {
     schema.pre('save', async function (next) {
-      if (this.isModified('password')) {
-        const salt = await bcrypt.genSalt(config.bcrypt_salt_rounds);
-        this.password = await bcrypt.hash(this.password!, salt);
+      try {
+        if (this.isModified('password')) {
+          const salt = await bcrypt.genSalt(config.bcrypt_salt_rounds);
+          this.password = await bcrypt.hash(this.password!, salt);
+        }
+      } finally {
+        next();
       }
-
-      next();
     });
 
     schema.post('save', async function (doc: any, next) {

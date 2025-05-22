@@ -14,6 +14,7 @@ const chatSchema = new Schema<TChat>(
     lastMessage: {
       type: Schema.Types.ObjectId,
       ref: 'Message',
+      default: null,
     },
   },
   { timestamps: true, versionKey: false },
