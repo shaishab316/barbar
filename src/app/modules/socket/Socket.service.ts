@@ -2,7 +2,7 @@ import http from 'http';
 import { Server, Socket } from 'socket.io';
 import config from '../../../config';
 import auth from '../../middlewares/socketAuth';
-import socketHandlers from './Socket.pulgin';
+import socketHandlers from './Socket.plugin';
 import { socketError, socketInfo } from './Socket.utils';
 import { json } from '../../../util/transform/json';
 import { TSocketHandler } from './Socket.interface';
@@ -51,7 +51,7 @@ export const SocketService = {
         socket.disconnect();
       });
 
-      this.pulgin(io!, socket);
+      this.plugin(io!, socket);
     });
   },
 
@@ -69,7 +69,7 @@ export const SocketService = {
     this.updateOnlineState();
   },
 
-  pulgin(io: Server, socket: Socket) {
+  plugin(io: Server, socket: Socket) {
     socketHandlers?.forEach((handler: TSocketHandler) => {
       try {
         handler(io!, socket);
