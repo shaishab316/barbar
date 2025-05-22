@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { TChat } from './Chat.interface';
 import autoPopulate from 'mongoose-autopopulate';
+import { ChatMiddlewares } from './Chat.middleware';
 
 const chatSchema = new Schema<TChat>(
   {
@@ -21,6 +22,8 @@ const chatSchema = new Schema<TChat>(
 );
 
 chatSchema.plugin(autoPopulate);
+
+ChatMiddlewares.schema(chatSchema);
 
 const Chat = model<TChat>('Chat', chatSchema);
 
