@@ -7,18 +7,13 @@ import { TList } from '../query/Query.interface';
 export const ChatServices = {
   async create(users: Types.ObjectId[]) {
     if (users[0].equals(users[1]))
-      throw new ServerError(
-        StatusCodes.BAD_REQUEST,
-        'You cannot create a chat with yourself',
-      );
+      throw new ServerError(StatusCodes.BAD_REQUEST, 'Invalid chat users');
 
     const chat = await Chat.findOne({
-      users: { $all: users.sort() },
+      users: { $all: users },
     });
 
-    if (chat) return chat;
-
-    return Chat.create({ users });
+    return chat || Chat.create({ users });
   },
 
   async list({ page, limit }: TList, userId: Types.ObjectId) {
