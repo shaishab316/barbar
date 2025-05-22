@@ -82,17 +82,9 @@ export const ChatServices = {
   },
 
   async delete(chatId: Types.ObjectId, userId: Types.ObjectId) {
-    const chat = await Chat.findOne({
+    return Chat.findOneAndDelete({
       _id: chatId,
       users: { $all: [userId] },
     });
-
-    if (!chat)
-      throw new ServerError(
-        StatusCodes.FORBIDDEN,
-        'You are not authorized to delete this chat.',
-      );
-
-    return Chat.findByIdAndDelete(chatId);
   },
 };
