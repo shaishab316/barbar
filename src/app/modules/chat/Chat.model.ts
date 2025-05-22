@@ -9,7 +9,6 @@ const chatSchema = new Schema<TChat>(
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-        autopopulate: { select: 'name avatar' },
       },
     ],
   },

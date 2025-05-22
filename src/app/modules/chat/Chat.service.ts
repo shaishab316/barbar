@@ -3,6 +3,7 @@ import Chat from './Chat.model';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
+import Message from '../message/Message.model';
 
 export const ChatServices = {
   async create(users: Types.ObjectId[]) {
@@ -25,9 +26,33 @@ export const ChatServices = {
     const chats = await Chat.find({
       users: { $all: [userId] },
     })
-      .sort('-createdAt')
+      .sort('-updatedAt')
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .populate('users', 'name avatar')
+      .lean();
+
+    const chatData = await Promise.all(
+      chats.map(async chat => {
+        const otherUser = chat.users.find(
+          (user: Types.ObjectId) => !user._id.equals(userId),
+        );
+
+        const lastMessage = await Message.findOne({
+          chat: chat._id,
+          sender: otherUser,
+        })
+          .sort('-updatedAt')
+          .select('content updatedAt');
+
+        return {
+          ...otherUser,
+          _id: chat._id,
+          message: lastMessage?.content,
+          date: lastMessage?.updatedAt,
+        };
+      }),
+    );
 
     const total = await Chat.countDocuments({
       users: { $all: [userId] },
@@ -42,7 +67,7 @@ export const ChatServices = {
           totalPages: Math.ceil(total / limit),
         },
       },
-      chats,
+      chats: chatData,
     };
   },
 
