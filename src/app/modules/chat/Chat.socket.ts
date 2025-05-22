@@ -61,6 +61,7 @@ const chatSocket: TSocketHandler = (io, socket) => {
       updateInbox(io, chat.users);
 
       io.to(chatId).emit('messageReceived', message);
+      io.emit(`messageReceived:${chatId}`, message);
 
       socketInfo(
         `✅ Message sent successfully from: ${user.name ?? 'Unknown'} to chat: ${chatId}`,
@@ -91,6 +92,10 @@ const chatSocket: TSocketHandler = (io, socket) => {
       await Message.findByIdAndDelete(messageId);
 
       io.to(message.chat._id.toString()).emit('messageDeleted', {
+        messageId,
+      });
+
+      io.emit(`messageDeleted:${message.chat._id}`, {
         messageId,
       });
 
