@@ -3,7 +3,6 @@ import Chat from './Chat.model';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
-import Message from '../message/Message.model';
 
 export const ChatServices = {
   async create(users: Types.ObjectId[]) {
@@ -23,36 +22,52 @@ export const ChatServices = {
   },
 
   async list({ page, limit }: TList, userId: Types.ObjectId) {
-    const chats = await Chat.find({
-      users: { $all: [userId] },
-    })
-      .sort('-updatedAt')
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('users', 'name avatar')
-      .lean();
-
-    const chatData = await Promise.all(
-      chats.map(async chat => {
-        const otherUser = chat.users.find(
-          (user: Types.ObjectId) => !user._id.equals(userId),
-        );
-
-        const lastMessage = await Message.findOne({
-          chat: chat._id,
-          sender: otherUser,
-        })
-          .sort('-updatedAt')
-          .select('content updatedAt');
-
-        return {
-          ...otherUser,
-          _id: chat._id,
-          message: lastMessage?.content,
-          date: lastMessage?.updatedAt,
-        };
-      }),
-    );
+    const chats = await Chat.aggregate([
+      {
+        $match: {
+          users: { $all: [userId] },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          let: { userId },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
+            { $project: { name: 1, avatar: 1 } },
+          ],
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      {
+        $lookup: {
+          from: 'messages',
+          let: { chatId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$chat', '$$chatId'] } } },
+            { $sort: { createdAt: -1 } },
+            { $limit: 1 },
+            { $project: { content: 1 } },
+          ],
+          as: 'lastMessage',
+        },
+      },
+      { $unwind: { path: '$lastMessage', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          avatar: '$user.avatar',
+          name: '$user.name',
+          message: '$lastMessage.content',
+          updatedAt: 1,
+          createdAt: 1,
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+    ]);
 
     const total = await Chat.countDocuments({
       users: { $all: [userId] },
@@ -67,7 +82,7 @@ export const ChatServices = {
           totalPages: Math.ceil(total / limit),
         },
       },
-      chats: chatData,
+      chats,
     };
   },
 

@@ -59,6 +59,7 @@ const chatSocket: TSocketHandler = (io, socket) => {
       });
 
       await Chat.findByIdAndUpdate(chatId, {
+        lastMessage: message._id,
         updatedAt: new Date(),
       });
 
