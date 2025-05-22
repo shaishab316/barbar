@@ -4,6 +4,7 @@ import config from '../../../config';
 import auth from '../../middlewares/socketAuth';
 import { socketHandlers } from './Socket.constant';
 import { socketError, socketInfo } from './Socket.utils';
+import { json } from '../../../util/transform/json';
 
 export let io: Server | null;
 const onlineUsers = new Set<string>();
@@ -26,6 +27,11 @@ export const SocketService = {
       socketInfo(
         `👤 User (${user?.name ?? 'Unknown'}) connected to room: (${user._id})`,
       );
+
+      socket.on('leave', (payload: any) => {
+        const { chatId } = json(payload) as { chatId: string };
+        socket.leave(chatId);
+      });
 
       socket.on('disconnect', () => {
         socket.leave(user._id);
