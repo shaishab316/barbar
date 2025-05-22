@@ -13,7 +13,10 @@ const locationSchema = new Schema<TLocation>({
     type: [Number], // [longitude, latitude]
     required: true,
   },
-  address: String,
+  address: {
+    type: String,
+    default: '',
+  },
 });
 
 const salonSchema = new Schema<TSalon>(
@@ -25,25 +28,23 @@ const salonSchema = new Schema<TSalon>(
     },
     name: {
       type: String,
-      required: true,
+      default: '',
     },
     description: {
       type: String,
-      required: true,
+      default: '',
     },
     banner: {
       type: String,
-      required: true,
+      default: '/images/logo.png',
     },
     location: {
       type: locationSchema,
-      required: true,
     },
     gallery: [
       {
         image: {
           type: String,
-          required: true,
         },
       },
     ],
@@ -61,22 +62,28 @@ const salonSchema = new Schema<TSalon>(
     gender: {
       type: String,
       enum: Object.values(EUserGender),
-      required: true,
+      default: EUserGender.MALE,
     },
     businessHours: {
       ...Object.fromEntries(
         week.map(day => [
           day,
           {
-            start: { type: String, required: true },
-            end: { type: String, required: true },
-            isOpen: { type: Boolean, required: true, default: true },
+            start: { type: String, default: '00:00' },
+            end: { type: String, default: '00:00' },
+            isOpen: { type: Boolean, default: true },
           },
         ]),
       ),
     },
-    contact: String,
-    website: String,
+    contact: {
+      type: String,
+      default: '',
+    },
+    website: {
+      type: String,
+      default: '',
+    },
   },
   { timestamps: true, versionKey: false },
 );

@@ -23,7 +23,7 @@ router.post(
 router.post(
   '/register/host',
   purifyRequest(UserValidations.createHost),
-  UserControllers.create,
+  UserControllers.createHost,
 );
 
 router.post(
