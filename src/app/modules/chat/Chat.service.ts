@@ -25,11 +25,7 @@ export const ChatServices = {
 
   async list({ page, limit }: TList, userId: Types.ObjectId) {
     const chats = await Chat.aggregate([
-      {
-        $match: {
-          users: { $all: [userId] },
-        },
-      },
+      { $match: { users: userId } },
       {
         $addFields: {
           opponentId: {
@@ -60,7 +56,7 @@ export const ChatServices = {
             { $match: { $expr: { $eq: ['$chat', '$$chatId'] } } },
             { $sort: { createdAt: -1 } },
             { $limit: 1 },
-            { $project: { content: 1 } },
+            { $project: { content: 1, updatedAt: 1, sender: 1 } },
           ],
           as: 'lastMessage',
         },
@@ -69,11 +65,17 @@ export const ChatServices = {
       {
         $project: {
           _id: 1,
-          avatar: '$opponent.avatar',
           name: '$opponent.name',
-          message: '$lastMessage.content',
-          updatedAt: 1,
-          createdAt: 1,
+          avatar: '$opponent.avatar',
+          message: {
+            $cond: {
+              if: { $eq: ['$lastMessage.sender', userId] },
+              then: { $concat: ['(You) ', '$lastMessage.content'] },
+              else: '$lastMessage.content',
+            },
+          },
+          updatedAt: '$lastMessage.updatedAt',
+          chatCreatedAt: '$createdAt',
         },
       },
       { $sort: { updatedAt: -1 } },
@@ -81,9 +83,7 @@ export const ChatServices = {
       { $limit: limit },
     ]);
 
-    const total = await Chat.countDocuments({
-      users: { $all: [userId] },
-    });
+    const total = await Chat.countDocuments({ users: userId });
 
     return {
       meta: {
