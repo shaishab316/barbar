@@ -1,8 +1,15 @@
+/* eslint-disable no-console */
 import { Types } from 'mongoose';
 import Chat from './Chat.model';
 import ServerError from '../../../errors/ServerError';
 import { StatusCodes } from 'http-status-codes';
 import { TList } from '../query/Query.interface';
+import http from 'http';
+import config from '../../../config';
+import Message from '../message/Message.model';
+import { Server } from 'socket.io';
+
+export let io: Server | null;
 
 export const ChatServices = {
   async create(users: Types.ObjectId[]) {
@@ -85,6 +92,47 @@ export const ChatServices = {
     return Chat.findOneAndDelete({
       _id: chatId,
       users: { $all: [userId] },
+    });
+  },
+
+  async socket(server: http.Server) {
+    if (!io) {
+      io = new Server(server, {
+        cors: { origin: config.server.allowed_origins },
+      });
+      console.log('🔑 Socket server initialized');
+    }
+
+    io.on('connection', socket => {
+      console.log('👤 User connected');
+
+      socket.on('disconnect', () => {
+        console.log('👤 User disconnected');
+      });
+
+      socket.on('error', err => {
+        console.log(err);
+        socket.disconnect();
+      });
+
+      socket.on('sendMessage', async ({ roomId, sender, message }: any) => {
+        try {
+          const newMessage = await Message.create({
+            chat: roomId,
+            sender,
+            content: message,
+          });
+          io?.emit(`messageReceived:${roomId}`, newMessage);
+          console.log(newMessage);
+          const chat = await Chat.findById(roomId);
+
+          chat?.users.forEach(user => {
+            io?.emit(`inboxUpdated:${user}`, newMessage);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      });
     });
   },
 };
