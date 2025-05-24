@@ -31,17 +31,27 @@ export const ChatServices = {
         },
       },
       {
-        $lookup: {
-          from: 'users',
-          let: { userId },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
-            { $project: { name: 1, avatar: 1 } },
-          ],
-          as: 'user',
+        $addFields: {
+          opponentId: {
+            $first: {
+              $filter: {
+                input: '$users',
+                as: 'u',
+                cond: { $ne: ['$$u', userId] },
+              },
+            },
+          },
         },
       },
-      { $unwind: '$user' },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'opponentId',
+          foreignField: '_id',
+          as: 'opponent',
+        },
+      },
+      { $unwind: '$opponent' },
       {
         $lookup: {
           from: 'messages',
@@ -59,8 +69,8 @@ export const ChatServices = {
       {
         $project: {
           _id: 1,
-          avatar: '$user.avatar',
-          name: '$user.name',
+          avatar: '$opponent.avatar',
+          name: '$opponent.name',
           message: '$lastMessage.content',
           updatedAt: 1,
           createdAt: 1,
