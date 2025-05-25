@@ -64,7 +64,7 @@ export const ChatServices = {
       { $unwind: { path: '$lastMessage', preserveNullAndEmptyArrays: true } },
       {
         $project: {
-          _id: 1,
+          _id: '$opponent._id',
           name: '$opponent.name',
           avatar: '$opponent.avatar',
           message: {
