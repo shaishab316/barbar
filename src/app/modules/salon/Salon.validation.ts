@@ -87,8 +87,13 @@ export const SalonValidations = {
   search: z.object({
     query: z.object({
       search: z.string().trim().optional(),
-      category: z.string().transform(oid).refine(exists(Category)).optional(),
-      rating: z.coerce.number().min(1).max(5).optional(),
+      category: z.string().optional().transform(oid).refine(exists(Category)),
+      rating: z.coerce
+        .number()
+        .optional()
+        .refine(val => !val || (val >= 0 && val <= 5), {
+          message: 'Rating must be between 0 and 5',
+        }),
     }),
   }),
 };
