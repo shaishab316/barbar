@@ -183,4 +183,72 @@ export const SalonServices = {
 
     return salon;
   },
+
+  async search({ category, search, rating }: any) {
+    const pipeline: any[] = [
+      // STAGE 1: JOIN WITH SERVICES COLLECTION
+      // Get all services for each salon by matching salon._id to services.salon
+      {
+        $lookup: {
+          from: 'services',
+          localField: '_id',
+          foreignField: 'salon',
+          as: 'services',
+        },
+      },
+
+      // STAGE 2: UNWIND SERVICES ARRAY
+      // Convert services array into individual documents (one per service)
+      // This allows us to filter services in the next stage
+      { $unwind: '$services' },
+
+      // STAGE 3: FILTER DOCUMENTS
+      // Apply all requested filters conditionally:
+      // - Filter by service category if provided
+      // - Filter by rating if provided
+      // - Text search across salon name, description, and service names if provided
+      {
+        $match: {
+          ...(category && { 'services.category': category }), // Only add if category exists
+          ...(rating && { rating }), // Only add if rating exists
+          ...(search && {
+            // Only add if search exists
+            $or: [
+              { name: { $regex: search, $options: 'i' } }, // Search salon name
+              { description: { $regex: search, $options: 'i' } }, // Search description
+              { 'services.name': { $regex: search, $options: 'i' } }, // Search service names
+            ],
+          }),
+        },
+      },
+
+      // STAGE 4: GROUP BY SALON ID
+      // Since we unwinded services, we need to regroup to get one document per salon
+      // $first keeps the original salon values (they're identical across service splits)
+      {
+        $group: {
+          _id: '$_id', // Group by salon ID
+          name: { $first: '$name' }, // Keep original name
+          banner: { $first: '$banner' }, // Keep original banner
+          location: { $first: '$location' }, // Keep original location
+          rating: { $first: '$rating' }, // Keep original rating
+        },
+      },
+
+      // STAGE 5: FINAL PROJECTION
+      // Explicitly define which fields to include in results
+      // This ensures we don't return any unexpected fields
+      {
+        $project: {
+          _id: 1, // Include ID
+          name: 1, // Include name
+          banner: 1, // Include banner
+          location: 1, // Include location
+          rating: 1, // Include rating
+        },
+      },
+    ];
+
+    return Salon.aggregate(pipeline);
+  },
 };

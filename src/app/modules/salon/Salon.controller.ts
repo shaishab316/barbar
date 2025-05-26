@@ -83,6 +83,15 @@ export const SalonControllers = {
     });
   }),
 
+  search: catchAsync(async ({ query }, res) => {
+    const data = await SalonServices.search(query);
+
+    serveResponse(res, {
+      message: 'Salons retrieved successfully!',
+      data,
+    });
+  }),
+
   delete: catchAsync(async ({ params }, res) => {
     const salon = await SalonServices.delete(params.salonId);
 

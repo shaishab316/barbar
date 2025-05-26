@@ -53,6 +53,12 @@ user.get(
 );
 
 user.get(
+  '/search',
+  purifyRequest(SalonValidations.search),
+  SalonControllers.search,
+);
+
+user.get(
   '/:salonId',
   purifyRequest(QueryValidations.exists('salonId', Salon)),
   SalonControllers.retrieve,

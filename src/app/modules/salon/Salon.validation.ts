@@ -3,6 +3,9 @@ import { EUserGender } from '../user/User.enum';
 import { week } from './Salon.constant';
 import { json } from '../../../util/transform/json';
 import { lower } from '../../../util/transform/lower';
+import { oid } from '../../../util/transform/oid';
+import { exists } from '../../../util/db/exists';
+import Category from '../category/Category.model';
 
 export const SalonValidations = {
   upsert: z.object({
@@ -78,6 +81,14 @@ export const SalonValidations = {
       sort: z.string().default('-createdAt'),
       search: z.string().trim().optional(),
       fields: z.string().default('name banner rating location'),
+    }),
+  }),
+
+  search: z.object({
+    query: z.object({
+      search: z.string().trim().optional(),
+      category: z.string().transform(oid).refine(exists(Category)).optional(),
+      rating: z.coerce.number().min(1).max(5).optional(),
     }),
   }),
 };
