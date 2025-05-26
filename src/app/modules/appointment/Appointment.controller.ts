@@ -3,7 +3,7 @@ import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { AppointmentServices } from './Appointment.service';
 import ServerError from '../../../errors/ServerError';
-import { EAppointmentState } from './Appointment.enum';
+import { EAppointmentState, EAppointmentType } from './Appointment.enum';
 import { SalonServices } from '../salon/Salon.service';
 import { NotificationServices } from '../notification/Notification.service';
 import Salon from '../salon/Salon.model';
@@ -14,6 +14,7 @@ export const AppointmentControllers = {
       ...body,
       user: user?._id,
       salon: params.salonId,
+      type: EAppointmentType.SERVICES,
     });
 
     const salon = await Salon.findById(params.salonId);
