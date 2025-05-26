@@ -1,1 +1,1 @@
-export const oid = (str: string) => str.oid;
+export const oid = (str: string | null = null) => str?.oid;
