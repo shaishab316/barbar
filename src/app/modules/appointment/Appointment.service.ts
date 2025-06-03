@@ -8,6 +8,7 @@ import { EUserRole } from '../user/User.enum';
 import { SalonServices } from '../salon/Salon.service';
 import { AppointmentTemplates } from './Appointment.template';
 import { savePdf } from '../../../util/file/savePdf';
+import { appointmentSearchableFields } from './Appointment.constant';
 
 export const AppointmentServices = {
   async create(appointmentData: TAppointment) {
@@ -97,11 +98,9 @@ export const AppointmentServices = {
     if (search)
       pipeline.push({
         $match: {
-          $or: [
-            { 'user.name': { $regex: search, $options: 'i' } },
-            { 'salon.name': { $regex: search, $options: 'i' } },
-            { 'services.name': { $regex: search, $options: 'i' } },
-          ],
+          $or: appointmentSearchableFields.map(field => ({
+            [field]: { $regex: search, $options: 'i' },
+          })),
         },
       });
 
