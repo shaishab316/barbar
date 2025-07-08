@@ -40,29 +40,3 @@ npm run dev
 ## 👤 **Author**
 
 - **Shaishab** – [@shaishabcoding](https://github.com/shaishabcoding)
-
----
-
----
-
----
-
-### **Note: commit.sh**
-
-- **What it does**: Automatically generates a commit message based on your changes using the Gemini API.
-
-- **How to use**:
-
-  1. Make the script executable(only once):
-
-     ```bash
-     chmod +x commit.sh
-     ```
-
-  2. Run the script:
-
-     ```bash
-     ./commit.sh
-     ```
-
-  3. Confirm or cancel the commit based on the generated message.
