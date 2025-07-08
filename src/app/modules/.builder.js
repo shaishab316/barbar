@@ -3,16 +3,22 @@ const path = require('path');
 const inquirer = require('inquirer');
 
 const fileTemplates = {
-  route: mName => `import { Router } from 'express';
+  route: mName => /*javascript*/ `import { Router } from 'express';
 import { ${mName}Controllers } from './${mName}.controller';
 import { ${mName}Validations } from './${mName}.validation';
 import purifyRequest from '../../middlewares/purifyRequest';
 
 const router = Router();
 
+router.post(
+  '/',
+  purifyRequest(${mName}Validations.create),
+  ${mName}Controllers.create,
+);
+
 export const ${mName}Routes = router;`,
 
-  interface: mName => `import { Types } from 'mongoose';
+  interface: mName => /*javascript*/ `import { Types } from 'mongoose';
 
 export type T${mName} = {
   _id?: Types.ObjectId;
@@ -21,51 +27,88 @@ export type T${mName} = {
   updatedAt?: Date;
 };`,
 
-  model: mName => `import { Schema, model } from 'mongoose';
+  model: mName => /*javascript*/ `import { Schema, model } from 'mongoose';
 import { T${mName} } from './${mName}.interface';
+import { ${mName}Middlewares } from './${mName}.middleware';
 
-const ${mName.toLowerCase()}Schema = new Schema<T${mName}>(
+const ${mName[0].toLowerCase()}${mName.slice(1)}Schema = new Schema<T${mName}>(
   {},
   { timestamps: true, versionKey: false },
 );
 
-const ${mName} = model<T${mName}>('${mName}', ${mName.toLowerCase()}Schema);
+${mName}Middlewares.schema(${mName[0].toLowerCase()}${mName.slice(1)}Schema);
+
+const ${mName} = model<T${mName}>('${mName}', ${mName[0].toLowerCase()}${mName.slice(1)}Schema);
 
 export default ${mName};`,
 
-  controller: mName => `import { StatusCodes } from 'http-status-codes';
+  controller:
+    mName => /*javascript*/ `import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { ${mName}Services } from './${mName}.service';
 
 export const ${mName}Controllers = {
-  // {{key}}: catchAsync(async (req, res) => {
-  //   const data = await ${mName}Services.{{key}}();
-  //
-  //   serveResponse(res, {
-  //     // statusCode: StatusCodes.OK,
-  //     message: '${mName} [value] successfully!',
-  //     data,
-  //   });
-  // }),
+  create: catchAsync(async (req, res) => {
+    const data = await ${mName}Services.create(req.body);
+
+    serveResponse(res, {
+      statusCode: StatusCodes.CREATED,
+      message: '${mName} created successfully!',
+      data,
+    });
+  }),
 };`,
 
-  service: mName => `import { T${mName} } from './${mName}.interface';
+  service:
+    mName => /*javascript*/ `import { T${mName} } from './${mName}.interface';
 import ${mName} from './${mName}.model';
 
-export const ${mName}Services = {};`,
+export const ${mName}Services = {
+  async create(${mName[0].toLowerCase()}${mName.slice(1)}Data: T${mName}) {
+    return ${mName}.create(${mName[0].toLowerCase()}${mName.slice(1)}Data);
+  },
+};`,
 
-  validation: mName => `import { z } from 'zod';
+  validation: mName => /*javascript*/ `import { z } from 'zod';
 
-export const ${mName}Validations = {};`,
+export const ${mName}Validations = {
+  create: z.object({
+    body: z.object({}),
+  }),
+};`,
+
+  middleware: mName => /*javascript*/ `import { Schema } from 'mongoose';
+import { T${mName} } from './${mName}.interface';
+
+export const ${mName}Middlewares = {
+  schema: (schema: Schema<T${mName}>) => {
+    ${['save', 'findOneAndDelete', 'findOneAndUpdate']
+      .map(event =>
+        ['pre', 'post']
+          .map(
+            fn => /*javascript*/ `
+    schema.${fn}('${event}', async function (${fn === 'pre' ? 'next' : 'doc, next'}) {
+      try {
+        // Do something ${fn === 'pre' ? 'before' : 'after'} ${event}
+      } finally {
+        next();
+      }
+    });`,
+          )
+          .join('\n'),
+      )
+      .join('\n')}
+  },
+};`,
 
   utils: () => '',
 
   lib: () => '',
 
-  template: mName => `export const ${mName}Templates = {};`,
+  template: mName => /*javascript*/ `export const ${mName}Templates = {};`,
 
-  middleware: mName => `export const ${mName}Middlewares = {};`,
+  enum: mName => /*javascript*/ `export enum E${mName} {}`,
 };
 
 inquirer
@@ -83,13 +126,14 @@ inquirer
         { name: 'Route', value: 'route', checked: true },
         { name: 'Interface', value: 'interface', checked: true },
         { name: 'Model', value: 'model', checked: true },
+        { name: 'Middleware', value: 'middleware', checked: true },
         { name: 'Controller', value: 'controller', checked: true },
         { name: 'Service', value: 'service', checked: true },
         { name: 'Validation', value: 'validation', checked: true },
+        { name: 'Enum', value: 'enum', checked: false },
         { name: 'Utils', value: 'utils', checked: false },
         { name: 'Lib', value: 'lib', checked: false },
         { name: 'Template', value: 'template', checked: false },
-        { name: 'Middleware', value: 'middleware', checked: false },
       ],
     },
   ])

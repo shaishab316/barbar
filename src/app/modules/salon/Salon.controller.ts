@@ -73,4 +73,30 @@ export const SalonControllers = {
       data,
     });
   }),
+
+  byCategory: catchAsync(async ({ params }, res) => {
+    const data = await SalonServices.byCategory(params.categoryId);
+
+    serveResponse(res, {
+      message: 'Salons retrieved successfully!',
+      data,
+    });
+  }),
+
+  search: catchAsync(async ({ query }, res) => {
+    const data = await SalonServices.search(query);
+
+    serveResponse(res, {
+      message: 'Salons retrieved successfully!',
+      data,
+    });
+  }),
+
+  delete: catchAsync(async ({ params }, res) => {
+    const salon = await SalonServices.delete(params.salonId);
+
+    serveResponse(res, {
+      message: `${salon?.name ?? 'Salon'} deleted successfully!`,
+    });
+  }),
 };

@@ -4,6 +4,8 @@ import serveResponse from '../../../util/server/serveResponse';
 import { StatusCodes } from 'http-status-codes';
 import { userExcludeFields } from './User.constant';
 import { AuthServices } from '../auth/Auth.service';
+import { NotificationServices } from '../notification/Notification.service';
+import Salon from '../salon/Salon.model';
 
 export const UserControllers = {
   create: catchAsync(async ({ body }, res) => {
@@ -13,11 +15,42 @@ export const UserControllers = {
       user._id!,
     );
 
+    await NotificationServices.create({
+      title: `${user.name} registered successfully!`,
+      description: `${user.name} registered successfully! At ${new Date()}`,
+    });
+
     AuthServices.setRefreshToken(res, refreshToken);
 
     serveResponse(res, {
       statusCode: StatusCodes.CREATED,
-      message: `${body.role.charAt(0).toUpperCase() + body.role.slice(1)} registered successfully!`,
+      message: `User registered successfully!`,
+      data: {
+        token: accessToken,
+        user,
+      },
+    });
+  }),
+
+  createHost: catchAsync(async ({ body }, res) => {
+    const user = await UserServices.create(body);
+
+    const { accessToken, refreshToken } = await AuthServices.retrieveToken(
+      user._id!,
+    );
+
+    await NotificationServices.create({
+      title: `${user.name} registered successfully!`,
+      description: `${user.name} registered successfully! At ${new Date()}`,
+    });
+
+    await Salon.create({ host: user._id });
+
+    AuthServices.setRefreshToken(res, refreshToken);
+
+    serveResponse(res, {
+      statusCode: StatusCodes.CREATED,
+      message: `Host registered successfully!`,
       data: {
         token: accessToken,
         user,
@@ -62,6 +95,14 @@ export const UserControllers = {
     serveResponse(res, {
       message: 'Profile fetched successfully!',
       data: user,
+    });
+  }),
+
+  delete: catchAsync(async ({ params }, res) => {
+    const user = await UserServices.delete(params.userId);
+
+    serveResponse(res, {
+      message: `${user?.name ?? 'User'} deleted successfully!`,
     });
   }),
 };

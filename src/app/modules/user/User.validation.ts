@@ -87,4 +87,10 @@ export const UserValidations = {
         .min(6, 'New Password must be at least 6 characters long'),
     }),
   }),
+
+  list: z.object({
+    query: z.object({
+      search: z.string().trim().optional(),
+    }),
+  }),
 };

@@ -1,10 +1,11 @@
-import colors from 'colors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
-import { errorLogger, logger } from '../../../util/logger/logger';
 import config from '../../../config';
 import auth from '../../middlewares/socketAuth';
-import { socketHandlers } from './Socket.constant';
+import socketHandlers from './Socket.plugin';
+import { socketError, socketInfo } from './Socket.utils';
+import { json } from '../../../util/transform/json';
+import { TSocketHandler } from './Socket.interface';
 
 export let io: Server | null;
 const onlineUsers = new Set<string>();
@@ -12,41 +13,45 @@ const onlineUsers = new Set<string>();
 export const SocketService = {
   init(server: http.Server) {
     if (!io) {
-      io = new Server(server, { cors: { origin: config.allowed_origins } });
-      logger.info(colors.green('🔑 Socket server initialized'));
+      io = new Server(server, {
+        cors: { origin: config.server.allowed_origins },
+      });
+      socketInfo('🔑 Socket server initialized');
     }
 
     io.use(auth);
 
     io.on('connection', socket => {
       const { user } = socket.data;
+      this.online(user._id);
 
-      logger.info(
-        colors.blue(
-          `👤 User (${user?.name ?? 'Unknown'}) connected to room: (${user._id})`,
-        ),
+      socketInfo(
+        `👤 User (${user?.name ?? 'Unknown'}) connected to room: (${user._id})`,
       );
 
-      this.online(user._id);
+      socket.on('leave', (payload: any) => {
+        const { chatId } = json(payload) as { chatId: string };
+        socket.leave(chatId);
+        socketInfo(
+          `👤 User (${user?.name ?? 'Unknown'}) left from room: (${chatId})`,
+        );
+      });
 
       socket.on('disconnect', () => {
         socket.leave(user._id);
-        logger.info(
-          colors.red(
-            `👤 User (${user?.name ?? 'Unknown'}) disconnected from room: (${user._id})`,
-          ),
-        );
-
         this.offline(user._id);
+
+        socketInfo(
+          `👤 User (${user?.name ?? 'Unknown'}) disconnected from room: (${user._id})`,
+        );
       });
 
       socket.on('error', err => {
-        errorLogger.error(colors.red('Socket Error:' + err));
-        socket.emit('customError', err.message);
+        socketError(socket, err.message);
         socket.disconnect();
       });
 
-      this.pulgin(io!, socket);
+      this.plugin(io!, socket);
     });
   },
 
@@ -64,12 +69,12 @@ export const SocketService = {
     this.updateOnlineState();
   },
 
-  pulgin(io: Server, socket: Socket) {
-    socketHandlers.forEach(handler => {
+  plugin(io: Server, socket: Socket) {
+    socketHandlers?.forEach((handler: TSocketHandler) => {
       try {
         handler(io!, socket);
-      } catch (error) {
-        errorLogger.error(colors.red('Error in socket handler: ' + error));
+      } catch (error: any) {
+        socketError(socket, error.message);
       }
     });
   },

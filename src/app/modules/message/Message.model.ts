@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TMessage } from './Message.interface';
+import { MessageMiddlewares } from './Message.middleware';
 
 const messageSchema = new Schema<TMessage>(
   {
@@ -20,6 +21,8 @@ const messageSchema = new Schema<TMessage>(
   },
   { timestamps: true, versionKey: false },
 );
+
+MessageMiddlewares.schema(messageSchema);
 
 const Message = model<TMessage>('Message', messageSchema);
 

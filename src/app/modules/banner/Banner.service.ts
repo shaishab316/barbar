@@ -9,7 +9,7 @@ export const BannerServices = {
   },
 
   async list() {
-    return Banner.find().select('image');
+    return Banner.find();
   },
 
   async delete(bannerId: Types.ObjectId) {

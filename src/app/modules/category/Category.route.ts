@@ -5,7 +5,9 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import Category from './Category.model';
 import capture from '../../middlewares/capture';
+import { SalonControllers } from '../salon/Salon.controller';
 
+/** Admin routes */
 const admin = Router();
 
 admin.post(
@@ -33,11 +35,18 @@ admin.delete(
   CategoryControllers.delete,
 );
 
+/** User routes */
+const user = Router();
+
+user.get('/', purifyRequest(QueryValidations.list), CategoryControllers.list);
+
+user.get(
+  '/:categoryId/salons',
+  purifyRequest(QueryValidations.exists('categoryId', Category)),
+  SalonControllers.byCategory,
+);
+
 export const CategoryRoutes = {
   admin,
-  user: Router().get(
-    '/',
-    purifyRequest(QueryValidations.list),
-    CategoryControllers.list,
-  ),
+  user,
 };

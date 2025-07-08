@@ -36,4 +36,8 @@ const auth = (
     next();
   });
 
+auth.admin = auth.bind(null, [EUserRole.ADMIN]);
+auth.host = auth.bind(null, [EUserRole.HOST]);
+auth.reset = auth.bind(null, [], ETokenType.RESET);
+
 export default auth;

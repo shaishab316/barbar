@@ -7,7 +7,7 @@ import { Response } from 'express';
 morgan.token('message', (_, res: Response) => res?.locals.errorMessage ?? '');
 
 const getIpFormat = () =>
-  config.server.node_env === 'development' ? ':remote-addr - ' : '';
+  config.server.isDevelopment ? ':remote-addr - ' : '';
 const successResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms`;
 const errorResponseFormat = `${getIpFormat()}:method :url :status - :response-time ms`;
 

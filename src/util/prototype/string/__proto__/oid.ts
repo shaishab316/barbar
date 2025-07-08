@@ -10,6 +10,8 @@ declare global {
 
 Object.defineProperty(String.prototype, 'oid', {
   get() {
+    if (!this.trim()) return;
+
     if (!Types.ObjectId.isValid(this as string))
       throw new ServerError(
         StatusCodes.BAD_REQUEST,

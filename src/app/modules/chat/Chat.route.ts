@@ -25,7 +25,7 @@ router.delete(
 /** Message routes */
 router.get(
   '/:chatId/messages',
-  purifyRequest(QueryValidations.exists('chatId', Chat)),
+  purifyRequest(QueryValidations.exists('chatId', Chat), QueryValidations.list),
   MessageControllers.list,
 );
 

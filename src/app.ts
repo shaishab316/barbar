@@ -17,12 +17,12 @@ import config from './config';
 const app = express();
 
 // Serve static files
-app.use(express.static('uploads'), express.static('public'));
+app.use(express.static('public'), express.static('uploads'));
 
 // Configure middleware
 app.use(
   cors({
-    origin: config.allowed_origins,
+    origin: config.server.allowed_origins,
     credentials: true,
   }),
 

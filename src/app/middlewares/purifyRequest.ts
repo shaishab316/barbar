@@ -25,6 +25,7 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
       keys.forEach(key => {
         req[key] = Object.assign(
           {},
+          key === 'params' && req.params,
           ...results.map(result => result?.[key] ?? {}),
         );
       });
@@ -32,7 +33,7 @@ const purifyRequest = (...schemas: AnyZodObject[]) =>
       next();
     },
     (error, req, _, next) => {
-      if (config.server.node_env === 'development')
+      if (config.server.isDevelopment)
         keys.forEach(key => console.log(`${key} :`, req[key]));
 
       next(error);

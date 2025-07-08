@@ -1,6 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
 import ServerError from '../../../errors/ServerError';
-import { TChat } from '../chat/Chat.interface';
 import Chat from '../chat/Chat.model';
 import { TList } from '../query/Query.interface';
 import { TMessage } from './Message.interface';

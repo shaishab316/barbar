@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import auth from '../app/middlewares/auth';
-import { EUserRole } from '../app/modules/user/User.enum';
 import { TRoute } from '../types/route.types';
 import AdminRoutes from '../app/modules/admin/Admin.route';
 import HostRoutes from '../app/modules/host/Host.route';
@@ -19,12 +18,12 @@ const routes: TRoute[] = [
   },
   {
     path: '/host',
-    middlewares: [auth([EUserRole.HOST])],
+    middlewares: [auth.host()],
     route: HostRoutes,
   },
   {
     path: '/admin',
-    middlewares: [auth([EUserRole.ADMIN])],
+    middlewares: [auth.admin()],
     route: AdminRoutes,
   },
 ];

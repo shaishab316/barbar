@@ -5,6 +5,7 @@ export type TBanner = {
 
   admin: Types.ObjectId;
   image: string;
+  name: string;
 
   createdAt?: Date;
   updatedAt?: Date;

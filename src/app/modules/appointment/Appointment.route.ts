@@ -5,9 +5,22 @@ import purifyRequest from '../../middlewares/purifyRequest';
 import { QueryValidations } from '../query/Query.validation';
 import Appointment from './Appointment.model';
 
-const router = Router();
+/** User Routes */
+const user = Router();
 
-router.patch(
+user.get(
+  '/my-appointments',
+  purifyRequest(QueryValidations.list, AppointmentValidations.list),
+  AppointmentControllers.listForUser,
+);
+
+user.get(
+  '/:appointmentId',
+  purifyRequest(QueryValidations.exists('appointmentId', Appointment)),
+  AppointmentControllers.retrieve,
+);
+
+user.post(
   '/:appointmentId/:state',
   purifyRequest(
     QueryValidations.exists('appointmentId', Appointment),
@@ -16,4 +29,26 @@ router.patch(
   AppointmentControllers.changeState,
 );
 
-export const AppointmentRoutes = router;
+/** Admin Routes */
+const admin = Router();
+
+admin.get(
+  '/',
+  purifyRequest(QueryValidations.list, AppointmentValidations.list),
+  AppointmentControllers.listForAdmin,
+);
+
+/** Host Routes */
+const host = Router();
+
+host.get(
+  '/',
+  purifyRequest(QueryValidations.list, AppointmentValidations.list),
+  AppointmentControllers.listForHost,
+);
+
+export const AppointmentRoutes = {
+  user,
+  admin,
+  host,
+};

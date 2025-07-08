@@ -2,13 +2,12 @@ import './configure';
 import env from '../util/env/env';
 import type ms from 'ms';
 import { genSecret } from '../util/crypto/genSecret';
-import getIpAddress from '../util/server/getIpAddress';
 
-const ip_address = env('ip address', getIpAddress());
-const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
-const href = env('href', `http://${ip_address}:${port}`);
+const node_env = env<string>('node env', 'development');
 const name = env('name', 'BarBar');
 const email = env('email user', 'admin@gmail.com');
+const ip_address = env('ip address', '0.0.0.0');
+const port = env('port', Math.floor(Math.random() * 1_000) + 3_000);
 
 /**
  * Configuration object for the application
@@ -18,12 +17,14 @@ const email = env('email user', 'admin@gmail.com');
  */
 const config = {
   server: {
-    developer: env('developer', 'Shaishab Chandra Shil'),
-    node_env: env('node env', 'development'),
+    name,
+    node_env,
     ip_address,
     port,
-    href,
-    name,
+    isDevelopment: node_env !== 'production',
+    allowed_origins: env('allowed origins', ['*']),
+    developer: env('developer', 'Shaishab Chandra Shil'),
+    href: 'http://localhost:3000',
     logo: env('logo', '/images/logo.png'),
     default_avatar: env('default avatar', '/images/placeholder.png'),
   },
@@ -32,13 +33,13 @@ const config = {
       'database url',
       `mongodb://127.0.0.1:27017/${name.toLowerCase().replace(' ', '-')}`,
     ),
+    redis: env('redis url', 'redis://redis:6379'),
     payment: {
-      success: env('payment success url', `${href}/payment/success`),
-      cancel: env('payment cancel url', `${href}/payment/cancel`),
+      success: env('payment success url', `/payment/success`),
+      cancel: env('payment cancel url', `/payment/cancel`),
     },
     api_doc: env('api doc', ''),
   },
-  allowed_origins: env('allowed origins', ['*']),
   bcrypt_salt_rounds: env('bcrypt salt rounds', 10),
   jwt: {
     access_token: {
@@ -85,7 +86,6 @@ const config = {
       'default service duration',
       '30m',
     ),
-    location_distance: env('location distance', 5000),
   },
   ai: {
     gemini: {

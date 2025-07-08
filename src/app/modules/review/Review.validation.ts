@@ -22,7 +22,7 @@ export const ReviewValidations = {
 
   list: z.object({
     query: z.object({
-      salon: z.string().transform(oid).refine(exists(Salon)).optional(),
+      salon: z.string().optional().transform(oid).refine(exists(Salon)),
     }),
   }),
 };

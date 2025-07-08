@@ -4,8 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import deleteFile from '../../../util/file/deleteFile';
 import ServerError from '../../../errors/ServerError';
 import { userExcludeFields } from './User.constant';
-import bcrypt from 'bcrypt';
-import { Document } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { Document, Types } from 'mongoose';
 import { TList } from '../query/Query.interface';
 
 export const UserServices = {
@@ -40,12 +40,22 @@ export const UserServices = {
     await user.save();
   },
 
-  async list({ page, limit }: TList) {
-    const users = await User.find()
+  async list({ page, limit, search }: TList) {
+    const filter: any = {};
+
+    if (search)
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+      ];
+
+    const users = await User.find(filter)
+      .select('-' + userExcludeFields.join(' -'))
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await User.countDocuments();
+    const total = await User.countDocuments(filter);
 
     return {
       meta: {
@@ -58,5 +68,13 @@ export const UserServices = {
       },
       users,
     };
+  },
+
+  async delete(userId: Types.ObjectId) {
+    const user = await User.findByIdAndDelete(userId);
+
+    if (user?.avatar) await deleteFile(user.avatar);
+
+    return user;
   },
 };

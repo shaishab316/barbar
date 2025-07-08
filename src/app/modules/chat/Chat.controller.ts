@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+import ServerError from '../../../errors/ServerError';
 import catchAsync from '../../../util/server/catchAsync';
 import serveResponse from '../../../util/server/serveResponse';
 import { ChatServices } from './Chat.service';
@@ -23,7 +25,13 @@ export const ChatControllers = {
   }),
 
   delete: catchAsync(async ({ user, params }, res) => {
-    await ChatServices.delete(params.chatId, user!._id!);
+    const message = await ChatServices.delete(params.chatId, user!._id!);
+
+    if (!message)
+      throw new ServerError(
+        StatusCodes.FORBIDDEN,
+        'You are not authorized to delete this chat.',
+      );
 
     serveResponse(res, {
       message: 'Chat deleted successfully!',

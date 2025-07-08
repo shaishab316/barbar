@@ -3,6 +3,9 @@ import { EUserGender } from '../user/User.enum';
 import { week } from './Salon.constant';
 import { json } from '../../../util/transform/json';
 import { lower } from '../../../util/transform/lower';
+import { oid } from '../../../util/transform/oid';
+import { exists } from '../../../util/db/exists';
+import Category from '../category/Category.model';
 
 export const SalonValidations = {
   upsert: z.object({
@@ -11,19 +14,23 @@ export const SalonValidations = {
       description: z.string().optional(),
       banner: z.string().optional(),
       location: z
-        .object({
-          coordinates: z.tuple([
-            z
-              .number()
-              .min(-180, { message: 'Longitude must be ≥ -180' })
-              .max(180, { message: 'Longitude must be ≤ 180' }),
-            z
-              .number()
-              .min(-90, { message: 'Latitude must be ≥ -90' })
-              .max(90, { message: 'Latitude must be ≤ 90' }),
-          ]),
-          address: z.string().optional(),
-        })
+        .any()
+        .transform(json)
+        .pipe(
+          z.object({
+            coordinates: z.tuple([
+              z.coerce
+                .number()
+                .min(-180, { message: 'Longitude must be ≥ -180' })
+                .max(180, { message: 'Longitude must be ≤ 180' }),
+              z.coerce
+                .number()
+                .min(-90, { message: 'Latitude must be ≥ -90' })
+                .max(90, { message: 'Latitude must be ≤ 90' }),
+            ]),
+            address: z.string().optional(),
+          }),
+        )
         .optional(),
       gender: z
         .string()
@@ -61,8 +68,32 @@ export const SalonValidations = {
 
   list: z.object({
     query: z.object({
-      longitude: z.number().min(-180).max(180).optional(),
-      latitude: z.number().min(-90).max(90).optional(),
+      longitude: z.coerce
+        .number()
+        .min(-180, { message: 'Longitude must be ≥ -180' })
+        .max(180, { message: 'Longitude must be ≤ 180' })
+        .optional(),
+      latitude: z.coerce
+        .number()
+        .min(-90, { message: 'Latitude must be ≥ -90' })
+        .max(90, { message: 'Latitude must be ≤ 90' })
+        .optional(),
+      sort: z.string().default('-createdAt'),
+      search: z.string().trim().optional(),
+      fields: z.string().default('name banner rating location'),
+    }),
+  }),
+
+  search: z.object({
+    query: z.object({
+      search: z.string().trim().optional(),
+      category: z.string().optional().transform(oid).refine(exists(Category)),
+      rating: z.coerce
+        .number()
+        .optional()
+        .refine(val => !val || (val >= 0 && val <= 5), {
+          message: 'Rating must be between 0 and 5',
+        }),
     }),
   }),
 };

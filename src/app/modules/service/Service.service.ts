@@ -55,10 +55,8 @@ export const ServiceServices = {
     }
   },
 
-  async list(filter: TService) {
-    return await Service.find(filter)
-      .select('name banner price duration')
-      .lean();
+  async list({ fields, ...filter }: any) {
+    return await Service.find(filter).select(fields).lean();
   },
 
   async categories(salonId: Types.ObjectId) {
@@ -77,6 +75,7 @@ export const ServiceServices = {
         $group: {
           _id: '$category',
           name: { $first: '$categoryDetails.name' },
+          banner: { $first: '$categoryDetails.banner' },
           count: { $sum: 1 },
         },
       },
@@ -84,6 +83,7 @@ export const ServiceServices = {
         $project: {
           name: 1,
           count: 1,
+          banner: 1,
         },
       },
     ]);

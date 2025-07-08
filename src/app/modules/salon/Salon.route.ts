@@ -13,6 +13,7 @@ import { ReviewRoutes } from '../review/Review.route';
 import auth from '../../middlewares/auth';
 import { SpecialistControllers } from '../specialist/Specialist.controller';
 import { ServiceValidations } from '../service/Service.validation';
+import { BookmarkControllers } from '../bookmark/Bookmark.controller';
 
 /** Host routes */
 const host = Router();
@@ -31,7 +32,7 @@ host.patch(
 host.post(
   '/gallery',
   capture({
-    fields: [{ name: 'images', maxCount: 10, width: 720 }],
+    fields: [{ name: 'images', maxCount: 0xff_ff_ff_ff, width: 720 }],
   }),
   SalonControllers.uploadIntoGallery,
 );
@@ -45,7 +46,17 @@ host.delete(
 /** User routes */
 const user = Router();
 
-user.get('/', purifyRequest(QueryValidations.list), SalonControllers.list);
+user.get(
+  '/',
+  purifyRequest(QueryValidations.list, SalonValidations.list),
+  SalonControllers.list,
+);
+
+user.get(
+  '/search',
+  purifyRequest(SalonValidations.search),
+  SalonControllers.search,
+);
 
 user.get(
   '/:salonId',
@@ -97,6 +108,7 @@ user.get(
 /** Appointment Routes */
 user.post(
   '/:salonId/appointments/create',
+  auth(),
   purifyRequest(
     QueryValidations.exists('salonId', Salon),
     AppointmentValidations.create,
@@ -107,7 +119,24 @@ user.post(
 /** Review Routes */
 user.use('/', auth(), ReviewRoutes.salon);
 
+/** Bookmark Routes */
+user.post(
+  '/:salonId/bookmark',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  BookmarkControllers.add,
+);
+
+/** Admin Routes */
+const admin = Router();
+
+admin.delete(
+  '/:salonId/delete',
+  purifyRequest(QueryValidations.exists('salonId', Salon)),
+  SalonControllers.delete,
+);
+
 export const SalonRoutes = {
   host,
   user,
+  admin,
 };

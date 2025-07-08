@@ -6,7 +6,11 @@ import { TRoute } from '../../../types/route.types';
 import { ProfileRoutes } from '../profile/Profile.route';
 import { AppointmentRoutes } from '../appointment/Appointment.route';
 import { ChatRoutes } from '../chat/Chat.route';
+import { UserValidations } from './User.validation';
+import User from './User.model';
+import { BookmarkRoutes } from '../bookmark/Bookmark.route';
 
+/** User Routes */
 const userRoutes: TRoute[] = [
   {
     path: '/profile',
@@ -14,19 +18,34 @@ const userRoutes: TRoute[] = [
   },
   {
     path: '/appointments',
-    route: AppointmentRoutes,
+    route: AppointmentRoutes.user,
   },
   {
     path: '/chats',
     route: ChatRoutes,
   },
+  {
+    path: '/bookmarks',
+    route: BookmarkRoutes,
+  },
 ];
 
+/** Admin Routes */
+const admin = Router();
+
+admin.get(
+  '/',
+  purifyRequest(QueryValidations.list, UserValidations.list),
+  UserControllers.list,
+);
+
+admin.delete(
+  '/:userId/delete',
+  purifyRequest(QueryValidations.exists('userId', User)),
+  UserControllers.delete,
+);
+
 export const UserRoutes = {
-  admin: Router().get(
-    '/',
-    purifyRequest(QueryValidations.list),
-    UserControllers.list,
-  ),
+  admin,
   user: Router().inject(userRoutes),
 };
